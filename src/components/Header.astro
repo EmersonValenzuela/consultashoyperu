@@ -1,0 +1,74 @@
+---
+const currentPath = Astro.url.pathname;
+
+const navItems = [
+  { href: '/', label: 'Inicio' },
+  { href: '/tipo-de-cambio-dolar', label: 'Dólar' },
+  { href: '/sismos-peru', label: 'Sismos' },
+  { href: '/feriados-peru', label: 'Feriados' },
+  { href: '/calculadora-igv', label: 'IGV' },
+  { href: '/calculadora-gratificacion', label: 'Gratificación' },
+  { href: '/calculadora-cts', label: 'CTS' },
+  { href: '/consulta-ruc', label: 'RUC' },
+  { href: '/validador-dni', label: 'DNI' },
+];
+---
+
+<header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <div class="flex items-center gap-3">
+        <a href="/" class="flex items-center gap-2">
+          <div class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+            PE
+          </div>
+          <div>
+            <span class="text-lg font-bold tracking-tight text-slate-900 block leading-tight">Consulta Hoy</span>
+            <span class="text-[10px] font-semibold text-blue-600 uppercase tracking-wider block">Perú</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="hidden md:flex items-center gap-1">
+        {navItems.map((item) => {
+          const isActive = currentPath === item.href;
+          return (
+            <a
+              href={item.href}
+              class={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                isActive
+                  ? 'bg-blue-50 text-blue-700 font-semibold'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              }`}
+            >
+              {item.label}
+            </a>
+          );
+        })}
+      </nav>
+
+      <div class="md:hidden flex items-center">
+        <!-- Menú simple móvil -->
+        <a href="/tipo-de-cambio-dolar" class="text-xs bg-blue-600 text-white font-medium px-2.5 py-1.5 rounded-md">
+          Dólar Hoy
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subnav horizontal scroll para móviles -->
+  <div class="md:hidden border-t border-slate-100 bg-slate-50/80 backdrop-blur overflow-x-auto py-2 px-4 flex gap-2 text-xs whitespace-nowrap scrollbar-none">
+    {navItems.map((item) => (
+      <a
+        href={item.href}
+        class={`px-2.5 py-1 rounded-full ${
+          currentPath === item.href
+            ? 'bg-blue-600 text-white font-medium'
+            : 'bg-white text-slate-700 border border-slate-200'
+        }`}
+      >
+        {item.label}
+      </a>
+    ))}
+  </div>
+</header>

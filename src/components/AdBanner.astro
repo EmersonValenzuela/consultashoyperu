@@ -1,0 +1,15 @@
+---
+interface Props {
+  slotId?: string;
+  format?: 'horizontal' | 'rectangle';
+}
+
+const { slotId = 'banner-top', format = 'horizontal' } = Astro.props;
+---
+
+<div class={`ad-slot my-6 mx-auto ${format === 'rectangle' ? 'max-w-[300px] min-h-[250px]' : 'max-w-4xl min-h-[90px]'}`} data-ad-slot={slotId}>
+  <div class="text-center">
+    <span class="block font-medium tracking-wide text-slate-400 uppercase text-[10px] mb-1">Publicidad</span>
+    <span class="text-xs text-slate-400">Espacio reservado para anuncios (Google AdSense)</span>
+  </div>
+</div>

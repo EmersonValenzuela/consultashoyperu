@@ -1,0 +1,59 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AdBanner from '../components/AdBanner.astro';
+import ConsultaRuc from '../components/consultas/ConsultaRuc';
+---
+
+<Layout
+  title="Consulta RUC SUNAT Gratis — Buscar Razón Social y Estado"
+  description="Consulta RUC en el padrón de contribuyentes de SUNAT Perú. Verifica la razón social, estado activo/inactivo, condición de habido y domicilio fiscal."
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <div class="text-center mb-8">
+      <span class="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full inline-block mb-3">
+        Registro Único de Contribuyentes
+      </span>
+      <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+        Consulta RUC SUNAT en Línea
+      </h1>
+      <p class="text-slate-600 text-sm sm:text-base mt-2 max-w-xl mx-auto">
+        Verifica el estado tributario de personas naturales con negocio y empresas en el Perú con datos oficiales de SUNAT.
+      </p>
+    </div>
+
+    <!-- Espacio Publicitario Top -->
+    <AdBanner slotId="ruc-top" />
+
+    <!-- Buscador React -->
+    <div class="mb-10">
+      <ConsultaRuc client:load />
+    </div>
+
+    <!-- Guía Informativa SEO -->
+    <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 space-y-6 text-sm text-slate-700 leading-relaxed">
+      <h2 class="text-lg font-bold text-slate-900">¿Qué significa cada estado y condición en la SUNAT?</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+          <h3 class="font-bold text-slate-900 mb-1">Estado del Contribuyente</h3>
+          <ul class="text-xs text-slate-600 space-y-2 mt-2">
+            <li><strong class="text-emerald-700">ACTIVO:</strong> Desarrolla actividades comerciales de manera normal y está habilitado para emitir comprobantes de pago.</li>
+            <li><strong class="text-amber-700">SUSPENSIÓN TEMPORAL:</strong> Comunicó a SUNAT la interrupción momentánea de sus actividades.</li>
+            <li><strong class="text-rose-700">BAJA DEFINITIVA:</strong> El contribuyente cerró su negocio o la empresa fue liquidada.</li>
+          </ul>
+        </div>
+
+        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+          <h3 class="font-bold text-slate-900 mb-1">Condición de Domicilio Fiscal</h3>
+          <ul class="text-xs text-slate-600 space-y-2 mt-2">
+            <li><strong class="text-blue-700">HABIDO:</strong> La SUNAT ha verificado y confirmado la existencia de la dirección fiscal declarada.</li>
+            <li><strong class="text-rose-700">NO HABIDO / NO HALLADO:</strong> SUNAT no pudo ubicar al contribuyente en su domicilio. Los comprobantes que emita tienen restricciones tributarias y no otorgan derecho a crédito fiscal.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Espacio Publicitario Bottom -->
+    <AdBanner slotId="ruc-bottom" />
+  </div>
+</Layout>

@@ -1,0 +1,60 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AdBanner from '../components/AdBanner.astro';
+import CalculadoraCts from '../components/calculators/CalculadoraCts';
+---
+
+<Layout
+  title="Calculadora de CTS Perú — Depósito de Mayo y Noviembre"
+  description="Calcula cuánto te toca de CTS en Perú según el D.S. 001-97-TR. Incluye sexto de gratificación, sueldo básico y asignación familiar."
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <div class="text-center mb-8">
+      <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full inline-block mb-3">
+        Compensación Laboral
+      </span>
+      <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+        Calculadora de CTS en Perú
+      </h1>
+      <p class="text-slate-600 text-sm sm:text-base mt-2 max-w-xl mx-auto">
+        Calcula el monto exacto de Compensación por Tiempo de Servicios que debe depositar tu empleador en el banco.
+      </p>
+    </div>
+
+    <!-- Espacio Publicitario Top -->
+    <AdBanner slotId="cts-top" />
+
+    <!-- Calculadora React -->
+    <div class="mb-10">
+      <CalculadoraCts client:load />
+    </div>
+
+    <!-- Guía Informativa SEO -->
+    <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 space-y-6 text-sm text-slate-700 leading-relaxed">
+      <h2 class="text-lg font-bold text-slate-900">Todo sobre el Depósito de la CTS en Perú</h2>
+
+      <div class="space-y-4">
+        <div>
+          <h3 class="font-bold text-slate-900 mb-1">¿Cuándo se deposita la CTS?</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            La Compensación por Tiempo de Servicios se deposita dos veces al año en la entidad bancaria o financiera elegida por el trabajador:
+          </p>
+          <ul class="list-disc list-inside text-xs text-slate-600 mt-2 space-y-1">
+            <li><strong>Primer semestre (noviembre a abril):</strong> Se deposita hasta el <strong>15 de mayo</strong>.</li>
+            <li><strong>Segundo semestre (mayo a octubre):</strong> Se deposita hasta el <strong>15 de noviembre</strong>.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="font-bold text-slate-900 mb-1">¿Cómo se calcula la Remuneración Computable?</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            La base de cálculo está compuesta por tu <strong>Sueldo Básico</strong> + <strong>Asignación Familiar</strong> (si aplica) + <strong>1/6 de la última gratificación percibida</strong>. Luego, dicho monto se divide entre 12 y se multiplica por el número de meses completos trabajados en el periodo semestral.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Espacio Publicitario Bottom -->
+    <AdBanner slotId="cts-bottom" />
+  </div>
+</Layout>

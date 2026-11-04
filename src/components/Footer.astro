@@ -1,0 +1,53 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="bg-white border-t border-slate-200 mt-auto py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+      <div class="col-span-1 md:col-span-2">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-7 h-7 rounded-md bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
+            PE
+          </div>
+          <span class="font-bold text-slate-900 tracking-tight text-base">Consulta Hoy Perú</span>
+        </div>
+        <p class="text-sm text-slate-500 max-w-sm mb-4 leading-relaxed">
+          Portal informativo y herramientas gratuitas de uso diario en Perú: tipo de cambio en tiempo real, sismos recientes, feriados oficiales y calculadoras laborales y tributarias.
+        </p>
+        <p class="text-xs text-slate-400">
+          Los datos económicos, laborales y tributarios tienen carácter meramente informativo y referencial.
+        </p>
+      </div>
+
+      <div>
+        <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-900 mb-3">Utilidades</h4>
+        <ul class="space-y-2 text-sm text-slate-600">
+          <li><a href="/tipo-de-cambio-dolar" class="hover:text-blue-600">Tipo de cambio Dólar</a></li>
+          <li><a href="/sismos-peru" class="hover:text-blue-600">Últimos sismos en Perú</a></li>
+          <li><a href="/feriados-peru" class="hover:text-blue-600">Calendario de feriados</a></li>
+          <li><a href="/consulta-ruc" class="hover:text-blue-600">Consulta RUC SUNAT</a></li>
+          <li><a href="/validador-dni" class="hover:text-blue-600">Validador de DNI</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-900 mb-3">Calculadoras</h4>
+        <ul class="space-y-2 text-sm text-slate-600">
+          <li><a href="/calculadora-igv" class="hover:text-blue-600">Calculadora de IGV (18%)</a></li>
+          <li><a href="/calculadora-gratificacion" class="hover:text-blue-600">Calculadora de Gratificación</a></li>
+          <li><a href="/calculadora-cts" class="hover:text-blue-600">Calculadora de CTS</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="border-t border-slate-100 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-4">
+      <p>© {year} Consulta Hoy Perú. Todos los derechos reservados.</p>
+      <div class="flex gap-4">
+        <a href="#" class="hover:text-slate-600">Términos de Uso</a>
+        <a href="#" class="hover:text-slate-600">Política de Privacidad</a>
+        <a href="#" class="hover:text-slate-600">Contacto</a>
+      </div>
+    </div>
+  </div>
+</footer>

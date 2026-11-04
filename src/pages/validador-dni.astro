@@ -1,0 +1,50 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AdBanner from '../components/AdBanner.astro';
+import ValidadorDni from '../components/consultas/ValidadorDni';
+---
+
+<Layout
+  title="Validador de Formato DNI Perú — Comprobar 8 Dígitos RENIEC"
+  description="Validador de formato de DNI en Perú en línea. Comprueba que el número de Documento Nacional de Identidad cumpla con la estructura de 8 dígitos de RENIEC."
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <div class="text-center mb-8">
+      <span class="text-xs font-bold uppercase tracking-wider text-teal-600 bg-teal-50 px-3 py-1 rounded-full inline-block mb-3">
+        Verificación de Documento
+      </span>
+      <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+        Validador de Formato de DNI
+      </h1>
+      <p class="text-slate-600 text-sm sm:text-base mt-2 max-w-xl mx-auto">
+        Comprobación instantánea de la estructura de 8 dígitos del Documento Nacional de Identidad peruano.
+      </p>
+    </div>
+
+    <!-- Espacio Publicitario Top -->
+    <AdBanner slotId="dni-top" />
+
+    <!-- Validador React -->
+    <div class="mb-10">
+      <ValidadorDni client:load />
+    </div>
+
+    <!-- Guía Informativa y de Privacidad -->
+    <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 space-y-6 text-sm text-slate-700 leading-relaxed">
+      <h2 class="text-lg font-bold text-slate-900">Estructura del DNI y Protección de Datos</h2>
+      <p>
+        El Documento Nacional de Identidad (DNI) emitido por el Registro Nacional de Identificación y Estado Civil (RENIEC) es el único instrumento oficial de identificación para todos los actos civiles, comerciales, administrativos y judiciales en el Perú.
+      </p>
+
+      <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600 space-y-2">
+        <p><strong>Aviso de Privacidad y Cumplimiento Legal (Ley N.º 29733):</strong></p>
+        <p>
+          Esta herramienta valida únicamente la sintaxis y longitud estándar (8 dígitos numéricos). Por estricto cumplimiento de la Ley de Protección de Datos Personales, <strong>no almacenamos números de documentos en bases de datos</strong> ni se exponen datos personales de ciudadanos sin consentimiento.
+        </p>
+      </div>
+    </div>
+
+    <!-- Espacio Publicitario Bottom -->
+    <AdBanner slotId="dni-bottom" />
+  </div>
+</Layout>

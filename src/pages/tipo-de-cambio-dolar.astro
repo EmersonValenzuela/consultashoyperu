@@ -1,0 +1,86 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AdBanner from '../components/AdBanner.astro';
+import ConversorMonedas from '../components/widgets/ConversorMonedas';
+import { api, type DolarData } from '../lib/api';
+import { DollarSign, TrendingUp, Info } from 'lucide-react';
+
+let dolar: DolarData | null = null;
+try {
+  const res = await api.getDolarActual();
+  dolar = res.data;
+} catch {
+  // Fallback
+}
+
+const compra = dolar?.compra ?? 3.75;
+const venta = dolar?.venta ?? 3.78;
+const fecha = dolar?.fecha ?? 'Hoy';
+---
+
+<Layout
+  title="Tipo de Cambio Dólar en Perú Hoy — Compra y Venta"
+  description="Precio del dólar en Perú hoy en tiempo real: tipo de cambio interbancario y paralelo (Ocoña / casas de cambio). Conversor de dólares a soles."
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <div class="text-center mb-8">
+      <span class="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full inline-block mb-3">
+        Mercado Cambiario Perú
+      </span>
+      <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+        Precio del Dólar en Perú Hoy
+      </h1>
+      <p class="text-slate-600 text-sm sm:text-base mt-2">
+        Cotización actualizada del dólar estadounidense (USD) frente al sol peruano (PEN). Fecha de referencia: <strong class="text-slate-900">{fecha}</strong>.
+      </p>
+    </div>
+
+    <!-- Cotizaciones destacadas -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm text-center">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1">Precio de Compra</span>
+        <span class="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight">S/ {compra.toFixed(3)}</span>
+        <span class="text-xs text-slate-400 block mt-2">Lo que te pagan si vendes dólares</span>
+      </div>
+
+      <div class="bg-white rounded-2xl p-6 border border-blue-200 shadow-sm text-center bg-gradient-to-b from-blue-50/50 to-white">
+        <span class="text-xs font-bold uppercase tracking-wider text-blue-600 block mb-1">Precio de Venta</span>
+        <span class="text-4xl sm:text-5xl font-black text-blue-600 tracking-tight">S/ {venta.toFixed(3)}</span>
+        <span class="text-xs text-slate-400 block mt-2">Lo que pagas si compras dólares</span>
+      </div>
+    </div>
+
+    <!-- Espacio Publicitario Superior -->
+    <AdBanner slotId="dolar-top" />
+
+    <!-- Conversor React Interactivo -->
+    <div class="mb-10">
+      <ConversorMonedas client:load tasaCompra={compra} tasaVenta={venta} />
+    </div>
+
+    <!-- Guía informativa SEO -->
+    <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 space-y-6 text-sm text-slate-700 leading-relaxed">
+      <h2 class="text-lg font-bold text-slate-900">¿Dónde cambiar dólares al mejor precio en Perú?</h2>
+      <p>
+        En el Perú existen dos mercados principales para el cambio de moneda:
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+          <h3 class="font-bold text-slate-900 mb-1">1. Mercado Paralelo / Casas de Cambio</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Suele ofrecer un margen (spread) más estrecho entre compra y venta que los bancos tradicionales. Incluye plataformas digitales fintech supervisadas por la SBS y los tradicionales cambistas de calle Ocoña y Miraflores.
+          </p>
+        </div>
+        <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+          <h3 class="font-bold text-slate-900 mb-1">2. Mercado Interbancario</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Tasa mayorista negociada entre entidades financieras y el Banco Central de Reserva del Perú (BCRP). Las ventanillas de bancos aplican un margen más amplio.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Espacio Publicitario Inferior -->
+    <AdBanner slotId="dolar-bottom" />
+  </div>
+</Layout>

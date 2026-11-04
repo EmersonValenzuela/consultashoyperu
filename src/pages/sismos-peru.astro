@@ -1,0 +1,121 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AdBanner from '../components/AdBanner.astro';
+import { api, type SismoData } from '../lib/api';
+import { Activity, MapPin, Clock, ExternalLink } from 'lucide-react';
+
+let sismos: SismoData[] = [];
+try {
+  const res = await api.getSismos(20);
+  sismos = res.data;
+} catch {
+  // Fallback
+}
+---
+
+<Layout
+  title="Últimos Sismos en Perú Hoy — Monitoreo Sísmico en Tiempo Real"
+  description="Reporte sísmico del Perú en tiempo real. Magnitud, epicentro, hora y profundidad de los temblores registrados por el Instituto Geofísico del Perú (IGP) y USGS."
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <div class="text-center mb-8">
+      <span class="text-xs font-bold uppercase tracking-wider text-rose-600 bg-rose-50 px-3 py-1 rounded-full inline-block mb-3">
+        Monitoreo Geofísico
+      </span>
+      <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+        Últimos Sismos Registrados en Perú
+      </h1>
+      <p class="text-slate-600 text-sm sm:text-base mt-2">
+        Temblores y movimientos telúricos en el territorio nacional y costas peruanas.
+      </p>
+    </div>
+
+    <!-- Espacio Publicitario Top -->
+    <AdBanner slotId="sismos-top" />
+
+    <!-- Lista de Sismos -->
+    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm mb-8">
+      <div class="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between">
+        <h2 class="font-bold text-slate-900 text-base flex items-center gap-2">
+          <Activity class="w-4 h-4 text-rose-600" /> Sismos Recientes (Últimos 20 eventos)
+        </h2>
+        <span class="text-xs text-slate-400">Actualizado automáticamente</span>
+      </div>
+
+      <div class="divide-y divide-slate-100">
+        {sismos.length === 0 ? (
+          <div class="p-8 text-center text-slate-500 text-sm">
+            Cargando últimos reportes sísmicos del territorio peruano...
+          </div>
+        ) : (
+          sismos.map((sismo) => {
+            const isHigh = sismo.magnitud >= 5.0;
+            const isMedium = sismo.magnitud >= 4.0 && sismo.magnitud < 5.0;
+
+            const pillClass = isHigh
+              ? 'bg-rose-100 text-rose-800 border-rose-200'
+              : isMedium
+                ? 'bg-amber-100 text-amber-800 border-amber-200'
+                : 'bg-emerald-100 text-emerald-800 border-emerald-200';
+
+            const fechaFormat = new Date(sismo.fecha_hora).toLocaleString('es-PE', {
+              timeZone: 'America/Lima',
+              dateStyle: 'medium',
+              timeStyle: 'short',
+            });
+
+            return (
+              <div class="p-4 sm:p-5 hover:bg-slate-50/80 transition-colors flex items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                  <div class={`w-14 h-14 rounded-xl flex flex-col items-center justify-center border font-black flex-shrink-0 ${pillClass}`}>
+                    <span class="text-xs font-bold leading-none">MAG</span>
+                    <span class="text-xl leading-none mt-0.5">{sismo.magnitud.toFixed(1)}</span>
+                  </div>
+
+                  <div>
+                    <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-snug">
+                      {sismo.lugar}
+                    </h3>
+                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-slate-500">
+                      <span class="flex items-center gap-1">
+                        <Clock class="w-3.5 h-3.5 text-slate-400" /> {fechaFormat}
+                      </span>
+                      <span>•</span>
+                      <span>Prof: {sismo.profundidad_km} km</span>
+                    </div>
+                  </div>
+                </div>
+
+                {sismo.referencia_url && (
+                  <a
+                    href={sismo.referencia_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="p-2 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors flex-shrink-0"
+                    title="Ver reporte oficial"
+                  >
+                    <ExternalLink class="w-4 h-4" />
+                  </a>
+                )}
+              </div>
+            );
+          })
+        )}
+      </div>
+    </div>
+
+    <!-- Recomendaciones ante sismos -->
+    <div class="bg-blue-50 border border-blue-200 rounded-2xl p-6 text-sm text-blue-900 leading-relaxed">
+      <h3 class="font-bold text-base mb-2">Recomendaciones del INDECI ante un Sismo</h3>
+      <ul class="list-disc list-inside space-y-1 text-xs text-blue-800">
+        <li>Mantén la calma y ubícate en una zona segura interna si estás en un piso alto.</li>
+        <li>Ten preparada tu Mochila para Emergencias con linterna, agua, botiquín y radio a pilas.</li>
+        <li>Al evacuar, no utilices ascensores; baja por las escaleras con serenidad.</li>
+        <li>Envía mensajes de texto (SMS) o usa el 119 para no saturar las líneas telefónicas.</li>
+      </ul>
+    </div>
+
+    <!-- Espacio Publicitario Bottom -->
+    <AdBanner slotId="sismos-bottom" />
+  </div>
+</Layout>

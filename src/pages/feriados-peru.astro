@@ -1,0 +1,106 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AdBanner from '../components/AdBanner.astro';
+import { api, type FeriadoData, type ProximoFeriadoData } from '../lib/api';
+import { Calendar, Clock, CheckCircle } from 'lucide-react';
+
+let feriados: FeriadoData[] = [];
+let proximo: ProximoFeriadoData | null = null;
+
+try {
+  const [fList, fNext] = await Promise.allSettled([
+    api.getFeriados(),
+    api.getProximoFeriado(),
+  ]);
+
+  if (fList.status === 'fulfilled') feriados = fList.value.data;
+  if (fNext.status === 'fulfilled') proximo = fNext.value.data;
+} catch {
+  // Fallback
+}
+---
+
+<Layout
+  title="Calendario de Feriados en Perú 2026 — Días No Laborables"
+  description="Lista completa de feriados nacionales oficiales y días no laborables en Perú para el año 2026. Conoce el próximo feriado largo y puente turístico."
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <div class="text-center mb-8">
+      <span class="text-xs font-bold uppercase tracking-wider text-purple-600 bg-purple-50 px-3 py-1 rounded-full inline-block mb-3">
+        Calendario Oficial 2026
+      </span>
+      <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+        Feriados y Días No Laborables en Perú
+      </h1>
+      <p class="text-slate-600 text-sm sm:text-base mt-2">
+        Planifica tus descansos, fines de semana largos y viajes con el calendario nacional oficial.
+      </p>
+    </div>
+
+    {proximo && (
+      <!-- Tarjeta destacada del próximo feriado -->
+      <div class="bg-gradient-to-r from-purple-900 to-indigo-900 text-white rounded-2xl p-6 sm:p-8 shadow-md mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+        <div>
+          <span class="text-xs uppercase tracking-widest text-purple-200 font-bold block mb-1">
+            Próximo Feriado Oficial
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-black leading-tight mb-2">
+            {proximo.proximo.nombre}
+          </h2>
+          <span class="text-sm text-purple-100 flex items-center gap-1.5 font-medium">
+            <Calendar class="w-4 h-4 text-purple-300" /> {proximo.proximo.fecha} ({proximo.proximo.tipo})
+          </span>
+        </div>
+
+        <div class="bg-white/10 backdrop-blur border border-white/20 rounded-xl px-6 py-4 text-center flex-shrink-0">
+          <span class="text-3xl sm:text-4xl font-black block leading-none">{proximo.dias_restantes}</span>
+          <span class="text-xs font-bold text-purple-200 uppercase tracking-wider mt-1 block">Días restantes</span>
+        </div>
+      </div>
+    )}
+
+    <!-- Espacio Publicitario Top -->
+    <AdBanner slotId="feriados-top" />
+
+    <!-- Tabla / Lista de Feriados -->
+    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm mb-8">
+      <div class="p-4 sm:p-6 border-b border-slate-100">
+        <h3 class="font-bold text-slate-900 text-base">Feriados del Año 2026</h3>
+      </div>
+
+      <div class="divide-y divide-slate-100">
+        {feriados.map((f) => (
+          <div class="p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-slate-50 transition-colors">
+            <div class="flex items-center gap-4">
+              <div class="text-center font-mono w-16 bg-slate-50 border border-slate-200 rounded-lg p-2 flex-shrink-0">
+                <span class="text-xs text-slate-400 uppercase block font-semibold">
+                  {new Date(f.fecha + 'T12:00:00').toLocaleString('es-PE', { month: 'short' })}
+                </span>
+                <span class="text-xl font-black text-slate-900 block leading-tight">
+                  {new Date(f.fecha + 'T12:00:00').getDate()}
+                </span>
+              </div>
+              <div>
+                <h4 class="font-bold text-slate-900 text-sm sm:text-base leading-snug">{f.nombre}</h4>
+                <span class="text-xs text-slate-400 capitalize">{f.tipo}</span>
+              </div>
+            </div>
+
+            <div>
+              <span class={`text-xs font-bold px-2.5 py-1 rounded-full ${
+                f.irrenunciable
+                  ? 'bg-rose-100 text-rose-800'
+                  : 'bg-emerald-100 text-emerald-800'
+              }`}>
+                {f.irrenunciable ? 'Descanso obligatorio' : 'Feriado nacional'}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Espacio Publicitario Bottom -->
+    <AdBanner slotId="feriados-bottom" />
+  </div>
+</Layout>

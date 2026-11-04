@@ -1,0 +1,63 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AdBanner from '../components/AdBanner.astro';
+import CalculadoraGratificacion from '../components/calculators/CalculadoraGratificacion';
+---
+
+<Layout
+  title="Calculadora de Gratificación Perú — Fiestas Patrias y Navidad"
+  description="Calcula tu gratificación legal en Perú según la Ley 27735 y Ley 30334. Incluye bonificación extraordinaria de EsSalud (9%) o EPS (6.75%) y asignación familiar."
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <div class="text-center mb-8">
+      <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full inline-block mb-3">
+        Derechos Laborales en Perú
+      </span>
+      <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+        Calculadora de Gratificación Legal
+      </h1>
+      <p class="text-slate-600 text-sm sm:text-base mt-2 max-w-xl mx-auto">
+        Calcula el monto neto que te corresponde recibir en los pagos de Julio (Fiestas Patrias) y Diciembre (Navidad).
+      </p>
+    </div>
+
+    <!-- Espacio Publicitario Top -->
+    <AdBanner slotId="grati-top" />
+
+    <!-- Calculadora React -->
+    <div class="mb-10">
+      <CalculadoraGratificacion client:load />
+    </div>
+
+    <!-- Guía Legal y Preguntas Frecuentes -->
+    <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 space-y-6 text-sm text-slate-700 leading-relaxed">
+      <h2 class="text-lg font-bold text-slate-900">Preguntas Frecuentes sobre la Gratificación en Perú</h2>
+
+      <div class="space-y-4">
+        <div>
+          <h3 class="font-bold text-slate-900 mb-1">¿Quiénes tienen derecho a recibir gratificación?</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Todos los trabajadores sujetos al régimen laboral de la actividad privada (Decreto Legislativo 728), ya sea con contrato a plazo indeterminado, a tiempo determinado o a tiempo parcial. Deben haber laborado como mínimo un mes calendario completo en el semestre correspondiente (enero-junio para julio, julio-noviembre para diciembre).
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-bold text-slate-900 mb-1">¿Hasta qué fecha tiene la empresa para pagar?</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Por ley, el plazo máximo e improrrogable es hasta el <strong>15 de julio</strong> para la gratificación de Fiestas Patrias, y hasta el <strong>15 de diciembre</strong> para la gratificación de Navidad.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="font-bold text-slate-900 mb-1">¿La gratificación tiene descuentos de AFP u ONP?</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            No. Gracias a la Ley N.º 30334, las gratificaciones están inafectas de todo aporte previsional (AFP u ONP) y contribución a EsSalud. El 9% que el empleador pagaría a EsSalud se le entrega directamente al trabajador como Bonificación Extraordinaria (o 6.75% si está afiliado a una EPS). Solo está afecta a retención del Impuesto a la Renta de Quinta Categoría si corresponde.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Espacio Publicitario Bottom -->
+    <AdBanner slotId="grati-bottom" />
+  </div>
+</Layout>
