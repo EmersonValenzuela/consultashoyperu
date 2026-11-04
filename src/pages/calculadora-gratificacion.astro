@@ -2,62 +2,129 @@
 import Layout from '../layouts/Layout.astro';
 import AdBanner from '../components/AdBanner.astro';
 import CalculadoraGratificacion from '../components/calculators/CalculadoraGratificacion';
+import { ArrowRight, Calendar, HelpCircle, ShieldAlert } from 'lucide-react';
 ---
 
 <Layout
-  title="Calculadora de Gratificación Perú — Fiestas Patrias y Navidad"
-  description="Calcula tu gratificación legal en Perú según la Ley 27735 y Ley 30334. Incluye bonificación extraordinaria de EsSalud (9%) o EPS (6.75%) y asignación familiar."
+  title="Calculadora de Gratificación 2026 Perú — Fiestas Patrias y Navidad"
+  description="Calcula tu gratificación legal de Julio y Diciembre con bonificación extraordinaria de EsSalud (9%) o EPS (6.75%). Conforme a las normas laborales de Sunafil."
 >
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-    <div class="text-center mb-8">
-      <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full inline-block mb-3">
-        Derechos Laborales en Perú
-      </span>
-      <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-        Calculadora de Gratificación Legal
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    
+    <!-- Top Leaderboard Ad -->
+    <AdBanner slotId="grati-header-leaderboard" format="leaderboard" className="mb-6" />
+
+    <!-- Breadcrumb & Header Editorial -->
+    <nav class="flex items-center gap-2 text-xs text-ink-500 mb-4" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-carmesi-700 transition-colors">Inicio</a>
+      <span>/</span>
+      <span class="text-ink-900 font-medium">Calculadora de Gratificación</span>
+    </nav>
+
+    <div class="border-b border-ink-100 pb-6 mb-8">
+      <div class="flex flex-wrap items-center gap-2.5 mb-2.5">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold bg-carmesi-50 text-carmesi-700 border border-carmesi-200">
+          Régimen Laboral Común (D.L. 728)
+        </span>
+        <span class="text-xs text-ink-500 font-tabular">Fechas límite: 15 de Julio y 15 de Diciembre</span>
+      </div>
+      <h1 class="font-heading text-3xl sm:text-4xl text-ink-950 font-black tracking-tight leading-tight">
+        Calculadora de Gratificación Legal en el Perú
       </h1>
-      <p class="text-slate-600 text-sm sm:text-base mt-2 max-w-xl mx-auto">
-        Calcula el monto neto que te corresponde recibir en los pagos de Julio (Fiestas Patrias) y Diciembre (Navidad).
+      <p class="text-sm sm:text-base text-ink-600 mt-2 max-w-3xl leading-relaxed">
+        Simula el importe exacto que te corresponde recibir por ley en los periodos de Fiestas Patrias o Navidad, incluyendo la bonificación extraordinaria del 9% o 6.75% libre de descuentos previsionales.
       </p>
     </div>
 
-    <!-- Espacio Publicitario Top -->
-    <AdBanner slotId="grati-top" />
+    <!-- Estructura Principal: Calculadora (8 cols) + Sidebar de Publicidad (4 cols) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Contenido Principal -->
+      <main class="lg:col-span-8 space-y-8">
+        
+        <!-- Componente Calculadora -->
+        <CalculadoraGratificacion client:load />
 
-    <!-- Calculadora React -->
-    <div class="mb-10">
-      <CalculadoraGratificacion client:load />
+        <!-- Anuncio In-Feed intermedio -->
+        <AdBanner slotId="grati-infeed-middle" format="infeed" label="Publicidad Patrocinada" />
+
+        <!-- Guía de Preguntas Frecuentes SUNAFIL -->
+        <section class="bg-white rounded-xl border border-ink-100 p-6 sm:p-8 shadow-clean space-y-6">
+          <div class="border-b border-ink-100 pb-4">
+            <h2 class="font-heading text-xl font-bold text-ink-900 flex items-center gap-2">
+              <HelpCircle class="w-5 h-5 text-carmesi-600" />
+              Preguntas Frecuentes sobre la Gratificación en Perú
+            </h2>
+          </div>
+
+          <div class="space-y-4 text-xs sm:text-sm text-ink-700 leading-relaxed">
+            <div class="p-4 bg-slate-50/80 rounded-lg border border-ink-100">
+              <h3 class="font-bold text-ink-900 mb-1">¿Quiénes tienen derecho a recibir gratificación legal?</h3>
+              <p class="text-xs text-ink-600">
+                Los trabajadores subordinados de la actividad privada bajo contrato indefinido, a plazo fijo o tiempo parcial que hayan laborado como mínimo un mes íntegro dentro del semestre computable (enero-junio para julio, o julio-noviembre para diciembre).
+              </p>
+            </div>
+
+            <div class="p-4 bg-slate-50/80 rounded-lg border border-ink-100">
+              <h3 class="font-bold text-ink-900 mb-1">¿Qué es la Bonificación Extraordinaria (Ley 30334)?</h3>
+              <p class="text-xs text-ink-600">
+                El aporte a EsSalud (9%) que el empleador deja de pagar sobre la gratificación se transfiere íntegramente al colaborador como una bonificación adicional extraordinaria. En caso de contar con una Entidad Prestadora de Salud (EPS), la bonificación equivale al 6.75%.
+              </p>
+            </div>
+
+            <div class="p-4 bg-slate-50/80 rounded-lg border border-ink-100">
+              <h3 class="font-bold text-ink-900 mb-1">¿Qué ocurre si la empresa no paga hasta el 15 de Julio o Diciembre?</h3>
+              <p class="text-xs text-ink-600">
+                El incumplimiento del pago dentro del plazo legal constituye una infracción grave sancionada por la Superintendencia Nacional de Fiscalización Laboral (SUNAFIL), acarreando multas que varían según el número de trabajadores afectados y el tipo de empresa.
+              </p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Sidebar con Publicidad -->
+      <aside class="lg:col-span-4 space-y-6">
+        
+        <!-- Sticky Half-Page Ad (300x600) -->
+        <AdBanner slotId="grati-sidebar-sticky" format="halfpage" label="Anuncio Destacado" />
+
+        <!-- Enlaces Rápidos a Otras Calculadoras -->
+        <div class="bg-white rounded-xl border border-ink-100 p-5 shadow-clean space-y-4">
+          <h3 class="font-heading font-bold text-xs uppercase tracking-wider text-slate-500">
+            Beneficios Laborales SUNAFIL
+          </h3>
+          <ul class="space-y-2.5 text-sm">
+            <li>
+              <a href="/calculadora-cts" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Calculadora de CTS</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
+            <li>
+              <a href="/feriados-peru" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Calendario de Feriados 2026</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
+            <li>
+              <a href="/calculadora-igv" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Calculadora de IGV (18%)</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Banner Ad adicional en sidebar -->
+        <AdBanner slotId="grati-sidebar-square" format="rectangle" label="Publicidad" />
+
+      </aside>
+
     </div>
 
-    <!-- Guía Legal y Preguntas Frecuentes -->
-    <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 space-y-6 text-sm text-slate-700 leading-relaxed">
-      <h2 class="text-lg font-bold text-slate-900">Preguntas Frecuentes sobre la Gratificación en Perú</h2>
+    <!-- Bottom Billboard Ad -->
+    <AdBanner slotId="grati-bottom-billboard" format="billboard" className="mt-12" />
 
-      <div class="space-y-4">
-        <div>
-          <h3 class="font-bold text-slate-900 mb-1">¿Quiénes tienen derecho a recibir gratificación?</h3>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            Todos los trabajadores sujetos al régimen laboral de la actividad privada (Decreto Legislativo 728), ya sea con contrato a plazo indeterminado, a tiempo determinado o a tiempo parcial. Deben haber laborado como mínimo un mes calendario completo en el semestre correspondiente (enero-junio para julio, julio-noviembre para diciembre).
-          </p>
-        </div>
-
-        <div>
-          <h3 class="font-bold text-slate-900 mb-1">¿Hasta qué fecha tiene la empresa para pagar?</h3>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            Por ley, el plazo máximo e improrrogable es hasta el <strong>15 de julio</strong> para la gratificación de Fiestas Patrias, y hasta el <strong>15 de diciembre</strong> para la gratificación de Navidad.
-          </p>
-        </div>
-
-        <div>
-          <h3 class="font-bold text-slate-900 mb-1">¿La gratificación tiene descuentos de AFP u ONP?</h3>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            No. Gracias a la Ley N.º 30334, las gratificaciones están inafectas de todo aporte previsional (AFP u ONP) y contribución a EsSalud. El 9% que el empleador pagaría a EsSalud se le entrega directamente al trabajador como Bonificación Extraordinaria (o 6.75% si está afiliado a una EPS). Solo está afecta a retención del Impuesto a la Renta de Quinta Categoría si corresponde.
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Espacio Publicitario Bottom -->
-    <AdBanner slotId="grati-bottom" />
   </div>
 </Layout>

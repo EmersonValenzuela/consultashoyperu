@@ -2,59 +2,129 @@
 import Layout from '../layouts/Layout.astro';
 import AdBanner from '../components/AdBanner.astro';
 import CalculadoraCts from '../components/calculators/CalculadoraCts';
+import { ArrowRight, HelpCircle, ShieldCheck, Wallet } from 'lucide-react';
 ---
 
 <Layout
-  title="Calculadora de CTS Perú — Depósito de Mayo y Noviembre"
-  description="Calcula cuánto te toca de CTS en Perú según el D.S. 001-97-TR. Incluye sexto de gratificación, sueldo básico y asignación familiar."
+  title="Calculadora de CTS 2026 Perú — Depósitos de Mayo y Noviembre Sunafil"
+  description="Calcula tu Compensación por Tiempo de Servicios (CTS) para los periodos de Mayo y Noviembre en Perú. Conoce la remuneración computable y libre disponibilidad."
 >
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-    <div class="text-center mb-8">
-      <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full inline-block mb-3">
-        Compensación Laboral
-      </span>
-      <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-        Calculadora de CTS en Perú
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    
+    <!-- Top Leaderboard Ad -->
+    <AdBanner slotId="cts-header-leaderboard" format="leaderboard" className="mb-6" />
+
+    <!-- Breadcrumb & Header Editorial -->
+    <nav class="flex items-center gap-2 text-xs text-ink-500 mb-4" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-carmesi-700 transition-colors">Inicio</a>
+      <span>/</span>
+      <span class="text-ink-900 font-medium">Calculadora de CTS</span>
+    </nav>
+
+    <div class="border-b border-ink-100 pb-6 mb-8">
+      <div class="flex flex-wrap items-center gap-2.5 mb-2.5">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold bg-carmesi-50 text-carmesi-700 border border-carmesi-200">
+          Beneficio Social por Desempleo
+        </span>
+        <span class="text-xs text-ink-500 font-tabular">Depósitos semestrales: 15 de Mayo y 15 de Noviembre</span>
+      </div>
+      <h1 class="font-heading text-3xl sm:text-4xl text-ink-950 font-black tracking-tight leading-tight">
+        Calculadora de Compensación por Tiempo de Servicios (CTS)
       </h1>
-      <p class="text-slate-600 text-sm sm:text-base mt-2 max-w-xl mx-auto">
-        Calcula el monto exacto de Compensación por Tiempo de Servicios que debe depositar tu empleador en el banco.
+      <p class="text-sm sm:text-base text-ink-600 mt-2 max-w-3xl leading-relaxed">
+        Calcula el depósito intangible que tu empleador debe abonar en tu cuenta bancaria o caja financiera en los meses de mayo y noviembre según la ley laboral peruana.
       </p>
     </div>
 
-    <!-- Espacio Publicitario Top -->
-    <AdBanner slotId="cts-top" />
+    <!-- Estructura Principal: Calculadora (8 cols) + Sidebar de Publicidad (4 cols) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Contenido Principal -->
+      <main class="lg:col-span-8 space-y-8">
+        
+        <!-- Componente Calculadora -->
+        <CalculadoraCts client:load />
 
-    <!-- Calculadora React -->
-    <div class="mb-10">
-      <CalculadoraCts client:load />
-    </div>
+        <!-- Anuncio In-Feed intermedio -->
+        <AdBanner slotId="cts-infeed-middle" format="infeed" label="Publicidad Patrocinada" />
 
-    <!-- Guía Informativa SEO -->
-    <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 space-y-6 text-sm text-slate-700 leading-relaxed">
-      <h2 class="text-lg font-bold text-slate-900">Todo sobre el Depósito de la CTS en Perú</h2>
+        <!-- Guía Legal CTS Sunafil -->
+        <section class="bg-white rounded-xl border border-ink-100 p-6 sm:p-8 shadow-clean space-y-6">
+          <div class="border-b border-ink-100 pb-4">
+            <h2 class="font-heading text-xl font-bold text-ink-900 flex items-center gap-2">
+              <Wallet class="w-5 h-5 text-carmesi-600" />
+              Aspectos Clave sobre el Depósito y Retiro de CTS
+            </h2>
+          </div>
 
-      <div class="space-y-4">
-        <div>
-          <h3 class="font-bold text-slate-900 mb-1">¿Cuándo se deposita la CTS?</h3>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            La Compensación por Tiempo de Servicios se deposita dos veces al año en la entidad bancaria o financiera elegida por el trabajador:
-          </p>
-          <ul class="list-disc list-inside text-xs text-slate-600 mt-2 space-y-1">
-            <li><strong>Primer semestre (noviembre a abril):</strong> Se deposita hasta el <strong>15 de mayo</strong>.</li>
-            <li><strong>Segundo semestre (mayo a octubre):</strong> Se deposita hasta el <strong>15 de noviembre</strong>.</li>
+          <div class="space-y-4 text-xs sm:text-sm text-ink-700 leading-relaxed">
+            <div class="p-4 bg-slate-50/80 rounded-lg border border-ink-100">
+              <h3 class="font-bold text-ink-900 mb-1">¿Cuáles son los periodos semestrales computables?</h3>
+              <p class="text-xs text-ink-600">
+                El depósito de <strong>Mayo</strong> computa los meses laborados entre noviembre del año anterior y abril del presente año. El depósito de <strong>Noviembre</strong> comprende las labores entre mayo y octubre.
+              </p>
+            </div>
+
+            <div class="p-4 bg-slate-50/80 rounded-lg border border-ink-100">
+              <h3 class="font-bold text-ink-900 mb-1">¿Cómo se calcula el sexto de la gratificación?</h3>
+              <p class="text-xs text-ink-600">
+                La ley estipula que la remuneración computable incluye el sueldo básico, la asignación familiar (si corresponde) y un sexto (1/6) de la última gratificación ordinaria percibida (de julio para el depósito de noviembre, o de diciembre para el depósito de mayo).
+              </p>
+            </div>
+
+            <div class="p-4 bg-slate-50/80 rounded-lg border border-ink-100">
+              <h3 class="font-bold text-ink-900 mb-1">Disponibilidad y Libre Retiro</h3>
+              <p class="text-xs text-ink-600">
+                Bajo la norma ordinaria permanente, el trabajador puede disponer del excedente de 4 sueldos brutos acumulados en su cuenta CTS. Cualquier autorización extraordinaria del 100% depende de la legislación temporal promulgada por el Congreso de la República.
+              </p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Sidebar con Publicidad -->
+      <aside class="lg:col-span-4 space-y-6">
+        
+        <!-- Sticky Half-Page Ad (300x600) -->
+        <AdBanner slotId="cts-sidebar-sticky" format="halfpage" label="Anuncio Destacado" />
+
+        <!-- Enlaces Rápidos a Otras Calculadoras -->
+        <div class="bg-white rounded-xl border border-ink-100 p-5 shadow-clean space-y-4">
+          <h3 class="font-heading font-bold text-xs uppercase tracking-wider text-slate-500">
+            Utilidades SUNAFIL / SBS
+          </h3>
+          <ul class="space-y-2.5 text-sm">
+            <li>
+              <a href="/calculadora-gratificacion" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Calculadora de Gratificación</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
+            <li>
+              <a href="/tipo-de-cambio-dolar" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Tipo de Cambio Dólar</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
+            <li>
+              <a href="/calculadora-igv" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Calculadora de IGV (18%)</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
           </ul>
         </div>
 
-        <div>
-          <h3 class="font-bold text-slate-900 mb-1">¿Cómo se calcula la Remuneración Computable?</h3>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            La base de cálculo está compuesta por tu <strong>Sueldo Básico</strong> + <strong>Asignación Familiar</strong> (si aplica) + <strong>1/6 de la última gratificación percibida</strong>. Luego, dicho monto se divide entre 12 y se multiplica por el número de meses completos trabajados en el periodo semestral.
-          </p>
-        </div>
-      </div>
+        <!-- Banner Ad adicional en sidebar -->
+        <AdBanner slotId="cts-sidebar-square" format="rectangle" label="Publicidad" />
+
+      </aside>
+
     </div>
 
-    <!-- Espacio Publicitario Bottom -->
-    <AdBanner slotId="cts-bottom" />
+    <!-- Bottom Billboard Ad -->
+    <AdBanner slotId="cts-bottom-billboard" format="billboard" className="mt-12" />
+
   </div>
 </Layout>

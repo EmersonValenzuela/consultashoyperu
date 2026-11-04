@@ -15,7 +15,6 @@ const {
   canonical,
 } = Astro.props;
 
-const siteUrl = 'https://consultahoy.pe';
 const currentUrl = canonical || Astro.url.href;
 ---
 
@@ -27,26 +26,29 @@ const currentUrl = canonical || Astro.url.href;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
+    <!-- Google Fonts: Plus Jakarta Sans & Space Grotesk -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
     <!-- SEO Meta Tags -->
-    <title>{title} | Consulta Hoy Perú</title>
+    <title>{title} — Consulta Hoy Perú</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={currentUrl} />
 
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph / Redes Sociales -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content={currentUrl} />
-    <meta property="og:title" content={`${title} | Consulta Hoy Perú`} />
+    <meta property="og:title" content={`${title} — Consulta Hoy Perú`} />
     <meta property="og:description" content={description} />
     <meta property="og:site_name" content="Consulta Hoy Perú" />
 
-    <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={currentUrl} />
-    <meta property="twitter:title" content={`${title} | Consulta Hoy Perú`} />
+    <meta property="twitter:title" content={`${title} — Consulta Hoy Perú`} />
     <meta property="twitter:description" content={description} />
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   </head>
   <body>
     <Header />

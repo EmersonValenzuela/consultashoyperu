@@ -2,58 +2,125 @@
 import Layout from '../layouts/Layout.astro';
 import AdBanner from '../components/AdBanner.astro';
 import ConsultaRuc from '../components/consultas/ConsultaRuc';
+import { ArrowRight, HelpCircle, ShieldCheck, Building2, Store } from 'lucide-react';
 ---
 
 <Layout
-  title="Consulta RUC SUNAT Gratis — Buscar Razón Social y Estado"
-  description="Consulta RUC en el padrón de contribuyentes de SUNAT Perú. Verifica la razón social, estado activo/inactivo, condición de habido y domicilio fiscal."
+  title="Consulta RUC SUNAT Gratis 2026 — Buscar Razón Social, Estado y Condición"
+  description="Consulta RUC gratis en el padrón de contribuyentes de SUNAT Perú. Verifica razón social, estado ACTIVO, condición de HABIDO y domicilio fiscal oficial."
 >
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-    <div class="text-center mb-8">
-      <span class="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full inline-block mb-3">
-        Registro Único de Contribuyentes
-      </span>
-      <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    
+    <!-- Top Leaderboard Ad -->
+    <AdBanner slotId="ruc-header-leaderboard" format="leaderboard" className="mb-6" />
+
+    <!-- Breadcrumb & Header Editorial -->
+    <nav class="flex items-center gap-2 text-xs text-ink-500 mb-4" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-carmesi-700 transition-colors">Inicio</a>
+      <span>/</span>
+      <span class="text-ink-900 font-medium">Consulta RUC SUNAT</span>
+    </nav>
+
+    <div class="border-b border-ink-100 pb-6 mb-8">
+      <div class="flex flex-wrap items-center gap-2.5 mb-2.5">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold bg-carmesi-50 text-carmesi-700 border border-carmesi-200">
+          SUNAT / Padrón Tributario Oficial
+        </span>
+        <span class="text-xs text-ink-500 font-tabular">Actualización periódica</span>
+      </div>
+      <h1 class="font-heading text-3xl sm:text-4xl text-ink-950 font-black tracking-tight leading-tight">
         Consulta RUC SUNAT en Línea
       </h1>
-      <p class="text-slate-600 text-sm sm:text-base mt-2 max-w-xl mx-auto">
-        Verifica el estado tributario de personas naturales con negocio y empresas en el Perú con datos oficiales de SUNAT.
+      <p class="text-sm sm:text-base text-ink-600 mt-2 max-w-3xl leading-relaxed">
+        Comprueba la validez fiscal, denominación social, estado de operaciones y condición de domicilio tributario para personas naturales con negocio y empresas constituidas en el Perú.
       </p>
     </div>
 
-    <!-- Espacio Publicitario Top -->
-    <AdBanner slotId="ruc-top" />
+    <!-- Estructura Principal: Consulta (8 cols) + Sidebar de Publicidad (4 cols) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Contenido Principal -->
+      <main class="lg:col-span-8 space-y-8">
+        
+        <!-- Componente Consulta RUC React -->
+        <ConsultaRuc client:load />
 
-    <!-- Buscador React -->
-    <div class="mb-10">
-      <ConsultaRuc client:load />
-    </div>
+        <!-- Anuncio In-Feed intermedio -->
+        <AdBanner slotId="ruc-infeed-middle" format="infeed" label="Publicidad Patrocinada" />
 
-    <!-- Guía Informativa SEO -->
-    <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 space-y-6 text-sm text-slate-700 leading-relaxed">
-      <h2 class="text-lg font-bold text-slate-900">¿Qué significa cada estado y condición en la SUNAT?</h2>
+        <!-- Guía de Estados SUNAT -->
+        <section class="bg-white rounded-xl border border-ink-100 p-6 sm:p-8 shadow-clean space-y-6">
+          <div class="border-b border-ink-100 pb-4">
+            <h2 class="font-heading text-xl font-bold text-ink-900 flex items-center gap-2">
+              <ShieldCheck class="w-5 h-5 text-carmesi-600" />
+              ¿Qué significan el Estado y la Condición en la SUNAT?
+            </h2>
+          </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-          <h3 class="font-bold text-slate-900 mb-1">Estado del Contribuyente</h3>
-          <ul class="text-xs text-slate-600 space-y-2 mt-2">
-            <li><strong class="text-emerald-700">ACTIVO:</strong> Desarrolla actividades comerciales de manera normal y está habilitado para emitir comprobantes de pago.</li>
-            <li><strong class="text-amber-700">SUSPENSIÓN TEMPORAL:</strong> Comunicó a SUNAT la interrupción momentánea de sus actividades.</li>
-            <li><strong class="text-rose-700">BAJA DEFINITIVA:</strong> El contribuyente cerró su negocio o la empresa fue liquidada.</li>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-4 bg-slate-50/80 rounded-lg border border-ink-100 space-y-2">
+              <h3 class="font-bold text-ink-900 text-sm">Estado del Contribuyente</h3>
+              <ul class="text-xs text-ink-600 space-y-2">
+                <li><strong class="text-emerald-700">ACTIVO:</strong> Realiza operaciones comerciales de manera normal y está formalmente habilitado para emitir facturas y boletas.</li>
+                <li><strong class="text-amber-700">SUSPENSIÓN TEMPORAL:</strong> Notificó a SUNAT la detención de actividades por un periodo determinado.</li>
+                <li><strong class="text-rose-700">BAJA DEFINITIVA:</strong> El negocio cerró formalmente o la sociedad jurídica fue liquidada.</li>
+              </ul>
+            </div>
+
+            <div class="p-4 bg-slate-50/80 rounded-lg border border-ink-100 space-y-2">
+              <h3 class="font-bold text-ink-900 text-sm">Condición del Domicilio</h3>
+              <ul class="text-xs text-ink-600 space-y-2">
+                <li><strong class="text-blue-700">HABIDO:</strong> La SUNAT ha verificado y localizado físicamente la dirección fiscal reportada.</li>
+                <li><strong class="text-rose-700">NO HABIDO / NO HALLADO:</strong> SUNAT no pudo notificar al contribuyente en su dirección. Los comprobantes que emite pierden el derecho al crédito fiscal del IGV.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Sidebar con Publicidad -->
+      <aside class="lg:col-span-4 space-y-6">
+        
+        <!-- Sticky Half-Page Ad (300x600) -->
+        <AdBanner slotId="ruc-sidebar-sticky" format="halfpage" label="Anuncio Destacado" />
+
+        <!-- Enlaces Rápidos -->
+        <div class="bg-white rounded-xl border border-ink-100 p-5 shadow-clean space-y-4">
+          <h3 class="font-heading font-bold text-xs uppercase tracking-wider text-slate-500">
+            Consultas Tributarias
+          </h3>
+          <ul class="space-y-2.5 text-sm">
+            <li>
+              <a href="/validador-dni" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Validador de DNI</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
+            <li>
+              <a href="/calculadora-igv" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Calculadora de IGV (18%)</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
+            <li>
+              <a href="/tipo-de-cambio-dolar" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Tipo de Cambio Dólar</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
           </ul>
         </div>
 
-        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-          <h3 class="font-bold text-slate-900 mb-1">Condición de Domicilio Fiscal</h3>
-          <ul class="text-xs text-slate-600 space-y-2 mt-2">
-            <li><strong class="text-blue-700">HABIDO:</strong> La SUNAT ha verificado y confirmado la existencia de la dirección fiscal declarada.</li>
-            <li><strong class="text-rose-700">NO HABIDO / NO HALLADO:</strong> SUNAT no pudo ubicar al contribuyente en su domicilio. Los comprobantes que emita tienen restricciones tributarias y no otorgan derecho a crédito fiscal.</li>
-          </ul>
-        </div>
-      </div>
+        <!-- Banner Ad adicional en sidebar -->
+        <AdBanner slotId="ruc-sidebar-square" format="rectangle" label="Publicidad" />
+
+      </aside>
+
     </div>
 
-    <!-- Espacio Publicitario Bottom -->
-    <AdBanner slotId="ruc-bottom" />
+    <!-- Bottom Billboard Ad -->
+    <AdBanner slotId="ruc-bottom-billboard" format="billboard" className="mt-12" />
+
   </div>
 </Layout>

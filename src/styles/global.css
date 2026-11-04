@@ -3,15 +3,36 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  body {
+    @apply bg-[#FBFBFA] text-ink-950 font-sans antialiased min-h-screen flex flex-col selection:bg-carmesi-100 selection:text-carmesi-900;
   }
 
-  body {
-    @apply bg-slate-50 text-slate-900 font-sans antialiased min-h-screen flex flex-col;
+  h1, h2, h3, h4 {
+    @apply tracking-tight font-bold text-ink-950;
   }
 }
 
-.ad-slot {
-  @apply bg-slate-100 border border-dashed border-slate-300 rounded-lg p-4 text-center text-xs text-slate-400 flex items-center justify-center my-6 min-h-[90px];
+/* Slots de publicidad de alta conversión respetando UX */
+.ad-container {
+  @apply bg-white border border-slate-200/80 rounded-xl my-6 mx-auto overflow-hidden text-center flex flex-col items-center justify-center relative;
+}
+
+.ad-label {
+  @apply text-[10px] font-semibold uppercase tracking-wider text-slate-400 py-1;
+}
+
+.ad-leaderboard {
+  @apply ad-container max-w-5xl min-h-[105px] w-full p-2;
+}
+
+.ad-rectangle {
+  @apply ad-container max-w-[336px] min-h-[280px] w-full p-3;
+}
+
+.ad-infeed {
+  @apply ad-container max-w-4xl min-h-[120px] w-full p-3 my-8 bg-slate-50/70 border-dashed;
+}
+
+.ad-sticky-sidebar {
+  @apply ad-container w-full min-h-[600px] sticky top-20 p-2;
 }

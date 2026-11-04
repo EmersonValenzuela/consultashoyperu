@@ -2,49 +2,122 @@
 import Layout from '../layouts/Layout.astro';
 import AdBanner from '../components/AdBanner.astro';
 import ValidadorDni from '../components/consultas/ValidadorDni';
+import { ArrowRight, HelpCircle, ShieldAlert, FileCheck, CheckCircle2 } from 'lucide-react';
 ---
 
 <Layout
-  title="Validador de Formato DNI Perú — Comprobar 8 Dígitos RENIEC"
-  description="Validador de formato de DNI en Perú en línea. Comprueba que el número de Documento Nacional de Identidad cumpla con la estructura de 8 dígitos de RENIEC."
+  title="Validador de DNI Perú — Comprobar Formato y Dígito Verificador RENIEC"
+  description="Valida el formato de un Documento Nacional de Identidad (DNI) de Perú al instante. Comprobación matemática segura sin almacenar datos personales."
 >
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-    <div class="text-center mb-8">
-      <span class="text-xs font-bold uppercase tracking-wider text-teal-600 bg-teal-50 px-3 py-1 rounded-full inline-block mb-3">
-        Verificación de Documento
-      </span>
-      <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-        Validador de Formato de DNI
-      </h1>
-      <p class="text-slate-600 text-sm sm:text-base mt-2 max-w-xl mx-auto">
-        Comprobación instantánea de la estructura de 8 dígitos del Documento Nacional de Identidad peruano.
-      </p>
-    </div>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    
+    <!-- Top Leaderboard Ad -->
+    <AdBanner slotId="dni-header-leaderboard" format="leaderboard" className="mb-6" />
 
-    <!-- Espacio Publicitario Top -->
-    <AdBanner slotId="dni-top" />
+    <!-- Breadcrumb & Header Editorial -->
+    <nav class="flex items-center gap-2 text-xs text-ink-500 mb-4" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-carmesi-700 transition-colors">Inicio</a>
+      <span>/</span>
+      <span class="text-ink-900 font-medium">Validador de DNI</span>
+    </nav>
 
-    <!-- Validador React -->
-    <div class="mb-10">
-      <ValidadorDni client:load />
-    </div>
-
-    <!-- Guía Informativa y de Privacidad -->
-    <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 space-y-6 text-sm text-slate-700 leading-relaxed">
-      <h2 class="text-lg font-bold text-slate-900">Estructura del DNI y Protección de Datos</h2>
-      <p>
-        El Documento Nacional de Identidad (DNI) emitido por el Registro Nacional de Identificación y Estado Civil (RENIEC) es el único instrumento oficial de identificación para todos los actos civiles, comerciales, administrativos y judiciales en el Perú.
-      </p>
-
-      <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600 space-y-2">
-        <p><strong>Aviso de Privacidad y Cumplimiento Legal (Ley N.º 29733):</strong></p>
-        <p>
-          Esta herramienta valida únicamente la sintaxis y longitud estándar (8 dígitos numéricos). Por estricto cumplimiento de la Ley de Protección de Datos Personales, <strong>no almacenamos números de documentos en bases de datos</strong> ni se exponen datos personales de ciudadanos sin consentimiento.
-        </p>
+    <div class="border-b border-ink-100 pb-6 mb-8">
+      <div class="flex flex-wrap items-center gap-2.5 mb-2.5">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold bg-carmesi-50 text-carmesi-700 border border-carmesi-200">
+          RENIEC / Registro de Identidad
+        </span>
+        <span class="text-xs text-ink-500 font-tabular">Protección de Datos Personales (Ley 29733)</span>
       </div>
+      <h1 class="font-heading text-3xl sm:text-4xl text-ink-950 font-black tracking-tight leading-tight">
+        Validador de DNI en Perú
+      </h1>
+      <p class="text-sm sm:text-base text-ink-600 mt-2 max-w-3xl leading-relaxed">
+        Verifica al instante si un número de Documento Nacional de Identidad cumple con los criterios de longitud, formato numérico y dígitos de control establecidos por el Registro Nacional de Identificación y Estado Civil.
+      </p>
     </div>
 
-    <!-- Espacio Publicitario Bottom -->
-    <AdBanner slotId="dni-bottom" />
+    <!-- Estructura Principal: Validador (8 cols) + Sidebar de Publicidad (4 cols) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Contenido Principal -->
+      <main class="lg:col-span-8 space-y-8">
+        
+        <!-- Componente Validador DNI React -->
+        <ValidadorDni client:load />
+
+        <!-- Anuncio In-Feed intermedio -->
+        <AdBanner slotId="dni-infeed-middle" format="infeed" label="Publicidad Patrocinada" />
+
+        <!-- Guía de Seguridad y Privacidad -->
+        <section class="bg-white rounded-xl border border-ink-100 p-6 sm:p-8 shadow-clean space-y-6">
+          <div class="border-b border-ink-100 pb-4">
+            <h2 class="font-heading text-xl font-bold text-ink-900 flex items-center gap-2">
+              <FileCheck class="w-5 h-5 text-carmesi-600" />
+              ¿Cómo funciona la validación de DNI en este portal?
+            </h2>
+          </div>
+
+          <div class="space-y-4 text-xs sm:text-sm text-ink-700 leading-relaxed">
+            <div class="p-4 bg-slate-50/80 rounded-lg border border-ink-100">
+              <h3 class="font-bold text-ink-900 mb-1">Estructura del DNI peruano</h3>
+              <p class="text-xs text-ink-600">
+                El DNI convencional consta de exactamente 8 dígitos correlativos y un dígito verificador adicional (presente en el anverso del documento físico). Esta herramienta comprueba que la cadena corresponda a un número válido y no contenga caracteres inválidos o longitudes erróneas.
+              </p>
+            </div>
+
+            <div class="p-4 bg-slate-50/80 rounded-lg border border-ink-100">
+              <h3 class="font-bold text-ink-900 mb-1">Privacidad y Protección de Datos Personales</h3>
+              <p class="text-xs text-ink-600">
+                En estricto cumplimiento de la Ley de Protección de Datos Personales (Ley N° 29733), este servicio no almacena en bases de datos, no expone a terceros ni registra en logs los números de DNI consultados por los usuarios.
+              </p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Sidebar con Publicidad -->
+      <aside class="lg:col-span-4 space-y-6">
+        
+        <!-- Sticky Half-Page Ad (300x600) -->
+        <AdBanner slotId="dni-sidebar-sticky" format="halfpage" label="Anuncio Destacado" />
+
+        <!-- Enlaces Rápidos -->
+        <div class="bg-white rounded-xl border border-ink-100 p-5 shadow-clean space-y-4">
+          <h3 class="font-heading font-bold text-xs uppercase tracking-wider text-slate-500">
+            Otras Utilidades Ciudadanas
+          </h3>
+          <ul class="space-y-2.5 text-sm">
+            <li>
+              <a href="/consulta-ruc" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Consulta RUC SUNAT</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
+            <li>
+              <a href="/tipo-de-cambio-dolar" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Tipo de Cambio Dólar</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
+            <li>
+              <a href="/feriados-peru" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Feriados Perú 2026</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Banner Ad adicional en sidebar -->
+        <AdBanner slotId="dni-sidebar-square" format="rectangle" label="Publicidad" />
+
+      </aside>
+
+    </div>
+
+    <!-- Bottom Billboard Ad -->
+    <AdBanner slotId="dni-bottom-billboard" format="billboard" className="mt-12" />
+
   </div>
 </Layout>

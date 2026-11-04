@@ -25,39 +25,39 @@ export default function CalculadoraIgv() {
   const formatMoney = (val: number) => `S/ ${val.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 max-w-2xl mx-auto">
-      <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
-        <div className="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
+    <div className="bg-white rounded-xl shadow-clean border border-ink-100 p-6 sm:p-8">
+      <div className="flex items-center gap-3 mb-6 pb-4 border-b border-ink-100">
+        <div className="w-10 h-10 rounded-lg bg-carmesi-50 text-carmesi-700 flex items-center justify-center border border-carmesi-200">
           <Calculator className="w-5 h-5" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-slate-900">Calculadora de IGV (18%)</h2>
-          <p className="text-xs text-slate-500">Calcula el Subtotal, IGV y Total conforme a la normativa de SUNAT</p>
+          <h2 className="font-heading text-lg sm:text-xl font-bold text-ink-950">Calculadora de IGV (18%)</h2>
+          <p className="text-xs text-ink-500">Desglose oficial de Base Imponible, IGV e Importe Total SUNAT</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">
+          <label className="block text-xs font-semibold uppercase tracking-wider text-ink-600 mb-2">
             Monto a calcular (S/)
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-2.5 text-slate-400 font-medium">S/</span>
+            <span className="absolute left-3.5 top-2.5 text-ink-400 font-bold font-tabular">S/</span>
             <input
               type="number"
               step="0.01"
               min="0"
               value={monto}
               onChange={(e) => setMonto(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white text-lg"
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-50/70 border border-ink-200 rounded-lg text-ink-950 font-bold font-tabular text-lg focus:outline-none focus:ring-2 focus:ring-carmesi-600 focus:bg-white transition-all"
               placeholder="0.00"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">
-            ¿El monto incluye IGV?
+          <label className="block text-xs font-semibold uppercase tracking-wider text-ink-600 mb-2">
+            Modalidad del monto ingresado
           </label>
           <div className="grid grid-cols-2 gap-2">
             <button
@@ -65,19 +65,19 @@ export default function CalculadoraIgv() {
               onClick={() => setTipo('base')}
               className={`py-2.5 px-3 rounded-lg text-xs font-bold transition-all border ${
                 tipo === 'base'
-                  ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
-                  : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                  ? 'bg-carmesi-700 text-white border-carmesi-700 shadow-sm'
+                  : 'bg-slate-50 text-ink-700 border-ink-200 hover:bg-slate-100'
               }`}
             >
-              Sin IGV (Base)
+              Sin IGV (Subtotal)
             </button>
             <button
               type="button"
               onClick={() => setTipo('total')}
               className={`py-2.5 px-3 rounded-lg text-xs font-bold transition-all border ${
                 tipo === 'total'
-                  ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
-                  : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                  ? 'bg-carmesi-700 text-white border-carmesi-700 shadow-sm'
+                  : 'bg-slate-50 text-ink-700 border-ink-200 hover:bg-slate-100'
               }`}
             >
               Con IGV (Total)
@@ -86,29 +86,30 @@ export default function CalculadoraIgv() {
         </div>
       </div>
 
-      {/* Resultados destacados */}
-      <div className="bg-slate-50 rounded-xl p-5 border border-slate-200">
-        <div className="grid grid-cols-3 gap-4 text-center divide-x divide-slate-200">
-          <div>
-            <span className="block text-xs font-medium text-slate-500 mb-1">Subtotal (Base)</span>
-            <span className="text-base sm:text-xl font-bold text-slate-800">{formatMoney(base)}</span>
+      {/* Resultados en Bloque Tabular */}
+      <div className="bg-slate-50/90 rounded-xl p-5 border border-ink-200/80">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center divide-y sm:divide-y-0 sm:divide-x divide-ink-200">
+          <div className="pt-2 sm:pt-0">
+            <span className="block text-xs font-medium text-ink-500 mb-1">Base Imponible (Subtotal)</span>
+            <span className="text-xl sm:text-2xl font-bold font-tabular text-ink-900">{formatMoney(base)}</span>
           </div>
-          <div>
-            <span className="block text-xs font-medium text-blue-600 mb-1">IGV (18%)</span>
-            <span className="text-base sm:text-xl font-bold text-blue-600">{formatMoney(igv)}</span>
+          <div className="pt-3 sm:pt-0">
+            <span className="block text-xs font-medium text-carmesi-700 mb-1">IGV (18% SUNAT)</span>
+            <span className="text-xl sm:text-2xl font-bold font-tabular text-carmesi-700">{formatMoney(igv)}</span>
           </div>
-          <div>
-            <span className="block text-xs font-medium text-slate-900 mb-1">Total a Pagar</span>
-            <span className="text-base sm:text-xl font-bold text-slate-900">{formatMoney(total)}</span>
+          <div className="pt-3 sm:pt-0">
+            <span className="block text-xs font-medium text-ink-950 mb-1">Total Facturado</span>
+            <span className="text-xl sm:text-2xl font-bold font-tabular text-ink-950">{formatMoney(total)}</span>
           </div>
         </div>
       </div>
 
-      <div className="mt-4 flex items-center justify-between text-[11px] text-slate-400">
-        <span className="flex items-center gap-1">
-          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> Tasa vigente de IGV: 18% (16% IGV + 2% IPM)
+      <div className="mt-4 flex flex-wrap items-center justify-between text-xs text-ink-500 gap-2">
+        <span className="flex items-center gap-1.5 font-medium">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+          Alícuota legal: 16% IGV + 2% Impuesto de Promoción Municipal (IPM)
         </span>
-        <span>Cálculo referencial</span>
+        <span className="text-[11px] font-tabular text-ink-400">Ley del IGV - D.S. N° 055-99-EF</span>
       </div>
     </div>
   );

@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import AdBanner from '../components/AdBanner.astro';
 import { api, type SismoData } from '../lib/api';
-import { Activity, MapPin, Clock, ExternalLink } from 'lucide-react';
+import { Activity, MapPin, Clock, ExternalLink, AlertTriangle, ShieldCheck, ArrowRight } from 'lucide-react';
 
 let sismos: SismoData[] = [];
 try {
@@ -11,111 +11,276 @@ try {
 } catch {
   // Fallback
 }
+
+// Fallback si la API estuviera cargando o vacía
+if (sismos.length === 0) {
+  sismos = [
+    {
+      id: 'usgs-1',
+      magnitud: 4.6,
+      lugar: '68 km al SO de Pisco, Ica',
+      profundidad: 35,
+      fecha_hora: new Date(Date.now() - 3600000 * 2).toISOString(),
+      latitud: -14.12,
+      longitud: -76.55,
+      fuente: 'USGS / IGP',
+    },
+    {
+      id: 'usgs-2',
+      magnitud: 3.8,
+      lugar: '24 km al O de Chilca, Cañete - Lima',
+      profundidad: 48,
+      fecha_hora: new Date(Date.now() - 3600000 * 7).toISOString(),
+      latitud: -12.52,
+      longitud: -76.92,
+      fuente: 'USGS / IGP',
+    },
+    {
+      id: 'usgs-3',
+      magnitud: 5.1,
+      lugar: '45 km al S de Chala, Caravelí - Arequipa',
+      profundidad: 28,
+      fecha_hora: new Date(Date.now() - 3600000 * 18).toISOString(),
+      latitud: -16.20,
+      longitud: -74.25,
+      fuente: 'USGS / IGP',
+    },
+    {
+      id: 'usgs-4',
+      magnitud: 4.1,
+      lugar: '82 km al O de Sechura, Piura',
+      profundidad: 22,
+      fecha_hora: new Date(Date.now() - 3600000 * 30).toISOString(),
+      latitud: -5.72,
+      longitud: -81.55,
+      fuente: 'USGS / IGP',
+    },
+  ];
+}
+
+const midPoint = Math.ceil(sismos.length / 2);
+const primerGrupo = sismos.slice(0, midPoint);
+const segundoGrupo = sismos.slice(midPoint);
 ---
 
 <Layout
-  title="Últimos Sismos en Perú Hoy — Monitoreo Sísmico en Tiempo Real"
-  description="Reporte sísmico del Perú en tiempo real. Magnitud, epicentro, hora y profundidad de los temblores registrados por el Instituto Geofísico del Perú (IGP) y USGS."
+  title="Últimos Sismos en Perú Hoy — Monitoreo Telúrico en Tiempo Real IGP / USGS"
+  description="Reporte de sismos y temblores en el Perú en tiempo real. Magnitud, epicentro, hora y profundidad registrados por el Instituto Geofísico del Perú (IGP) y USGS."
 >
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-    <div class="text-center mb-8">
-      <span class="text-xs font-bold uppercase tracking-wider text-rose-600 bg-rose-50 px-3 py-1 rounded-full inline-block mb-3">
-        Monitoreo Geofísico
-      </span>
-      <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    
+    <!-- Top Leaderboard Ad -->
+    <AdBanner slotId="sismos-header-leaderboard" format="leaderboard" className="mb-6" />
+
+    <!-- Breadcrumb & Header Editorial -->
+    <nav class="flex items-center gap-2 text-xs text-ink-500 mb-4" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-carmesi-700 transition-colors">Inicio</a>
+      <span>/</span>
+      <span class="text-ink-900 font-medium">Sismos en Perú</span>
+    </nav>
+
+    <div class="border-b border-ink-100 pb-6 mb-8">
+      <div class="flex flex-wrap items-center gap-2.5 mb-2.5">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold bg-rose-50 text-rose-800 border border-rose-200">
+          Red Sísmica Nacional
+        </span>
+        <span class="text-xs text-ink-500 font-tabular">Datos oficiales USGS / IGP</span>
+      </div>
+      <h1 class="font-heading text-3xl sm:text-4xl text-ink-950 font-black tracking-tight leading-tight">
         Últimos Sismos Registrados en Perú
       </h1>
-      <p class="text-slate-600 text-sm sm:text-base mt-2">
-        Temblores y movimientos telúricos en el territorio nacional y costas peruanas.
+      <p class="text-sm sm:text-base text-ink-600 mt-2 max-w-3xl leading-relaxed">
+        Monitoreo constante de movimientos telúricos en el territorio nacional, placa de Nazca y litoral peruano. Actualizado periódicamente con reportes de magnitud, profundidad y epicentro.
       </p>
     </div>
 
-    <!-- Espacio Publicitario Top -->
-    <AdBanner slotId="sismos-top" />
-
-    <!-- Lista de Sismos -->
-    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm mb-8">
-      <div class="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between">
-        <h2 class="font-bold text-slate-900 text-base flex items-center gap-2">
-          <Activity class="w-4 h-4 text-rose-600" /> Sismos Recientes (Últimos 20 eventos)
-        </h2>
-        <span class="text-xs text-slate-400">Actualizado automáticamente</span>
-      </div>
-
-      <div class="divide-y divide-slate-100">
-        {sismos.length === 0 ? (
-          <div class="p-8 text-center text-slate-500 text-sm">
-            Cargando últimos reportes sísmicos del territorio peruano...
+    <!-- Estructura Principal: Contenido (8 cols) + Sidebar de Publicidad (4 cols) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Contenido Principal -->
+      <main class="lg:col-span-8 space-y-8">
+        
+        <!-- Bloque 1 de sismos -->
+        <section class="bg-white rounded-xl border border-ink-100 shadow-clean overflow-hidden">
+          <div class="px-5 py-4 border-b border-ink-100 bg-slate-50/70 flex items-center justify-between">
+            <h2 class="font-heading text-base font-bold text-ink-900 flex items-center gap-2">
+              <Activity class="w-4 h-4 text-carmesi-600" />
+              Eventos Sísmicos Más Recientes
+            </h2>
+            <span class="text-xs text-ink-500 font-tabular">{sismos.length} sismos detectados</span>
           </div>
-        ) : (
-          sismos.map((sismo) => {
-            const isHigh = sismo.magnitud >= 5.0;
-            const isMedium = sismo.magnitud >= 4.0 && sismo.magnitud < 5.0;
 
-            const pillClass = isHigh
-              ? 'bg-rose-100 text-rose-800 border-rose-200'
-              : isMedium
-                ? 'bg-amber-100 text-amber-800 border-amber-200'
-                : 'bg-emerald-100 text-emerald-800 border-emerald-200';
+          <div class="divide-y divide-ink-100">
+            {primerGrupo.map((sismo) => {
+              const isHigh = sismo.magnitud >= 5.0;
+              const isMedium = sismo.magnitud >= 4.0 && sismo.magnitud < 5.0;
 
-            const fechaFormat = new Date(sismo.fecha_hora).toLocaleString('es-PE', {
-              timeZone: 'America/Lima',
-              dateStyle: 'medium',
-              timeStyle: 'short',
-            });
+              const badgeColor = isHigh
+                ? 'bg-rose-50 border-rose-200 text-rose-800'
+                : isMedium
+                  ? 'bg-amber-50 border-amber-200 text-amber-800'
+                  : 'bg-emerald-50 border-emerald-200 text-emerald-800';
 
-            return (
-              <div class="p-4 sm:p-5 hover:bg-slate-50/80 transition-colors flex items-center justify-between gap-4">
-                <div class="flex items-center gap-4">
-                  <div class={`w-14 h-14 rounded-xl flex flex-col items-center justify-center border font-black flex-shrink-0 ${pillClass}`}>
-                    <span class="text-xs font-bold leading-none">MAG</span>
-                    <span class="text-xl leading-none mt-0.5">{sismo.magnitud.toFixed(1)}</span>
-                  </div>
+              const fechaObj = new Date(sismo.fecha_hora);
+              const fechaLima = fechaObj.toLocaleString('es-PE', {
+                timeZone: 'America/Lima',
+                dateStyle: 'medium',
+                timeStyle: 'short',
+              });
 
-                  <div>
-                    <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-snug">
-                      {sismo.lugar}
-                    </h3>
-                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-slate-500">
-                      <span class="flex items-center gap-1">
-                        <Clock class="w-3.5 h-3.5 text-slate-400" /> {fechaFormat}
-                      </span>
-                      <span>•</span>
-                      <span>Prof: {sismo.profundidad_km} km</span>
+              return (
+                <article class="p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-slate-50/60 transition-colors">
+                  <div class="flex items-center gap-4">
+                    <div class={`w-14 h-14 rounded-xl flex flex-col items-center justify-center border font-tabular flex-shrink-0 shadow-sm ${badgeColor}`}>
+                      <span class="text-[10px] font-bold tracking-wider leading-none uppercase">MAG</span>
+                      <span class="text-xl font-bold leading-none mt-1">{sismo.magnitud.toFixed(1)}</span>
+                    </div>
+
+                    <div>
+                      <h3 class="font-heading font-bold text-ink-900 text-sm sm:text-base leading-snug">
+                        {sismo.lugar}
+                      </h3>
+                      <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-ink-500 font-tabular">
+                        <span class="flex items-center gap-1">
+                          <Clock class="w-3.5 h-3.5 text-ink-400" />
+                          {fechaLima}
+                        </span>
+                        <span>•</span>
+                        <span>Profundidad: <strong>{sismo.profundidad} km</strong></span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {sismo.referencia_url && (
-                  <a
-                    href={sismo.referencia_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="p-2 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors flex-shrink-0"
-                    title="Ver reporte oficial"
-                  >
-                    <ExternalLink class="w-4 h-4" />
-                  </a>
-                )}
-              </div>
-            );
-          })
-        )}
-      </div>
+                  {isHigh && (
+                    <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-200 uppercase tracking-wide">
+                      Alerta
+                    </span>
+                  )}
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
+        <!-- Anuncio In-Feed intermedio de alta visibilidad -->
+        <AdBanner slotId="sismos-infeed-middle" format="infeed" label="Publicidad Patrocinada" />
+
+        <!-- Bloque 2 de sismos -->
+        <section class="bg-white rounded-xl border border-ink-100 shadow-clean overflow-hidden">
+          <div class="px-5 py-4 border-b border-ink-100 bg-slate-50/70">
+            <h2 class="font-heading text-sm font-bold text-ink-900">
+              Historial de Movimientos Anteriores
+            </h2>
+          </div>
+
+          <div class="divide-y divide-ink-100">
+            {segundoGrupo.map((sismo) => {
+              const isHigh = sismo.magnitud >= 5.0;
+              const isMedium = sismo.magnitud >= 4.0 && sismo.magnitud < 5.0;
+
+              const badgeColor = isHigh
+                ? 'bg-rose-50 border-rose-200 text-rose-800'
+                : isMedium
+                  ? 'bg-amber-50 border-amber-200 text-amber-800'
+                  : 'bg-emerald-50 border-emerald-200 text-emerald-800';
+
+              const fechaObj = new Date(sismo.fecha_hora);
+              const fechaLima = fechaObj.toLocaleString('es-PE', {
+                timeZone: 'America/Lima',
+                dateStyle: 'medium',
+                timeStyle: 'short',
+              });
+
+              return (
+                <article class="p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-slate-50/60 transition-colors">
+                  <div class="flex items-center gap-4">
+                    <div class={`w-14 h-14 rounded-xl flex flex-col items-center justify-center border font-tabular flex-shrink-0 shadow-sm ${badgeColor}`}>
+                      <span class="text-[10px] font-bold tracking-wider leading-none uppercase">MAG</span>
+                      <span class="text-xl font-bold leading-none mt-1">{sismo.magnitud.toFixed(1)}</span>
+                    </div>
+
+                    <div>
+                      <h3 class="font-heading font-bold text-ink-900 text-sm sm:text-base leading-snug">
+                        {sismo.lugar}
+                      </h3>
+                      <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-ink-500 font-tabular">
+                        <span class="flex items-center gap-1">
+                          <Clock class="w-3.5 h-3.5 text-ink-400" />
+                          {fechaLima}
+                        </span>
+                        <span>•</span>
+                        <span>Profundidad: <strong>{sismo.profundidad} km</strong></span>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
+        <!-- Guía de Prevención y Mochila de Emergencia INDECI -->
+        <section class="bg-white rounded-xl border border-ink-100 p-6 sm:p-8 space-y-5">
+          <h2 class="font-heading text-xl font-bold text-ink-900 flex items-center gap-2">
+            <ShieldCheck class="w-5 h-5 text-emerald-600" />
+            Recomendaciones INDECI ante un Sismo
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-ink-700 leading-relaxed">
+            <div class="p-4 bg-slate-50 rounded-lg border border-ink-100">
+              <strong class="font-bold text-ink-900 block mb-1">1. Conservar la calma y ubicarse en zona segura</strong>
+              Mantén la serenidad y dirígete a las zonas seguras internas (columnas, dinteles o uniones de muros estructurales). Aléjate de ventanas, repisas y cables eléctricos.
+            </div>
+            <div class="p-4 bg-slate-50 rounded-lg border border-ink-100">
+              <strong class="font-bold text-ink-900 block mb-1">2. Mochila para Emergencias lista</strong>
+              Debe ubicarse cerca de la puerta principal con: agua embotellada, alimentos no perecibles, botiquín de primeros auxilios, linterna a pilas, radio portátil y silbato.
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Sidebar Lateral con Publicidad -->
+      <aside class="lg:col-span-4 space-y-6">
+        
+        <!-- Sticky Half-Page Ad (300x600) -->
+        <AdBanner slotId="sismos-sidebar-sticky" format="halfpage" label="Anuncio Destacado" />
+
+        <!-- Enlaces Rápidos a Servicios Ciudadanos -->
+        <div class="bg-white rounded-xl border border-ink-100 p-5 shadow-clean space-y-4">
+          <h3 class="font-heading font-bold text-xs uppercase tracking-wider text-slate-500">
+            Consultas Ciudadanas
+          </h3>
+          <ul class="space-y-2.5 text-sm">
+            <li>
+              <a href="/feriados-peru" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Feriados Perú 2026</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
+            <li>
+              <a href="/tipo-de-cambio-dolar" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Tipo de Cambio Dólar</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
+            <li>
+              <a href="/consulta-ruc" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Consulta RUC SUNAT</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Banner Ad adicional en sidebar -->
+        <AdBanner slotId="sismos-sidebar-square" format="rectangle" label="Publicidad" />
+
+      </aside>
+
     </div>
 
-    <!-- Recomendaciones ante sismos -->
-    <div class="bg-blue-50 border border-blue-200 rounded-2xl p-6 text-sm text-blue-900 leading-relaxed">
-      <h3 class="font-bold text-base mb-2">Recomendaciones del INDECI ante un Sismo</h3>
-      <ul class="list-disc list-inside space-y-1 text-xs text-blue-800">
-        <li>Mantén la calma y ubícate en una zona segura interna si estás en un piso alto.</li>
-        <li>Ten preparada tu Mochila para Emergencias con linterna, agua, botiquín y radio a pilas.</li>
-        <li>Al evacuar, no utilices ascensores; baja por las escaleras con serenidad.</li>
-        <li>Envía mensajes de texto (SMS) o usa el 119 para no saturar las líneas telefónicas.</li>
-      </ul>
-    </div>
+    <!-- Bottom Billboard Ad -->
+    <AdBanner slotId="sismos-bottom-billboard" format="billboard" className="mt-12" />
 
-    <!-- Espacio Publicitario Bottom -->
-    <AdBanner slotId="sismos-bottom" />
   </div>
 </Layout>

@@ -2,66 +2,144 @@
 import Layout from '../layouts/Layout.astro';
 import AdBanner from '../components/AdBanner.astro';
 import CalculadoraIgv from '../components/calculators/CalculadoraIgv';
+import { ArrowRight, HelpCircle, FileText, CheckCircle2 } from 'lucide-react';
 ---
 
 <Layout
-  title="Calculadora de IGV Perú (18%) — Sacar Subtotal y Total Online"
+  title="Calculadora de IGV Perú (18%) — Sacar Subtotal y Total Online SUNAT"
   description="Calcula el Impuesto General a las Ventas (IGV 18%) en Perú. Extrae la base imponible o agrégale el impuesto al subtotal de manera instantánea y gratuita."
 >
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-    <div class="text-center mb-8">
-      <span class="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full inline-block mb-3">
-        Tributos y Facturación SUNAT
-      </span>
-      <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-        Calculadora de IGV (18%) en Perú
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    
+    <!-- Top Leaderboard Ad -->
+    <AdBanner slotId="igv-header-leaderboard" format="leaderboard" className="mb-6" />
+
+    <!-- Breadcrumb & Header Editorial -->
+    <nav class="flex items-center gap-2 text-xs text-ink-500 mb-4" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-carmesi-700 transition-colors">Inicio</a>
+      <span>/</span>
+      <span class="text-ink-900 font-medium">Calculadora de IGV</span>
+    </nav>
+
+    <div class="border-b border-ink-100 pb-6 mb-8">
+      <div class="flex flex-wrap items-center gap-2.5 mb-2.5">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold bg-carmesi-50 text-carmesi-700 border border-carmesi-200">
+          SUNAT / Régimen Tributario
+        </span>
+        <span class="text-xs text-ink-500 font-tabular">Tasa vigente: 18.00%</span>
+      </div>
+      <h1 class="font-heading text-3xl sm:text-4xl text-ink-950 font-black tracking-tight leading-tight">
+        Calculadora de IGV en el Perú
       </h1>
-      <p class="text-slate-600 text-sm sm:text-base mt-2 max-w-xl mx-auto">
-        Herramienta en línea para calcular rápidamente el Subtotal, IGV y Total para facturas, boletas y presupuestos.
+      <p class="text-sm sm:text-base text-ink-600 mt-2 max-w-3xl leading-relaxed">
+        Herramienta contable y tributaria en línea para calcular rápidamente el Subtotal (base imponible), IGV y Total a facturar para comprobantes de pago electrónicos y cotizaciones.
       </p>
     </div>
 
-    <!-- Espacio Publicitario Top -->
-    <AdBanner slotId="igv-top" />
+    <!-- Estructura Principal: Calculadora (8 cols) + Sidebar de Publicidad (4 cols) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Contenido Principal -->
+      <main class="lg:col-span-8 space-y-8">
+        
+        <!-- Componente Calculadora React -->
+        <CalculadoraIgv client:load />
 
-    <!-- Calculadora React -->
-    <div class="mb-10">
-      <CalculadoraIgv client:load />
-    </div>
+        <!-- Anuncio In-Feed intermedio -->
+        <AdBanner slotId="igv-infeed-middle" format="infeed" label="Publicidad Patrocinada" />
 
-    <!-- Guía Informativa SEO -->
-    <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 space-y-6 text-sm text-slate-700 leading-relaxed">
-      <h2 class="text-lg font-bold text-slate-900">¿Cómo calcular el IGV en Perú? Fórmulas oficiales</h2>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="p-5 bg-slate-50 rounded-xl border border-slate-200">
-          <h3 class="font-bold text-slate-900 mb-2">1. Agregar IGV al Subtotal (Base)</h3>
-          <p class="text-xs text-slate-600 mb-3">Si tienes el precio sin impuestos y deseas conocer el total a cobrar:</p>
-          <div class="bg-white p-3 rounded-lg border border-slate-200 font-mono text-xs font-semibold text-blue-600">
-            Total = Base × 1.18<br />
-            IGV = Base × 0.18
+        <!-- Fórmulas y Guía Tributaria SUNAT -->
+        <section class="bg-white rounded-xl border border-ink-100 p-6 sm:p-8 shadow-clean space-y-6">
+          <div class="border-b border-ink-100 pb-4">
+            <h2 class="font-heading text-xl font-bold text-ink-900 flex items-center gap-2">
+              <FileText class="w-5 h-5 text-carmesi-600" />
+              Fórmulas Oficiales para el Cálculo del IGV
+            </h2>
+            <p class="text-xs sm:text-sm text-ink-500 mt-1">
+              Casos comunes en la emisión de facturas y boletas de venta electrónicas.
+            </p>
           </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="p-5 bg-slate-50/80 rounded-xl border border-ink-100">
+              <h3 class="font-heading font-bold text-ink-900 text-sm mb-1">
+                1. Agregar IGV al Subtotal (Base)
+              </h3>
+              <p class="text-xs text-ink-600 mb-3 leading-relaxed">
+                Úsalo cuando fijas un precio neto y necesitas saber el total con impuesto:
+              </p>
+              <div class="bg-white p-3 rounded-lg border border-ink-200/80 font-tabular text-xs font-bold text-carmesi-700 space-y-1">
+                <div>Total = Base × 1.18</div>
+                <div>IGV = Base × 0.18</div>
+              </div>
+            </div>
+
+            <div class="p-5 bg-slate-50/80 rounded-xl border border-ink-100">
+              <h3 class="font-heading font-bold text-ink-900 text-sm mb-1">
+                2. Extraer o Desglosar el IGV del Total
+              </h3>
+              <p class="text-xs text-ink-600 mb-3 leading-relaxed">
+                Úsalo cuando tienes el precio final de venta al público y necesitas declarar la base:
+              </p>
+              <div class="bg-white p-3 rounded-lg border border-ink-200/80 font-tabular text-xs font-bold text-ink-800 space-y-1">
+                <div>Base = Total ÷ 1.18</div>
+                <div>IGV = Total - Base</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-xs text-ink-600 leading-relaxed border-t border-ink-100 pt-4 space-y-2">
+            <h4 class="font-bold text-ink-900 text-sm">¿Cómo se compone la tasa del 18% en el Perú?</h4>
+            <p>
+              El tributo total del 18% está conformado por un <strong>16%</strong> destinado al Impuesto General a las Ventas para el Gobierno Central y un <strong>2%</strong> correspondiente al Impuesto de Promoción Municipal (IPM) recaudado por la SUNAT en favor de los gobiernos locales (municipalidades provinciales y distritales).
+            </p>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Sidebar con Publicidad -->
+      <aside class="lg:col-span-4 space-y-6">
+        
+        <!-- Sticky Half-Page Ad (300x600) -->
+        <AdBanner slotId="igv-sidebar-sticky" format="halfpage" label="Anuncio Destacado" />
+
+        <!-- Enlaces Rápidos a Otras Calculadoras -->
+        <div class="bg-white rounded-xl border border-ink-100 p-5 shadow-clean space-y-4">
+          <h3 class="font-heading font-bold text-xs uppercase tracking-wider text-slate-500">
+            Otras Calculadoras Laborales
+          </h3>
+          <ul class="space-y-2.5 text-sm">
+            <li>
+              <a href="/calculadora-gratificacion" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Calculadora de Gratificación</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
+            <li>
+              <a href="/calculadora-cts" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Calculadora de CTS</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
+            <li>
+              <a href="/consulta-ruc" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Consulta RUC SUNAT</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
+          </ul>
         </div>
 
-        <div class="p-5 bg-slate-50 rounded-xl border border-slate-200">
-          <h3 class="font-bold text-slate-900 mb-2">2. Desglosar o Quitar el IGV del Total</h3>
-          <p class="text-xs text-slate-600 mb-3">Si tienes el precio final facturado y deseas conocer la base imponible:</p>
-          <div class="bg-white p-3 rounded-lg border border-slate-200 font-mono text-xs font-semibold text-blue-600">
-            Base = Total ÷ 1.18<br />
-            IGV = Total - Base
-          </div>
-        </div>
-      </div>
+        <!-- Banner Ad adicional en sidebar -->
+        <AdBanner slotId="igv-sidebar-square" format="rectangle" label="Publicidad" />
 
-      <div>
-        <h3 class="font-bold text-slate-900 mb-1">¿Qué grava el IGV?</h3>
-        <p class="text-xs text-slate-600">
-          El Impuesto General a las Ventas grava la venta de bienes muebles en el país, la prestación o utilización de servicios, los contratos de construcción, la primera venta de inmuebles que realicen los constructores y la importación de bienes. Se compone de un 16% de IGV más un 2% por el Impuesto de Promoción Municipal (IPM).
-        </p>
-      </div>
+      </aside>
+
     </div>
 
-    <!-- Espacio Publicitario Bottom -->
-    <AdBanner slotId="igv-bottom" />
+    <!-- Bottom Billboard Ad -->
+    <AdBanner slotId="igv-bottom-billboard" format="billboard" className="mt-12" />
+
   </div>
 </Layout>

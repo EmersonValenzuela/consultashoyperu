@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import AdBanner from '../components/AdBanner.astro';
 import ConversorMonedas from '../components/widgets/ConversorMonedas';
 import { api, type DolarData } from '../lib/api';
-import { DollarSign, TrendingUp, Info } from 'lucide-react';
+import { DollarSign, TrendingUp, Info, ArrowRight, ShieldCheck, Building2, Store } from 'lucide-react';
 
 let dolar: DolarData | null = null;
 try {
@@ -16,71 +16,221 @@ try {
 const compra = dolar?.compra ?? 3.75;
 const venta = dolar?.venta ?? 3.78;
 const fecha = dolar?.fecha ?? 'Hoy';
+const variacion = dolar?.variacion ?? 0.05;
+const spread = (venta - compra).toFixed(3);
 ---
 
 <Layout
-  title="Tipo de Cambio Dólar en Perú Hoy — Compra y Venta"
-  description="Precio del dólar en Perú hoy en tiempo real: tipo de cambio interbancario y paralelo (Ocoña / casas de cambio). Conversor de dólares a soles."
+  title="Tipo de Cambio Dólar en Perú Hoy — Precio Compra y Venta SUNAT / SBS"
+  description="Precio del dólar en Perú hoy en tiempo real: tipo de cambio interbancario, SUNAT y paralelo (Ocoña / fintechs). Conversor de dólares a soles al instante."
 >
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-    <div class="text-center mb-8">
-      <span class="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full inline-block mb-3">
-        Mercado Cambiario Perú
-      </span>
-      <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    
+    <!-- Top Leaderboard Ad -->
+    <AdBanner slotId="dolar-header-leaderboard" format="leaderboard" className="mb-6" />
+
+    <!-- Breadcrumb & Header Editorial -->
+    <nav class="flex items-center gap-2 text-xs text-ink-500 mb-4" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-carmesi-700 transition-colors">Inicio</a>
+      <span>/</span>
+      <span class="text-ink-900 font-medium">Tipo de Cambio Dólar</span>
+    </nav>
+
+    <div class="border-b border-ink-100 pb-6 mb-8">
+      <div class="flex flex-wrap items-center gap-2.5 mb-2.5">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold bg-soles-50 text-soles-800 border border-soles-200">
+          Superintendencia de Banca y Seguros (SBS)
+        </span>
+        <span class="text-xs text-ink-500 font-tabular">Referencia oficial: {fecha}</span>
+      </div>
+      <h1 class="font-heading text-3xl sm:text-4xl text-ink-950 font-black tracking-tight leading-tight">
         Precio del Dólar en Perú Hoy
       </h1>
-      <p class="text-slate-600 text-sm sm:text-base mt-2">
-        Cotización actualizada del dólar estadounidense (USD) frente al sol peruano (PEN). Fecha de referencia: <strong class="text-slate-900">{fecha}</strong>.
+      <p class="text-sm sm:text-base text-ink-600 mt-2 max-w-3xl leading-relaxed">
+        Cotización actualizada del dólar estadounidense (USD) frente al sol peruano (PEN). Consulta las tasas de compra y venta para transacciones bancarias, SUNAT y casas de cambio en Lima.
       </p>
     </div>
 
-    <!-- Cotizaciones destacadas -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm text-center">
-        <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1">Precio de Compra</span>
-        <span class="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight">S/ {compra.toFixed(3)}</span>
-        <span class="text-xs text-slate-400 block mt-2">Lo que te pagan si vendes dólares</span>
-      </div>
-
-      <div class="bg-white rounded-2xl p-6 border border-blue-200 shadow-sm text-center bg-gradient-to-b from-blue-50/50 to-white">
-        <span class="text-xs font-bold uppercase tracking-wider text-blue-600 block mb-1">Precio de Venta</span>
-        <span class="text-4xl sm:text-5xl font-black text-blue-600 tracking-tight">S/ {venta.toFixed(3)}</span>
-        <span class="text-xs text-slate-400 block mt-2">Lo que pagas si compras dólares</span>
-      </div>
-    </div>
-
-    <!-- Espacio Publicitario Superior -->
-    <AdBanner slotId="dolar-top" />
-
-    <!-- Conversor React Interactivo -->
-    <div class="mb-10">
-      <ConversorMonedas client:load tasaCompra={compra} tasaVenta={venta} />
-    </div>
-
-    <!-- Guía informativa SEO -->
-    <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 space-y-6 text-sm text-slate-700 leading-relaxed">
-      <h2 class="text-lg font-bold text-slate-900">¿Dónde cambiar dólares al mejor precio en Perú?</h2>
-      <p>
-        En el Perú existen dos mercados principales para el cambio de moneda:
-      </p>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
-          <h3 class="font-bold text-slate-900 mb-1">1. Mercado Paralelo / Casas de Cambio</h3>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            Suele ofrecer un margen (spread) más estrecho entre compra y venta que los bancos tradicionales. Incluye plataformas digitales fintech supervisadas por la SBS y los tradicionales cambistas de calle Ocoña y Miraflores.
-          </p>
+    <!-- Cotizaciones destacadas en Tablero de Monedas -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      
+      <!-- Compra Card -->
+      <div class="bg-white rounded-xl p-6 border border-ink-100 shadow-clean flex flex-col justify-between">
+        <div class="flex items-center justify-between text-xs font-semibold text-ink-500 uppercase tracking-wider mb-2">
+          <span>Precio de Compra</span>
+          <span class="text-[10px] bg-slate-100 text-ink-600 px-2 py-0.5 rounded font-mono">SBS/SUNAT</span>
         </div>
-        <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
-          <h3 class="font-bold text-slate-900 mb-1">2. Mercado Interbancario</h3>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            Tasa mayorista negociada entre entidades financieras y el Banco Central de Reserva del Perú (BCRP). Las ventanillas de bancos aplican un margen más amplio.
-          </p>
+        <div class="my-2">
+          <div class="font-tabular text-4xl sm:text-5xl font-black text-ink-950 tracking-tight leading-none">
+            S/ {compra.toFixed(3)}
+          </div>
+          <span class="text-xs text-ink-500 block mt-2">
+            Monto en soles que recibes por cada dólar que vendes.
+          </span>
+        </div>
+        <div class="text-[11px] text-ink-400 font-tabular pt-3 border-t border-slate-100 flex items-center justify-between">
+          <span>Mercado mayorista</span>
+          <span class="text-emerald-600 font-medium">Activo</span>
         </div>
       </div>
+
+      <!-- Venta Card -->
+      <div class="bg-white rounded-xl p-6 border-2 border-carmesi-600/30 bg-gradient-to-b from-carmesi-50/20 to-white shadow-clean flex flex-col justify-between">
+        <div class="flex items-center justify-between text-xs font-semibold text-carmesi-700 uppercase tracking-wider mb-2">
+          <span>Precio de Venta</span>
+          <span class="text-[10px] bg-carmesi-50 text-carmesi-700 px-2 py-0.5 rounded font-bold border border-carmesi-200">Recomendado</span>
+        </div>
+        <div class="my-2">
+          <div class="font-tabular text-4xl sm:text-5xl font-black text-carmesi-700 tracking-tight leading-none">
+            S/ {venta.toFixed(3)}
+          </div>
+          <span class="text-xs text-ink-600 block mt-2">
+            Monto en soles que pagas por cada dólar que compras.
+          </span>
+        </div>
+        <div class="text-[11px] text-ink-500 font-tabular pt-3 border-t border-carmesi-100 flex items-center justify-between">
+          <span>Spread interbancario</span>
+          <span class="font-bold text-ink-700">S/ {spread}</span>
+        </div>
+      </div>
+
+      <!-- Referencia Ocoña / Paralelo Card -->
+      <div class="bg-ink-900 text-white rounded-xl p-6 shadow-elevated flex flex-col justify-between border border-ink-800">
+        <div>
+          <span class="text-xs font-bold text-soles-400 uppercase tracking-wider block mb-1">
+            Mercado Paralelo (Ocoña)
+          </span>
+          <div class="flex items-baseline gap-2 mt-2">
+            <span class="font-tabular text-3xl font-black text-white">S/ {(compra - 0.01).toFixed(2)}</span>
+            <span class="text-xs text-slate-400">/</span>
+            <span class="font-tabular text-3xl font-black text-soles-400">S/ {(venta + 0.01).toFixed(2)}</span>
+          </div>
+          <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+            Estimado referencial en casas de cambio físicas y cambistas autorizados en Lima.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-ink-800 flex items-center justify-between text-xs text-slate-400">
+          <span>Horario de mayor liquidez</span>
+          <span class="text-soles-300 font-medium">9:00 AM – 1:30 PM</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Estructura Principal: Columna Principal (8) + Sidebar Publicidad (4) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Columna Principal -->
+      <main class="lg:col-span-8 space-y-8">
+        
+        <!-- Conversor de Monedas -->
+        <section class="bg-white rounded-xl border border-ink-100 p-6 sm:p-8 shadow-clean">
+          <div class="mb-6">
+            <h2 class="font-heading text-xl font-bold text-ink-900">
+              Conversor de Dólares a Soles (USD / PEN)
+            </h2>
+            <p class="text-xs sm:text-sm text-ink-500 mt-1">
+              Calcula al instante cuánto dinero recibirás según el tipo de cambio oficial de compra o venta.
+            </p>
+          </div>
+
+          <ConversorMonedas client:load tasaCompra={compra} tasaVenta={venta} />
+        </section>
+
+        <!-- Anuncio In-Feed intermedio -->
+        <AdBanner slotId="dolar-infeed-middle" format="infeed" label="Publicidad Patrocinada" />
+
+        <!-- Guía de Mercado: Bancos vs Fintechs vs Paralelo -->
+        <section class="bg-white rounded-xl border border-ink-100 p-6 sm:p-8 shadow-clean space-y-6">
+          <div class="border-b border-ink-100 pb-4">
+            <h2 class="font-heading text-xl font-bold text-ink-900">
+              ¿Dónde conviene cambiar dólares en Perú?
+            </h2>
+            <p class="text-xs sm:text-sm text-ink-600 mt-1">
+              Aprende a identificar el mercado que mejor se adapta al monto de tu transacción.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            
+            <div class="p-5 bg-slate-50/80 rounded-xl border border-ink-100 space-y-2">
+              <div class="w-8 h-8 rounded-lg bg-white border border-ink-200 flex items-center justify-center text-carmesi-700">
+                <Store class="w-4 h-4" />
+              </div>
+              <h3 class="font-heading font-bold text-ink-900 text-sm">
+                Casas de cambio y Fintechs online
+              </h3>
+              <p class="text-xs text-ink-600 leading-relaxed">
+                Tienen un margen (spread) mucho más ajustado que la banca comercial. Si cambias montos medianos o grandes, las plataformas fintech reguladas por la SBS transfieren en minutos entre cuentas locales (BCP, Interbank, BBVA, Scotiabank).
+              </p>
+            </div>
+
+            <div class="p-5 bg-slate-50/80 rounded-xl border border-ink-100 space-y-2">
+              <div class="w-8 h-8 rounded-lg bg-white border border-ink-200 flex items-center justify-center text-soles-600">
+                <Building2 class="w-4 h-4" />
+              </div>
+              <h3 class="font-heading font-bold text-ink-900 text-sm">
+                Ventanillas de bancos tradicionales
+              </h3>
+              <p class="text-xs text-ink-600 leading-relaxed">
+                Suelen cobrar un spread más alto (compran más barato y venden más caro). Es recomendable usarlos únicamente para transferencias interbancarias directas de conveniencia o créditos hipotecarios pactados en moneda extranjera.
+              </p>
+            </div>
+
+          </div>
+
+          <div class="bg-soles-50/70 border border-soles-200 rounded-lg p-4 text-xs text-soles-950 flex items-start gap-3">
+            <Info class="w-4 h-4 text-soles-700 mt-0.5 flex-shrink-0" />
+            <div>
+              <strong class="font-bold">Consejo de ahorro financiero:</strong> El tipo de cambio interbancario fluctúa entre las 9:00 AM y la 1:30 PM (hora de Lima), cuando abre la rueda de la Bolsa de Valores de Lima. Operar fuera de este horario suele acarrear márgenes bancarios preventivos más altos.
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Sidebar Lateral con Publicidad -->
+      <aside class="lg:col-span-4 space-y-6">
+        
+        <!-- Sticky Half-Page Ad (300x600) -->
+        <AdBanner slotId="dolar-sidebar-sticky" format="halfpage" label="Anuncio Destacado" />
+
+        <!-- Enlaces Rápidos Financieros -->
+        <div class="bg-white rounded-xl border border-ink-100 p-5 shadow-clean space-y-4">
+          <h3 class="font-heading font-bold text-xs uppercase tracking-wider text-slate-500">
+            Otras Utilidades Financieras
+          </h3>
+          <ul class="space-y-2.5 text-sm">
+            <li>
+              <a href="/calculadora-igv" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Calculadora de IGV (18%)</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
+            <li>
+              <a href="/consulta-ruc" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Consulta RUC SUNAT</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
+            <li>
+              <a href="/validador-dni" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Validador de DNI (RENIEC)</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Banner Ad adicional en sidebar -->
+        <AdBanner slotId="dolar-sidebar-square" format="rectangle" label="Publicidad" />
+
+      </aside>
+
     </div>
 
-    <!-- Espacio Publicitario Inferior -->
-    <AdBanner slotId="dolar-bottom" />
+    <!-- Bottom Billboard Ad -->
+    <AdBanner slotId="dolar-bottom-billboard" format="billboard" className="mt-12" />
+
   </div>
 </Layout>

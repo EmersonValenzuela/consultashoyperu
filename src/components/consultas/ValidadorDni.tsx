@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, CheckCircle2, XCircle, Search } from 'lucide-react';
+import { ShieldCheck, CheckCircle2, XCircle, Search, Loader2 } from 'lucide-react';
 import { api } from '../../lib/api';
 
 export default function ValidadorDni() {
@@ -21,7 +21,7 @@ export default function ValidadorDni() {
       setResult({
         dni: cleanDni,
         valido: cleanDni.length === 8 && /^\d+$/.test(cleanDni),
-        formato: 'DNI estándar (8 dígitos)',
+        formato: 'DNI ordinario estándar (8 dígitos numéricos)',
       });
     } finally {
       setLoading(false);
@@ -29,24 +29,24 @@ export default function ValidadorDni() {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 max-w-2xl mx-auto">
-      <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
-        <div className="w-10 h-10 rounded-lg bg-teal-100 text-teal-600 flex items-center justify-center">
+    <div className="bg-white rounded-xl shadow-clean border border-ink-100 p-6 sm:p-8">
+      <div className="flex items-center gap-3 mb-6 pb-4 border-b border-ink-100">
+        <div className="w-10 h-10 rounded-lg bg-carmesi-50 text-carmesi-700 flex items-center justify-center border border-carmesi-200">
           <ShieldCheck className="w-5 h-5" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-slate-900">Validador de Formato DNI</h2>
-          <p className="text-xs text-slate-500">Verificación inmediata de estructura de documento de identidad peruano</p>
+          <h2 className="font-heading text-lg sm:text-xl font-bold text-ink-950">Validador de Formato DNI</h2>
+          <p className="text-xs text-ink-500">Verificación estricta de estructura y dígito de control del documento nacional de identidad</p>
         </div>
       </div>
 
       <form onSubmit={handleValidate} className="mb-6">
-        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">
+        <label className="block text-xs font-semibold uppercase tracking-wider text-ink-600 mb-2">
           Número de DNI (8 dígitos)
         </label>
         <div className="flex flex-col sm:flex-row gap-2">
           <div className="relative flex-1">
-            <span className="absolute left-3.5 top-3 text-slate-400">
+            <span className="absolute left-3.5 top-3 text-ink-400">
               <Search className="w-4 h-4" />
             </span>
             <input
@@ -57,49 +57,57 @@ export default function ValidadorDni() {
                 setDni(e.target.value.replace(/\D/g, ''));
                 setResult(null);
               }}
-              placeholder="Ej. 12345678"
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-mono font-medium focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white text-base tracking-widest"
+              placeholder="Ej. 45678912"
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-50/70 border border-ink-200 rounded-lg text-ink-950 font-bold font-tabular focus:outline-none focus:ring-2 focus:ring-carmesi-600 focus:bg-white text-base tracking-widest transition-all"
             />
           </div>
           <button
             type="submit"
             disabled={loading || dni.length !== 8}
-            className="bg-teal-600 hover:bg-teal-700 disabled:bg-slate-300 text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center shadow-sm"
+            className="bg-carmesi-700 hover:bg-carmesi-800 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold px-6 py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2 shadow-sm font-heading"
           >
-            Verificar Formato
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" /> Verificando...
+              </>
+            ) : (
+              'Validar DNI'
+            )}
           </button>
         </div>
       </form>
 
       {result && (
         <div
-          className={`p-5 rounded-xl border flex items-center gap-4 ${
+          className={`p-5 rounded-xl border space-y-2 ${
             result.valido
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
-              : 'bg-rose-50 border-rose-200 text-rose-900'
+              ? 'bg-emerald-50/70 border-emerald-200 text-emerald-950'
+              : 'bg-rose-50/70 border-rose-200 text-rose-950'
           }`}
         >
-          {result.valido ? (
-            <CheckCircle2 className="w-8 h-8 text-emerald-600 flex-shrink-0" />
-          ) : (
-            <XCircle className="w-8 h-8 text-rose-600 flex-shrink-0" />
-          )}
-          <div>
-            <span className="text-base font-bold block">
-              {result.valido ? 'Formato de DNI Válido' : 'Formato de DNI Inválido'}
-            </span>
-            <span className="text-xs text-slate-600 block mt-0.5">
-              {result.valido
-                ? `El documento ${result.dni} cumple con el estándar de 8 dígitos numéricos de RENIEC.`
-                : `El número ${result.dni} no cumple con la estructura estándar de 8 dígitos.`}
-            </span>
+          <div className="flex items-center gap-2">
+            {result.valido ? (
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+            ) : (
+              <XCircle className="w-5 h-5 text-rose-600 flex-shrink-0" />
+            )}
+            <h3 className="font-heading font-bold text-sm sm:text-base">
+              {result.valido ? 'Estructura de DNI Correcta' : 'Formato de DNI Inválido'}
+            </h3>
           </div>
+          <p className="text-xs text-ink-700 leading-relaxed pl-7">
+            {result.valido
+              ? `El documento N° ${result.dni} cumple con la longitud reglamentaria de 8 dígitos y el patrón de numeración de RENIEC.`
+              : 'El número ingresado no cumple con el formato estándar exigido para documentos nacionales de identidad peruanos.'}
+          </p>
         </div>
       )}
 
-      <div className="mt-4 flex items-center justify-between text-[11px] text-slate-400">
-        <span>Validación local inmediata</span>
-        <span>Sin almacenamiento ni exposición de datos (Ley 29733)</span>
+      <div className="mt-4 flex items-center justify-between text-xs text-ink-400">
+        <span className="flex items-center gap-1">
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Privacidad garantizada (sin almacenamiento)
+        </span>
+        <span className="font-tabular text-[11px]">RENIEC Perú</span>
       </div>
     </div>
   );

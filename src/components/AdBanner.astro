@@ -1,15 +1,33 @@
 ---
 interface Props {
-  slotId?: string;
-  format?: 'horizontal' | 'rectangle';
+  slotId: string;
+  format?: 'leaderboard' | 'rectangle' | 'infeed' | 'billboard' | 'halfpage';
+  label?: string;
+  className?: string;
 }
 
-const { slotId = 'banner-top', format = 'horizontal' } = Astro.props;
+const {
+  slotId,
+  format = 'leaderboard',
+  label = 'Publicidad',
+  className = '',
+} = Astro.props;
+
+const formatClasses = {
+  leaderboard: 'ad-leaderboard',
+  rectangle: 'ad-rectangle',
+  infeed: 'ad-infeed',
+  billboard: 'ad-container max-w-5xl min-h-[250px] w-full p-4',
+  halfpage: 'ad-sticky-sidebar',
+};
 ---
 
-<div class={`ad-slot my-6 mx-auto ${format === 'rectangle' ? 'max-w-[300px] min-h-[250px]' : 'max-w-4xl min-h-[90px]'}`} data-ad-slot={slotId}>
-  <div class="text-center">
-    <span class="block font-medium tracking-wide text-slate-400 uppercase text-[10px] mb-1">Publicidad</span>
-    <span class="text-xs text-slate-400">Espacio reservado para anuncios (Google AdSense)</span>
+<aside class={`${formatClasses[format]} ${className}`} aria-label={label} data-ad-slot={slotId}>
+  <div class="ad-label">{label}</div>
+  <div class="flex-1 w-full flex items-center justify-center bg-slate-50/60 rounded-lg border border-dashed border-slate-200">
+    <div class="text-center p-3">
+      <span class="block text-xs font-semibold text-slate-400">Espacio Publicitario</span>
+      <span class="text-[11px] text-slate-400 font-mono mt-0.5 block">{slotId}</span>
+    </div>
   </div>
-</div>
+</aside>
