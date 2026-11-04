@@ -26,8 +26,8 @@ try {
 const compra = dolar?.compra ?? 3.75;
 const venta = dolar?.venta ?? 3.78;
 const fechaDolar = dolar?.fecha ?? 'Hoy';
-const feriadoNombre = proximoFeriado?.proximo?.nombre ?? 'Próximo Feriado Nacional';
-const diasRestantes = proximoFeriado?.dias_restantes ?? 0;
+const feriadoNombre = proximoFeriado?.nombre ?? 'Próximo Feriado Nacional';
+const diasRestantes = proximoFeriado?.dias_faltantes ?? 0;
 ---
 
 <Layout title="Portal Diario de Utilidades e Información de Perú">
@@ -83,7 +83,7 @@ const diasRestantes = proximoFeriado?.dias_restantes ?? 0;
           </div>
           <h3 class="text-lg font-bold text-slate-900 mb-1">{feriadoNombre}</h3>
           <p class="text-xs text-slate-500">
-            {proximoFeriado?.proximo?.fecha || 'Consulta el calendario completo de feriados nacionales y días no laborables.'}
+            {proximoFeriado?.fecha || 'Consulta el calendario completo de feriados nacionales y días no laborables.'}
           </p>
         </div>
         <a href="/feriados-peru" class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-emerald-600 hover:text-emerald-700">

@@ -52,8 +52,10 @@ export interface FeriadoData {
 }
 
 export interface ProximoFeriadoData {
-  proximo: FeriadoData;
-  dias_restantes: number;
+  fecha: string;
+  nombre: string;
+  tipo: string;
+  dias_faltantes: number;
 }
 
 export interface RucData {

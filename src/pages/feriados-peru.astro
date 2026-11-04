@@ -45,15 +45,15 @@ try {
             Próximo Feriado Oficial
           </span>
           <h2 class="text-2xl sm:text-3xl font-black leading-tight mb-2">
-            {proximo.proximo.nombre}
+            {proximo.nombre}
           </h2>
           <span class="text-sm text-purple-100 flex items-center gap-1.5 font-medium">
-            <Calendar class="w-4 h-4 text-purple-300" /> {proximo.proximo.fecha} ({proximo.proximo.tipo})
+            <Calendar class="w-4 h-4 text-purple-300" /> {proximo.fecha} ({proximo.tipo})
           </span>
         </div>
 
         <div class="bg-white/10 backdrop-blur border border-white/20 rounded-xl px-6 py-4 text-center flex-shrink-0">
-          <span class="text-3xl sm:text-4xl font-black block leading-none">{proximo.dias_restantes}</span>
+          <span class="text-3xl sm:text-4xl font-black block leading-none">{proximo.dias_faltantes}</span>
           <span class="text-xs font-bold text-purple-200 uppercase tracking-wider mt-1 block">Días restantes</span>
         </div>
       </div>
