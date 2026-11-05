@@ -32,14 +32,18 @@ export interface DolarData {
 }
 
 export interface SismoData {
-  id: number;
-  id_externo: string;
+  id: number | string;
+  id_externo?: string;
   magnitud: number;
   lugar: string;
-  fecha_hora: string;
+  ocurrido_en: string;
+  fecha_hora?: string;
   latitud: number;
   longitud: number;
-  profundidad_km: number;
+  profundidad_km: number | null;
+  profundidad?: number | null;
+  fuente?: string;
+  url?: string | null;
   referencia_url?: string;
 }
 

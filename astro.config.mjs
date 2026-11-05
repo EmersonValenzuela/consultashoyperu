@@ -4,7 +4,7 @@ import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: process.env.SITE_URL || 'https://consultahoyperu.com',
+  site: process.env.SITE_URL || 'https://consultasperu.safezoneperu.com',
   integrations: [
     react(),
     tailwind({
