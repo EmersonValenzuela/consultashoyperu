@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://consultasperu.safezoneperu.com/sitemap-index.xml
+Sitemap: https://safezoneperu.com/sitemap-index.xml
