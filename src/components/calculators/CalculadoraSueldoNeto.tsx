@@ -9,7 +9,7 @@ export default function CalculadoraSueldoNeto() {
   const [hijos, setHijos] = useState<string>('0');
 
   const brutoBase = Math.max(0, parseFloat(sueldoBruto) || 0);
-  const RMV = 1025;
+  const RMV = 1230;
   const montoAsignacion = asignacionFamiliar ? RMV * 0.10 : 0;
   const ingresoTotalBruto = brutoBase + montoAsignacion;
 
@@ -185,7 +185,7 @@ export default function CalculadoraSueldoNeto() {
                 className="w-4 h-4 text-carmesi-600 rounded border-ink-300 focus:ring-carmesi-500 cursor-pointer"
               />
               <span className="text-xs font-semibold text-ink-800">
-                Tengo hijos menores de edad (+ S/ 102.50 Asignación Familiar)
+                Tengo hijos menores de edad (+ S/ 123.00 Asignación Familiar)
               </span>
             </label>
           </div>

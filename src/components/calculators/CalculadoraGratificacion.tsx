@@ -8,8 +8,8 @@ export default function CalculadoraGratificacion() {
   const [promedioVariables, setPromedioVariables] = useState<string>('0');
   const [tipoSeguro, setTipoSeguro] = useState<'essalud' | 'eps'>('essalud');
 
-  // RMV vigente: S/ 1,025.00 -> Asignación Familiar 10% = S/ 102.50
-  const montoAsignacion = asignacionFamiliar ? 102.5 : 0;
+  // RMV: S/ 1,230.00 -> Asignación Familiar 10% = S/ 123.00
+  const montoAsignacion = asignacionFamiliar ? 123 : 0;
   const parsedSueldo = parseFloat(sueldo) || 0;
   const parsedVariables = parseFloat(promedioVariables) || 0;
 
@@ -100,7 +100,7 @@ export default function CalculadoraGratificacion() {
             />
             <div className="text-xs">
               <span className="font-bold text-ink-900 block">Asignación Familiar</span>
-              <span className="text-ink-500 text-[11px]">+S/ 102.50 (10% de la RMV)</span>
+              <span className="text-ink-500 text-[11px]">+S/ 123.00 (10% de la RMV)</span>
             </div>
           </label>
 

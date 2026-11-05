@@ -8,7 +8,7 @@ export default function CalculadoraCts() {
   const [meses, setMeses] = useState<number>(6);
   const [dias, setDias] = useState<number>(0);
 
-  const montoAsignacion = asignacionFamiliar ? 102.5 : 0;
+  const montoAsignacion = asignacionFamiliar ? 123 : 0;
   const parsedSueldo = parseFloat(sueldo) || 0;
   const parsedGrati = parseFloat(ultimaGratificacion) || 0;
 
@@ -83,7 +83,7 @@ export default function CalculadoraCts() {
           />
           <div className="text-xs">
             <span className="font-bold text-ink-900 block">Percibo Asignación Familiar</span>
-            <span className="text-ink-500 text-[11px]">Suma S/ 102.50 a la base de cálculo (10% de RMV)</span>
+            <span className="text-ink-500 text-[11px]">Suma S/ 123.00 a la base de cálculo (10% de RMV)</span>
           </div>
         </label>
 
