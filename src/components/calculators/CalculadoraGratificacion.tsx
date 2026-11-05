@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Briefcase, CheckCircle2, Info } from 'lucide-react';
+import { Briefcase, CheckCircle2 } from 'lucide-react';
 
 export default function CalculadoraGratificacion() {
   const [sueldo, setSueldo] = useState<string>('3000');

@@ -7,15 +7,43 @@ interface Props {
   title: string;
   description?: string;
   canonical?: string;
+  keywords?: string;
+  schema?: Record<string, any> | Array<Record<string, any>>;
 }
 
 const {
   title,
   description = 'Consulta Hoy Perú: Tipo de cambio del dólar, sismos recientes, feriados oficiales, calculadoras de IGV, CTS, gratificación y consulta RUC en tiempo real.',
   canonical,
+  keywords = 'tipo de cambio peru, cambio soles a dolar, dolar a soles, cuanto esta el dolar en peru, sismos peru, feriados 2026, calculadora igv, calculadora gratificacion, consulta ruc sunat',
+  schema,
 } = Astro.props;
 
-const currentUrl = canonical || Astro.url.href;
+const siteUrl = Astro.site ? Astro.site.origin : 'https://consultahoy.pe';
+const currentUrl = canonical || new URL(Astro.url.pathname, siteUrl).href;
+
+// Base Schema.org Organization + WebSite
+const defaultSchemas: Array<Record<string, any>> = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    'name': 'Consulta Hoy Perú',
+    'url': siteUrl,
+    'description': 'Portal nacional de utilidades cívicas, económicas y laborales del Perú.',
+    'inLanguage': 'es-PE',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    'name': 'Consulta Hoy Perú',
+    'url': siteUrl,
+    'logo': `${siteUrl}/favicon.svg`,
+  },
+];
+
+const allSchemas = schema
+  ? [...defaultSchemas, ...(Array.isArray(schema) ? schema : [schema])]
+  : defaultSchemas;
 ---
 
 <!doctype html>
@@ -37,18 +65,27 @@ const currentUrl = canonical || Astro.url.href;
     <!-- SEO Meta Tags -->
     <title>{title} — Consulta Hoy Perú</title>
     <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
     <link rel="canonical" href={currentUrl} />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
 
     <!-- Open Graph / Redes Sociales -->
     <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_PE" />
     <meta property="og:url" content={currentUrl} />
     <meta property="og:title" content={`${title} — Consulta Hoy Perú`} />
     <meta property="og:description" content={description} />
     <meta property="og:site_name" content="Consulta Hoy Perú" />
 
+    <!-- Twitter Card -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:title" content={`${title} — Consulta Hoy Perú`} />
     <meta property="twitter:description" content={description} />
+
+    <!-- Schema.org JSON-LD Datos Estructurados -->
+    {allSchemas.map((s) => (
+      <script type="application/ld+json" set:html={JSON.stringify(s)} />
+    ))}
   </head>
   <body>
     <Header />

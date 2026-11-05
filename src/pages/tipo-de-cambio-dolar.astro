@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import AdBanner from '../components/AdBanner.astro';
 import ConversorMonedas from '../components/widgets/ConversorMonedas';
 import { api, type DolarData } from '../lib/api';
-import { DollarSign, TrendingUp, Info, ArrowRight, ShieldCheck, Building2, Store } from 'lucide-react';
+import { DollarSign, TrendingUp, Info, ArrowRight, ShieldCheck, Building2, Store, HelpCircle, ArrowRightLeft } from 'lucide-react';
 
 let dolar: DolarData | null = null;
 try {
@@ -16,13 +16,63 @@ try {
 const compra = dolar?.compra ?? 3.75;
 const venta = dolar?.venta ?? 3.78;
 const fecha = dolar?.fecha ?? 'Hoy';
-const variacion = dolar?.variacion ?? 0.05;
 const spread = (venta - compra).toFixed(3);
+
+// Tablas precalculadas de conversión (esenciales para Featured Snippets / Posición Cero en Google)
+const montosSoles = [10, 20, 50, 100, 200, 500, 1000, 2000, 5000];
+const montosDolares = [1, 5, 10, 20, 50, 100, 200, 500, 1000, 5000];
+
+// Datos estructurados Schema.org para Google Rich Snippets
+const schemaJsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    'mainEntity': [
+      {
+        '@type': 'Question',
+        'name': '¿A cuánto está el cambio de soles a dólares hoy en Perú?',
+        'acceptedAnswer': {
+          '@type': 'Answer',
+          'text': `El tipo de cambio para comprar dólares con soles hoy se ubica en aproximadamente S/ ${venta.toFixed(3)} según la tasa de venta interbancaria y SBS. Por ejemplo, cambiar 100 dólares requiere S/ ${(100 * venta).toFixed(2)}.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        'name': '¿A cuánto compran el dólar hoy en Perú?',
+        'acceptedAnswer': {
+          '@type': 'Answer',
+          'text': `El precio de compra oficial hoy es de S/ ${compra.toFixed(3)}. Es el monto que recibes en soles por cada dólar que vendes.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        'name': '¿Cuál es la diferencia entre el dólar interbancario, SUNAT y paralelo?',
+        'acceptedAnswer': {
+          '@type': 'Answer',
+          'text': 'El dólar interbancario es el pactado entre entidades financieras. El tipo de cambio SUNAT corresponde al cierre del día hábil anterior publicado por la SBS para fines tributarios y contables. El paralelo u Ocoña se transa libremente en casas de cambio físicas y fintechs.',
+        },
+      },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FinancialProduct',
+    'name': 'Tipo de Cambio Dólar a Soles y Soles a Dólar en Perú',
+    'description': `Cotización en tiempo real del dólar en Perú hoy: Compra S/ ${compra.toFixed(3)}, Venta S/ ${venta.toFixed(3)}.`,
+    'feesAndCommissionsSpecification': 'Sin comisiones en la consulta online',
+    'provider': {
+      '@type': 'Organization',
+      'name': 'Superintendencia de Banca, Seguros y AFP (SBS) / SUNAT',
+    },
+  },
+];
 ---
 
 <Layout
-  title="Tipo de Cambio Dólar en Perú Hoy — Precio Compra y Venta SUNAT / SBS"
-  description="Precio del dólar en Perú hoy en tiempo real: tipo de cambio interbancario, SUNAT y paralelo (Ocoña / fintechs). Conversor de dólares a soles al instante."
+  title="Cambio Soles a Dólar Hoy en Perú — Tipo de Cambio Dólar a Soles SBS y SUNAT"
+  description={`¿A cuánto está el cambio de soles a dólares hoy en Perú? Precio de compra (S/ ${compra.toFixed(3)}) y venta (S/ ${venta.toFixed(3)}) oficial SUNAT, SBS y paralelo Ocoña. Conversor en vivo.`}
+  keywords="cambio soles a dolar, cambio de soles a dolares, dolar a soles hoy peru, cuanto esta el dolar en peru hoy, tipo de cambio sunat hoy, tipo de cambio sbs, conversor soles a dolares, ocona tipo de cambio"
+  schema={schemaJsonLd}
 >
   <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
     
@@ -33,29 +83,29 @@ const spread = (venta - compra).toFixed(3);
     <nav class="flex items-center gap-2 text-xs text-ink-500 mb-4" aria-label="Breadcrumb">
       <a href="/" class="hover:text-carmesi-700 transition-colors">Inicio</a>
       <span>/</span>
-      <span class="text-ink-900 font-medium">Tipo de Cambio Dólar</span>
+      <span class="text-ink-900 font-medium">Cambio Soles a Dólar</span>
     </nav>
 
-    <div class="border-b border-ink-100 pb-6 mb-8">
+    <header class="border-b border-ink-100 pb-6 mb-8">
       <div class="flex flex-wrap items-center gap-2.5 mb-2.5">
         <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold bg-soles-50 text-soles-800 border border-soles-200">
           Superintendencia de Banca y Seguros (SBS)
         </span>
-        <span class="text-xs text-ink-500 font-tabular">Referencia oficial: {fecha}</span>
+        <span class="text-xs text-ink-500 font-tabular">Fecha oficial: {fecha}</span>
       </div>
       <h1 class="font-heading text-3xl sm:text-4xl text-ink-950 font-black tracking-tight leading-tight">
-        Precio del Dólar en Perú Hoy
+        Cambio de Soles a Dólar y Dólar a Soles Hoy en Perú
       </h1>
       <p class="text-sm sm:text-base text-ink-600 mt-2 max-w-3xl leading-relaxed">
-        Cotización actualizada del dólar estadounidense (USD) frente al sol peruano (PEN). Consulta las tasas de compra y venta para transacciones bancarias, SUNAT y casas de cambio en Lima.
+        Consulta el precio del dólar en el Perú en tiempo real. Cotizaciones oficiales de compra y venta de la SBS y SUNAT, mercado paralelo (Ocoña) y conversor instantáneo de divisas (PEN / USD).
       </p>
-    </div>
+    </header>
 
     <!-- Cotizaciones destacadas en Tablero de Monedas -->
     <section class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
       
       <!-- Compra Card -->
-      <div class="bg-white rounded-xl p-6 border border-ink-100 shadow-clean flex flex-col justify-between">
+      <article class="bg-white rounded-xl p-6 border border-ink-100 shadow-clean flex flex-col justify-between">
         <div class="flex items-center justify-between text-xs font-semibold text-ink-500 uppercase tracking-wider mb-2">
           <span>Precio de Compra</span>
           <span class="text-[10px] bg-slate-100 text-ink-600 px-2 py-0.5 rounded font-mono">SBS/SUNAT</span>
@@ -64,41 +114,41 @@ const spread = (venta - compra).toFixed(3);
           <div class="font-tabular text-4xl sm:text-5xl font-black text-ink-950 tracking-tight leading-none">
             S/ {compra.toFixed(3)}
           </div>
-          <span class="text-xs text-ink-500 block mt-2">
-            Monto en soles que recibes por cada dólar que vendes.
-          </span>
+          <p class="text-xs text-ink-500 mt-2">
+            Monto en soles que te pagan si vendes tus dólares hoy.
+          </p>
         </div>
         <div class="text-[11px] text-ink-400 font-tabular pt-3 border-t border-slate-100 flex items-center justify-between">
           <span>Mercado mayorista</span>
-          <span class="text-emerald-600 font-medium">Activo</span>
+          <span class="text-emerald-600 font-medium">Operación normal</span>
         </div>
-      </div>
+      </article>
 
       <!-- Venta Card -->
-      <div class="bg-white rounded-xl p-6 border-2 border-carmesi-600/30 bg-gradient-to-b from-carmesi-50/20 to-white shadow-clean flex flex-col justify-between">
+      <article class="bg-white rounded-xl p-6 border-2 border-carmesi-600/30 bg-gradient-to-b from-carmesi-50/20 to-white shadow-clean flex flex-col justify-between">
         <div class="flex items-center justify-between text-xs font-semibold text-carmesi-700 uppercase tracking-wider mb-2">
           <span>Precio de Venta</span>
-          <span class="text-[10px] bg-carmesi-50 text-carmesi-700 px-2 py-0.5 rounded font-bold border border-carmesi-200">Recomendado</span>
+          <span class="text-[10px] bg-carmesi-50 text-carmesi-700 px-2 py-0.5 rounded font-bold border border-carmesi-200">Para comprar dólares</span>
         </div>
         <div class="my-2">
           <div class="font-tabular text-4xl sm:text-5xl font-black text-carmesi-700 tracking-tight leading-none">
             S/ {venta.toFixed(3)}
           </div>
-          <span class="text-xs text-ink-600 block mt-2">
-            Monto en soles que pagas por cada dólar que compras.
-          </span>
+          <p class="text-xs text-ink-600 mt-2">
+            Monto en soles que debes pagar para adquirir 1 dólar estadounidense.
+          </p>
         </div>
         <div class="text-[11px] text-ink-500 font-tabular pt-3 border-t border-carmesi-100 flex items-center justify-between">
-          <span>Spread interbancario</span>
+          <span>Spread bancario</span>
           <span class="font-bold text-ink-700">S/ {spread}</span>
         </div>
-      </div>
+      </article>
 
       <!-- Referencia Ocoña / Paralelo Card -->
-      <div class="bg-ink-900 text-white rounded-xl p-6 shadow-elevated flex flex-col justify-between border border-ink-800">
+      <article class="bg-ink-900 text-white rounded-xl p-6 shadow-elevated flex flex-col justify-between border border-ink-800">
         <div>
           <span class="text-xs font-bold text-soles-400 uppercase tracking-wider block mb-1">
-            Mercado Paralelo (Ocoña)
+            Mercado Paralelo (Ocoña / Casas de Cambio)
           </span>
           <div class="flex items-baseline gap-2 mt-2">
             <span class="font-tabular text-3xl font-black text-white">S/ {(compra - 0.01).toFixed(2)}</span>
@@ -106,14 +156,14 @@ const spread = (venta - compra).toFixed(3);
             <span class="font-tabular text-3xl font-black text-soles-400">S/ {(venta + 0.01).toFixed(2)}</span>
           </div>
           <p class="text-xs text-slate-300 mt-2 leading-relaxed">
-            Estimado referencial en casas de cambio físicas y cambistas autorizados en Lima.
+            Cotización promedio estimada en casas de cambio físicas y cambistas en Lima.
           </p>
         </div>
         <div class="mt-4 pt-3 border-t border-ink-800 flex items-center justify-between text-xs text-slate-400">
-          <span>Horario de mayor liquidez</span>
+          <span>Mayor liquidez</span>
           <span class="text-soles-300 font-medium">9:00 AM – 1:30 PM</span>
         </div>
-      </div>
+      </article>
 
     </section>
 
@@ -124,66 +174,121 @@ const spread = (venta - compra).toFixed(3);
       <main class="lg:col-span-8 space-y-8">
         
         <!-- Conversor de Monedas -->
-        <section class="bg-white rounded-xl border border-ink-100 p-6 sm:p-8 shadow-clean">
-          <div class="mb-6">
-            <h2 class="font-heading text-xl font-bold text-ink-900">
-              Conversor de Dólares a Soles (USD / PEN)
-            </h2>
-            <p class="text-xs sm:text-sm text-ink-500 mt-1">
-              Calcula al instante cuánto dinero recibirás según el tipo de cambio oficial de compra o venta.
-            </p>
-          </div>
-
+        <section aria-label="Conversor de Monedas">
           <ConversorMonedas client:load tasaCompra={compra} tasaVenta={venta} />
         </section>
 
-        <!-- Anuncio In-Feed intermedio -->
+        <!-- Anuncio In-Feed intermedio de alta conversión -->
         <AdBanner slotId="dolar-infeed-middle" format="infeed" label="Publicidad Patrocinada" />
 
-        <!-- Guía de Mercado: Bancos vs Fintechs vs Paralelo -->
+        <!-- Tablas de Conversión Directa (Imanes SEO para Featured Snippets de Google) -->
         <section class="bg-white rounded-xl border border-ink-100 p-6 sm:p-8 shadow-clean space-y-6">
           <div class="border-b border-ink-100 pb-4">
-            <h2 class="font-heading text-xl font-bold text-ink-900">
-              ¿Dónde conviene cambiar dólares en Perú?
+            <h2 class="font-heading text-xl font-bold text-ink-950">
+              Tablas de Conversión Rápida de Soles a Dólar y Dólar a Soles
             </h2>
-            <p class="text-xs sm:text-sm text-ink-600 mt-1">
-              Aprende a identificar el mercado que mejor se adapta al monto de tu transacción.
+            <p class="text-xs sm:text-sm text-ink-500 mt-1">
+              Equivalencias calculadas con el tipo de cambio oficial vigente en el Perú.
             </p>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             
-            <div class="p-5 bg-slate-50/80 rounded-xl border border-ink-100 space-y-2">
-              <div class="w-8 h-8 rounded-lg bg-white border border-ink-200 flex items-center justify-center text-carmesi-700">
-                <Store class="w-4 h-4" />
+            <!-- Tabla 1: De Soles a Dólares (Venta) -->
+            <div class="border border-ink-100 rounded-xl overflow-hidden">
+              <div class="bg-slate-50 px-4 py-3 border-b border-ink-100">
+                <h3 class="font-heading font-bold text-xs uppercase tracking-wider text-ink-700">
+                  Cambio de Soles a Dólares (PEN a USD)
+                </h3>
               </div>
-              <h3 class="font-heading font-bold text-ink-900 text-sm">
-                Casas de cambio y Fintechs online
-              </h3>
-              <p class="text-xs text-ink-600 leading-relaxed">
-                Tienen un margen (spread) mucho más ajustado que la banca comercial. Si cambias montos medianos o grandes, las plataformas fintech reguladas por la SBS transfieren en minutos entre cuentas locales (BCP, Interbank, BBVA, Scotiabank).
-              </p>
+              <table class="w-full text-xs text-left">
+                <thead class="bg-slate-50/50 text-ink-400 font-semibold border-b border-ink-100">
+                  <tr>
+                    <th scope="col" class="py-2.5 px-4 font-medium">Monto en Soles</th>
+                    <th scope="col" class="py-2.5 px-4 text-right font-medium">Equivalente en Dólares</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-ink-100 font-tabular">
+                  {montosSoles.map((s) => {
+                    const usdVal = (s / venta).toFixed(2);
+                    return (
+                      <tr class="hover:bg-slate-50/60 transition-colors">
+                        <td class="py-2 px-4 font-bold text-ink-900">S/ {s.toLocaleString('es-PE')}</td>
+                        <td class="py-2 px-4 text-right font-bold text-carmesi-700">${usdVal} USD</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
 
-            <div class="p-5 bg-slate-50/80 rounded-xl border border-ink-100 space-y-2">
-              <div class="w-8 h-8 rounded-lg bg-white border border-ink-200 flex items-center justify-center text-soles-600">
-                <Building2 class="w-4 h-4" />
+            <!-- Tabla 2: De Dólares a Soles (Compra) -->
+            <div class="border border-ink-100 rounded-xl overflow-hidden">
+              <div class="bg-slate-50 px-4 py-3 border-b border-ink-100">
+                <h3 class="font-heading font-bold text-xs uppercase tracking-wider text-ink-700">
+                  Cambio de Dólares a Soles (USD a PEN)
+                </h3>
               </div>
-              <h3 class="font-heading font-bold text-ink-900 text-sm">
-                Ventanillas de bancos tradicionales
-              </h3>
-              <p class="text-xs text-ink-600 leading-relaxed">
-                Suelen cobrar un spread más alto (compran más barato y venden más caro). Es recomendable usarlos únicamente para transferencias interbancarias directas de conveniencia o créditos hipotecarios pactados en moneda extranjera.
-              </p>
+              <table class="w-full text-xs text-left">
+                <thead class="bg-slate-50/50 text-ink-400 font-semibold border-b border-ink-100">
+                  <tr>
+                    <th scope="col" class="py-2.5 px-4 font-medium">Monto en Dólares</th>
+                    <th scope="col" class="py-2.5 px-4 text-right font-medium">Equivalente en Soles</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-ink-100 font-tabular">
+                  {montosDolares.map((d) => {
+                    const penVal = (d * compra).toFixed(2);
+                    return (
+                      <tr class="hover:bg-slate-50/60 transition-colors">
+                        <td class="py-2 px-4 font-bold text-ink-900">${d.toLocaleString('es-PE')} USD</td>
+                        <td class="py-2 px-4 text-right font-bold text-ink-950">S/ {penVal}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
 
           </div>
+        </section>
 
-          <div class="bg-soles-50/70 border border-soles-200 rounded-lg p-4 text-xs text-soles-950 flex items-start gap-3">
-            <Info class="w-4 h-4 text-soles-700 mt-0.5 flex-shrink-0" />
-            <div>
-              <strong class="font-bold">Consejo de ahorro financiero:</strong> El tipo de cambio interbancario fluctúa entre las 9:00 AM y la 1:30 PM (hora de Lima), cuando abre la rueda de la Bolsa de Valores de Lima. Operar fuera de este horario suele acarrear márgenes bancarios preventivos más altos.
-            </div>
+        <!-- Preguntas Frecuentes SEO (Acordeón / Contenido Estructurado) -->
+        <section class="bg-white rounded-xl border border-ink-100 p-6 sm:p-8 shadow-clean space-y-6">
+          <div class="border-b border-ink-100 pb-4">
+            <h2 class="font-heading text-xl font-bold text-ink-950 flex items-center gap-2">
+              <HelpCircle class="w-5 h-5 text-carmesi-600" />
+              Preguntas Frecuentes sobre el Cambio de Soles a Dólares
+            </h2>
+          </div>
+
+          <div class="space-y-4 text-xs sm:text-sm text-ink-700 leading-relaxed">
+            <article class="p-4 bg-slate-50/80 rounded-lg border border-ink-100">
+              <h3 class="font-bold text-ink-950 mb-1">
+                ¿A cuánto está el cambio de soles a dólares hoy en Perú?
+              </h3>
+              <p class="text-xs text-ink-600">
+                Para comprar dólares con moneda nacional peruana, el tipo de cambio oficial de venta se sitúa en <strong>S/ {venta.toFixed(3)}</strong>. Por ejemplo, si deseas cambiar S/ 1,000 recibirás aproximadamente ${(1000 / venta).toFixed(2)} USD.
+              </p>
+            </article>
+
+            <article class="p-4 bg-slate-50/80 rounded-lg border border-ink-100">
+              <h3 class="font-bold text-ink-950 mb-1">
+                ¿A cuánto compran el dólar en bancos y casas de cambio?
+              </h3>
+              <p class="text-xs text-ink-600">
+                La cotización de compra promedio es de <strong>S/ {compra.toFixed(3)}</strong>. Este es el monto en soles que te abonarán por cada billete estadounidense que vendas.
+              </p>
+            </article>
+
+            <article class="p-4 bg-slate-50/80 rounded-lg border border-ink-100">
+              <h3 class="font-bold text-ink-950 mb-1">
+                ¿Dónde conviene cambiar dinero: bancos, fintechs o calle Ocoña?
+              </h3>
+              <p class="text-xs text-ink-600">
+                Las fintechs de cambio online registradas ante la SBS y las casas de cambio de calle Ocoña / Miraflores ofrecen los márgenes más competitivos. Las agencias y ventanillas bancarias tradicionales suelen tener un margen de ganancia más elevado (spread bancario).
+              </p>
+            </article>
           </div>
         </section>
 
@@ -215,7 +320,7 @@ const spread = (venta - compra).toFixed(3);
             </li>
             <li>
               <a href="/validador-dni" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
-                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Validador de DNI (RENIEC)</span>
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Validador de DNI</span>
                 <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
               </a>
             </li>
