@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import AdBanner from '../components/AdBanner.astro';
 import { api, type SismoData } from '../lib/api';
 import MapaSismos from '../components/widgets/MapaSismos';
-import { Activity, MapPin, Clock, ExternalLink, AlertTriangle, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Activity, MapPin, Clock, ExternalLink, AlertTriangle, ShieldCheck, ArrowRight, Share2 } from 'lucide-react';
 
 let sismos: SismoData[] = [];
 try {
@@ -165,21 +165,33 @@ const segundoGrupo = sismos.slice(midPoint);
                     </div>
                   </div>
 
-                  <div class="flex items-center gap-2 flex-shrink-0">
+                  <div class="flex items-center gap-1.5 flex-shrink-0">
                     {isHigh && (
                       <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-200 uppercase tracking-wide">
                         Alerta
                       </span>
                     )}
-                    <a
-                      href={`https://www.google.com/maps?q=${sismo.latitud},${sismo.longitud}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="inline-flex items-center gap-1 text-xs font-semibold text-slate-600 hover:text-rose-700 bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
-                      title="Ver coordenadas en Google Maps"
+                    <button
+                      type="button"
+                      data-sismo-id={sismo.id}
+                      data-lat={sismo.latitud}
+                      data-lng={sismo.longitud}
+                      class="btn-focus-map inline-flex items-center gap-1 text-xs font-semibold text-slate-700 hover:text-rose-700 bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
+                      title="Enfocar en el mapa"
                     >
                       <MapPin class="w-3.5 h-3.5 text-rose-600" />
-                      <span class="hidden sm:inline">Mapa</span>
+                      <span class="hidden sm:inline">Ver mapa</span>
+                    </button>
+                    <a
+                      href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+                        `🚨 *Sismo detectado en Perú*\n📍 Epicentro: ${sismo.lugar}\n💥 Magnitud: ${sismo.magnitud.toFixed(1)}\n📏 Profundidad: ${profundidadTexto}\n🕒 Hora: ${fechaLima}\n\nConsulta en vivo: https://consultasperu.safezoneperu.com/sismos-peru/`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="inline-flex items-center justify-center p-1.5 text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors"
+                      title="Compartir por WhatsApp"
+                    >
+                      <Share2 class="w-3.5 h-3.5" />
                     </a>
                   </div>
                 </article>
@@ -248,16 +260,28 @@ const segundoGrupo = sismos.slice(midPoint);
                     </div>
                   </div>
 
-                  <div class="flex items-center gap-2 flex-shrink-0">
-                    <a
-                      href={`https://www.google.com/maps?q=${sismo.latitud},${sismo.longitud}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="inline-flex items-center gap-1 text-xs font-semibold text-slate-600 hover:text-rose-700 bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
-                      title="Ver coordenadas en Google Maps"
+                  <div class="flex items-center gap-1.5 flex-shrink-0">
+                    <button
+                      type="button"
+                      data-sismo-id={sismo.id}
+                      data-lat={sismo.latitud}
+                      data-lng={sismo.longitud}
+                      class="btn-focus-map inline-flex items-center gap-1 text-xs font-semibold text-slate-700 hover:text-rose-700 bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
+                      title="Enfocar en el mapa"
                     >
                       <MapPin class="w-3.5 h-3.5 text-rose-600" />
-                      <span class="hidden sm:inline">Mapa</span>
+                      <span class="hidden sm:inline">Ver mapa</span>
+                    </button>
+                    <a
+                      href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+                        `🚨 *Sismo detectado en Perú*\n📍 Epicentro: ${sismo.lugar}\n💥 Magnitud: ${sismo.magnitud.toFixed(1)}\n📏 Profundidad: ${profundidadTexto}\n🕒 Hora: ${fechaLima}\n\nConsulta en vivo: https://consultasperu.safezoneperu.com/sismos-peru/`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="inline-flex items-center justify-center p-1.5 text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors"
+                      title="Compartir por WhatsApp"
+                    >
+                      <Share2 class="w-3.5 h-3.5" />
                     </a>
                   </div>
                 </article>
@@ -330,4 +354,17 @@ const segundoGrupo = sismos.slice(midPoint);
     <AdBanner slotId="sismos-bottom-billboard" format="billboard" className="mt-12" />
 
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.btn-focus-map').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-sismo-id');
+          const lat = parseFloat(btn.getAttribute('data-lat') || '0');
+          const lng = parseFloat(btn.getAttribute('data-lng') || '0');
+          window.dispatchEvent(new CustomEvent('focus-sismo', { detail: { id, lat, lng } }));
+        });
+      });
+    });
+  </script>
 </Layout>

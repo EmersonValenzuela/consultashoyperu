@@ -1,0 +1,118 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AdBanner from '../components/AdBanner.astro';
+import CalculadoraCuartaCategoria from '../components/calculators/CalculadoraCuartaCategoria';
+import { ArrowRight, HelpCircle, FileText, ShieldCheck, CheckCircle2 } from 'lucide-react';
+---
+
+<Layout
+  title="Calculadora de Recibo por Honorarios 2026 — Retención 8% 4ta Categoría SUNAT"
+  description="Calcula la retención del 8% de Cuarta Categoría para Recibos por Honorarios electrónicos en Perú. Conoce el monto neto a cobrar o el monto bruto que debes emitir a empresas."
+>
+  <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Top Leaderboard Ad -->
+    <AdBanner slotId="cuarta-header-leaderboard" format="leaderboard" className="mb-6" />
+
+    <!-- Breadcrumb & Header Editorial -->
+    <nav class="flex items-center gap-2 text-xs text-ink-500 mb-4" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-carmesi-700 transition-colors">Inicio</a>
+      <span>/</span>
+      <span class="text-ink-900 font-medium">Recibo por Honorarios</span>
+    </nav>
+
+    <div class="border-b border-ink-100 pb-6 mb-8">
+      <div class="flex flex-wrap items-center gap-2.5 mb-2.5">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold bg-sky-50 text-sky-800 border border-sky-200">
+          SUNAT / Renta de Cuarta Categoría
+        </span>
+        <span class="text-xs text-ink-500 font-tabular">Tasa de retención: 8.00%</span>
+      </div>
+      <h1 class="font-heading text-3xl sm:text-4xl text-ink-950 font-black tracking-tight leading-tight">
+        Calculadora de Recibo por Honorarios (4ta Categoría)
+      </h1>
+      <p class="text-sm sm:text-base text-ink-600 mt-2 max-w-4xl leading-relaxed">
+        Calcula de forma automática la retención del Impuesto a la Renta (8%) que aplican las empresas a los trabajadores independientes o freelancers al emitir recibos por honorarios electrónicos en la plataforma SUNAT Operaciones en Línea.
+      </p>
+    </div>
+
+    <!-- Estructura Principal: Calculadora (8 cols) + Sidebar de Publicidad (4 cols) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Contenido Principal -->
+      <main class="lg:col-span-8 space-y-8">
+        
+        <!-- Componente Calculadora React -->
+        <CalculadoraCuartaCategoria client:load />
+
+        <!-- Anuncio In-Feed intermedio -->
+        <AdBanner slotId="cuarta-infeed-middle" format="infeed" label="Publicidad Patrocinada" />
+
+        <!-- Guía Explicativa Cuarta Categoría -->
+        <section class="bg-white rounded-xl border border-ink-100 p-6 sm:p-8 space-y-6">
+          <h2 class="font-heading text-xl font-bold text-ink-900 flex items-center gap-2">
+            <HelpCircle class="w-5 h-5 text-sky-600" />
+            Preguntas Frecuentes sobre la Retención de Cuarta Categoría
+          </h2>
+
+          <div class="space-y-4 text-sm text-ink-700 leading-relaxed">
+            <div class="p-4 bg-slate-50 rounded-lg border border-ink-100">
+              <strong class="font-bold text-ink-900 block mb-1">¿A partir de qué monto te retienen el 8%?</strong>
+              Si emites un recibo por honorarios a una empresa (Régimen General, MYPE Tributario, etc.) por un monto <strong>superior a S/ 1,500</strong>, la empresa tiene la obligación legal de retenerte el 8% y pagarlo a la SUNAT a tu nombre.
+            </div>
+
+            <div class="p-4 bg-slate-50 rounded-lg border border-ink-100">
+              <strong class="font-bold text-ink-900 block mb-1">¿Cómo evitar la retención del 8% legalmente?</strong>
+              Puedes solicitar la <strong>Suspensión de Retenciones de Cuarta Categoría</strong> (Formulario Virtual 1609 en la web de SUNAT con tu Clave SOL). Es un trámite 100% gratuito que se aprueba de inmediato si proyectas no ganar más de S/ 3,755 mensuales o S/ 45,063 al año.
+            </div>
+
+            <div class="p-4 bg-slate-50 rounded-lg border border-ink-100">
+              <strong class="font-bold text-ink-900 block mb-1">¿Qué pasa si emito a personas naturales sin negocio?</strong>
+              Si tu cliente es una persona natural que no tiene empresa ni negocio, no está obligado a retenerte el 8%, cobras el 100% del recibo directamente.
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Sidebar Lateral con Publicidad y Enlaces -->
+      <aside class="lg:col-span-4 space-y-6">
+        
+        <AdBanner slotId="cuarta-sidebar-sticky" format="halfpage" label="Anuncio Destacado" />
+
+        <div class="bg-white rounded-xl border border-ink-100 p-5 shadow-clean space-y-4">
+          <h3 class="font-heading font-bold text-xs uppercase tracking-wider text-slate-500">
+            Otras Herramientas SUNAT
+          </h3>
+          <ul class="space-y-2.5 text-sm">
+            <li>
+              <a href="/calculadora-sueldo-neto" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Calculadora de Sueldo Neto</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
+            <li>
+              <a href="/calculadora-igv" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Calculadora de IGV (18%)</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
+            <li>
+              <a href="/consulta-ruc" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-ink-100 transition-colors group">
+                <span class="font-medium text-ink-800 group-hover:text-carmesi-700">Consulta RUC SUNAT</span>
+                <ArrowRight class="w-4 h-4 text-ink-400 group-hover:translate-x-0.5 transition-transform" />
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <AdBanner slotId="cuarta-sidebar-square" format="rectangle" label="Publicidad" />
+
+      </aside>
+
+    </div>
+
+    <AdBanner slotId="cuarta-bottom-billboard" format="billboard" className="mt-12" />
+
+  </div>
+</Layout>

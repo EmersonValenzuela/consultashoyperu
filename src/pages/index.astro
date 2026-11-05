@@ -188,6 +188,48 @@ const diasRestantes = proximoFeriado?.dias_faltantes ?? 0;
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Calculadora Sueldo Neto -->
+        <a
+          href="/calculadora-sueldo-neto"
+          class="bg-white p-6 rounded-2xl border border-slate-200/90 hover:border-carmesi-300 hover:shadow-elevated transition-all flex flex-col justify-between group"
+        >
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+              <Calculator class="w-5 h-5" />
+            </div>
+            <h3 class="font-bold text-ink-950 text-base mb-1 group-hover:text-carmesi-600 transition-colors">
+              Calculadora de Sueldo Neto
+            </h3>
+            <p class="text-xs text-slate-500 leading-relaxed">
+              Calcula tu sueldo líquido en mano con descuentos de AFP, ONP y retención de 5ta categoría SUNAT.
+            </p>
+          </div>
+          <span class="text-xs font-bold text-carmesi-600 mt-4 flex items-center gap-1">
+            Calcular Sueldo <ArrowUpRight class="w-3.5 h-3.5" />
+          </span>
+        </a>
+
+        <!-- Calculadora Cuarta Categoría -->
+        <a
+          href="/calculadora-cuarta-categoria"
+          class="bg-white p-6 rounded-2xl border border-slate-200/90 hover:border-carmesi-300 hover:shadow-elevated transition-all flex flex-col justify-between group"
+        >
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-700 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+              <Calculator class="w-5 h-5" />
+            </div>
+            <h3 class="font-bold text-ink-950 text-base mb-1 group-hover:text-carmesi-600 transition-colors">
+              Recibo por Honorarios (4ta)
+            </h3>
+            <p class="text-xs text-slate-500 leading-relaxed">
+              Cálculo de retención del 8% de Impuesto a la Renta para trabajadores independientes y freelancers.
+            </p>
+          </div>
+          <span class="text-xs font-bold text-carmesi-600 mt-4 flex items-center gap-1">
+            Calcular Recibo <ArrowUpRight class="w-3.5 h-3.5" />
+          </span>
+        </a>
+
         <!-- Calculadora IGV -->
         <a
           href="/calculadora-igv"

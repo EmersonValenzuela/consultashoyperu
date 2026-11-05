@@ -10,7 +10,9 @@ interface Props {
 export default function MapaSismos({ sismos }: Props) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
+  const markersMapRef = useRef<Map<string | number, any>>(new Map());
   const [activeCount, setActiveCount] = useState<number>(0);
+  const [selectedMag, setSelectedMag] = useState<'all' | 'alert' | 'medium' | 'low'>('all');
 
   useEffect(() => {
     let isMounted = true;
@@ -23,13 +25,11 @@ export default function MapaSismos({ sismos }: Props) {
 
       if (!isMounted || !mapContainerRef.current) return;
 
-      // Si ya existía una instancia previa, la destruimos
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
 
-      // Centro geográfico referencial de Perú
       const defaultCenter: [number, number] = [-9.19, -75.0152];
       const defaultZoom = 5;
 
@@ -38,16 +38,16 @@ export default function MapaSismos({ sismos }: Props) {
         zoom: defaultZoom,
         minZoom: 4,
         maxZoom: 12,
-        scrollWheelZoom: false, // Evita zoom accidental al scrollear la página
+        scrollWheelZoom: false,
       });
 
-      // Añadir capa de OpenStreetMap estándar (100% libre, pública y sin API key ni marcas de agua)
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> contributors',
         maxZoom: 19,
       }).addTo(map);
 
       mapInstanceRef.current = map;
+      markersMapRef.current.clear();
 
       const validEvents = sismos.filter(
         (s) => typeof s.latitud === 'number' && typeof s.longitud === 'number' && !isNaN(s.latitud) && !isNaN(s.longitud)
@@ -79,7 +79,6 @@ export default function MapaSismos({ sismos }: Props) {
         const profNum = sismo.profundidad_km ?? sismo.profundidad;
         const profStr = profNum !== null && profNum !== undefined ? `${Math.round(Number(profNum))} km` : 'No reportada';
 
-        // Marcador circular con escala según magnitud
         const marker = L.circleMarker([sismo.latitud, sismo.longitud], {
           radius: radius,
           fillColor: fillColor,
@@ -89,9 +88,12 @@ export default function MapaSismos({ sismos }: Props) {
           fillOpacity: 0.8,
         });
 
-        // Contenido del popup con diseño Tailwind / Clean UI
+        const shareText = encodeURIComponent(
+          `🚨 Sismo en Perú: M ${sismo.magnitud.toFixed(1)} - ${sismo.lugar}\nProfundidad: ${profStr} | Hora: ${fechaLima}\nUbicación: https://www.google.com/maps?q=${sismo.latitud},${sismo.longitud}`
+        );
+
         const popupContent = `
-          <div style="font-family: inherit; font-size: 13px; min-width: 200px; color: #0f172a; padding: 2px;">
+          <div style="font-family: inherit; font-size: 13px; min-width: 210px; color: #0f172a; padding: 2px;">
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; padding-bottom: 5px; border-bottom: 1px solid #e2e8f0;">
               <span style="font-weight: 800; font-size: 13px; color: ${color};">MAGNITUD ${sismo.magnitud.toFixed(1)}</span>
               <span style="font-size: 10px; font-weight: 700; background: #f1f5f9; color: #475569; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">
@@ -106,9 +108,12 @@ export default function MapaSismos({ sismos }: Props) {
               <div>📏 <strong>Profundidad:</strong> ${profStr}</div>
               <div>📍 <strong>Coordenadas:</strong> ${sismo.latitud.toFixed(4)}, ${sismo.longitud.toFixed(4)}</div>
             </div>
-            <div style="display: flex; gap: 8px; pt-2; border-top: 1px solid #f1f5f9;">
-              <a href="https://www.google.com/maps?q=${sismo.latitud},${sismo.longitud}" target="_blank" rel="noopener noreferrer" style="font-size: 11px; font-weight: 700; color: #be123c; text-decoration: none; display: inline-flex; align-items: center; gap: 3px;">
-                Ver en Google Maps →
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 6px; border-top: 1px solid #f1f5f9;">
+              <a href="https://www.google.com/maps?q=${sismo.latitud},${sismo.longitud}" target="_blank" rel="noopener noreferrer" style="font-size: 11px; font-weight: 700; color: #be123c; text-decoration: none;">
+                Google Maps →
+              </a>
+              <a href="https://api.whatsapp.com/send?text=${shareText}" target="_blank" rel="noopener noreferrer" style="font-size: 11px; font-weight: 700; color: #059669; text-decoration: none;">
+                Compartir 📲
               </a>
             </div>
           </div>
@@ -121,26 +126,44 @@ export default function MapaSismos({ sismos }: Props) {
         });
 
         marker.addTo(map);
+        markersMapRef.current.set(sismo.id, marker);
         latLngBounds.push([sismo.latitud, sismo.longitud]);
       });
 
-      // Si hay eventos sísmicos válidos, ajustamos el mapa para encuadrarlos
       if (latLngBounds.length > 0) {
         if (latLngBounds.length === 1) {
           map.setView(latLngBounds[0], 7);
         } else {
-          map.fitBounds(latLngBounds, {
-            padding: [45, 45],
-            maxZoom: 7,
-          });
+          map.fitBounds(latLngBounds, { padding: [45, 45], maxZoom: 7 });
         }
       }
+
+      // Listener para enfocar sismo desde cualquier tarjeta externa
+      const onFocusSismo = (e: any) => {
+        const { id, lat, lng } = e.detail || {};
+        if (typeof lat === 'number' && typeof lng === 'number') {
+          map.flyTo([lat, lng], 8, { duration: 1.2 });
+          const marker = markersMapRef.current.get(id);
+          if (marker) {
+            setTimeout(() => marker.openPopup(), 600);
+          }
+          if (mapContainerRef.current) {
+            mapContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }
+      };
+
+      window.addEventListener('focus-sismo', onFocusSismo);
+      (window as any).__sismoMapListener = onFocusSismo;
     };
 
     initMap();
 
     return () => {
       isMounted = false;
+      if ((window as any).__sismoMapListener) {
+        window.removeEventListener('focus-sismo', (window as any).__sismoMapListener);
+      }
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;

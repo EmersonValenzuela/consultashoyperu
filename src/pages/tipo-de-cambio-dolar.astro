@@ -2,13 +2,24 @@
 import Layout from '../layouts/Layout.astro';
 import AdBanner from '../components/AdBanner.astro';
 import ConversorMonedas from '../components/widgets/ConversorMonedas';
+import GraficoDolar from '../components/widgets/GraficoDolar';
 import { api, type DolarData } from '../lib/api';
-import { DollarSign, TrendingUp, Info, ArrowRight, ShieldCheck, Building2, Store, HelpCircle, ArrowRightLeft } from 'lucide-react';
+import { DollarSign, TrendingUp, Info, ArrowRight, ShieldCheck, Building2, Store, HelpCircle, ArrowRightLeft, Share2 } from 'lucide-react';
 
 let dolar: DolarData | null = null;
+let historico: Array<{ fecha: string; compra: number; venta: number }> = [];
+
 try {
-  const res = await api.getDolarActual();
-  dolar = res.data;
+  const [resDolar, resHist] = await Promise.allSettled([
+    api.getDolarActual(),
+    api.getDolarHistorico(
+      new Date(Date.now() - 90 * 86400000).toISOString().slice(0, 10),
+      new Date().toISOString().slice(0, 10)
+    ),
+  ]);
+
+  if (resDolar.status === 'fulfilled') dolar = resDolar.value.data;
+  if (resHist.status === 'fulfilled') historico = resHist.value.data || [];
 } catch {
   // Fallback
 }
@@ -101,70 +112,81 @@ const schemaJsonLd = [
       </p>
     </header>
 
-    <!-- Cotizaciones destacadas en Tablero de Monedas -->
-    <section class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <!-- Bloque Superior Integrado: Cotizaciones en Vivo + Conversor Inmediato -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8 items-stretch">
       
-      <!-- Compra Card -->
-      <article class="bg-white rounded-xl p-6 border border-ink-100 shadow-clean flex flex-col justify-between">
-        <div class="flex items-center justify-between text-xs font-semibold text-ink-500 uppercase tracking-wider mb-2">
-          <span>Precio de Compra</span>
-          <span class="text-[10px] bg-slate-100 text-ink-600 px-2 py-0.5 rounded font-mono">SBS/SUNAT</span>
-        </div>
-        <div class="my-2">
-          <div class="font-tabular text-4xl sm:text-5xl font-black text-ink-950 tracking-tight leading-none">
-            S/ {compra.toFixed(3)}
-          </div>
-          <p class="text-xs text-ink-500 mt-2">
-            Monto en soles que te pagan si vendes tus dólares hoy.
-          </p>
-        </div>
-        <div class="text-[11px] text-ink-400 font-tabular pt-3 border-t border-slate-100 flex items-center justify-between">
-          <span>Mercado mayorista</span>
-          <span class="text-emerald-600 font-medium">Operación normal</span>
-        </div>
-      </article>
+      <!-- Lado Izquierdo (7 cols): Tarjetas de Cotizaciones Oficiales y Paralelo -->
+      <div class="lg:col-span-7 flex flex-col justify-between gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
+          <!-- Compra Card -->
+          <article class="bg-white rounded-xl p-5 sm:p-6 border border-ink-100 shadow-clean flex flex-col justify-between">
+            <div class="flex items-center justify-between text-xs font-semibold text-ink-500 uppercase tracking-wider mb-2">
+              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Precio de Compra</span>
+              <span class="text-[10px] bg-slate-100 text-ink-600 px-2 py-0.5 rounded font-mono">SBS/SUNAT</span>
+            </div>
+            <div class="my-2">
+              <div class="font-tabular text-3xl sm:text-4xl font-black text-ink-950 tracking-tight leading-none">
+                S/ {compra.toFixed(3)}
+              </div>
+              <p class="text-xs text-ink-500 mt-2">
+                Monto en soles que te pagan si vendes tus dólares hoy.
+              </p>
+            </div>
+            <div class="text-[11px] text-ink-400 font-tabular pt-2.5 border-t border-slate-100 flex items-center justify-between">
+              <span>Mercado mayorista</span>
+              <span class="text-emerald-600 font-medium">Oficial SBS</span>
+            </div>
+          </article>
 
-      <!-- Venta Card -->
-      <article class="bg-white rounded-xl p-6 border-2 border-carmesi-600/30 bg-gradient-to-b from-carmesi-50/20 to-white shadow-clean flex flex-col justify-between">
-        <div class="flex items-center justify-between text-xs font-semibold text-carmesi-700 uppercase tracking-wider mb-2">
-          <span>Precio de Venta</span>
-          <span class="text-[10px] bg-carmesi-50 text-carmesi-700 px-2 py-0.5 rounded font-bold border border-carmesi-200">Para comprar dólares</span>
+          <!-- Venta Card -->
+          <article class="bg-white rounded-xl p-5 sm:p-6 border-2 border-carmesi-600/30 bg-gradient-to-b from-carmesi-50/20 to-white shadow-clean flex flex-col justify-between">
+            <div class="flex items-center justify-between text-xs font-semibold text-carmesi-700 uppercase tracking-wider mb-2">
+              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-rose-500"></span> Precio de Venta</span>
+              <span class="text-[10px] bg-carmesi-50 text-carmesi-700 px-2 py-0.5 rounded font-bold border border-carmesi-200">Para comprar dólares</span>
+            </div>
+            <div class="my-2">
+              <div class="font-tabular text-3xl sm:text-4xl font-black text-carmesi-700 tracking-tight leading-none">
+                S/ {venta.toFixed(3)}
+              </div>
+              <p class="text-xs text-ink-600 mt-2">
+                Monto en soles que debes pagar para adquirir 1 dólar.
+              </p>
+            </div>
+            <div class="text-[11px] text-ink-500 font-tabular pt-2.5 border-t border-carmesi-100 flex items-center justify-between">
+              <span>Spread bancario</span>
+              <span class="font-bold text-ink-700">S/ {spread}</span>
+            </div>
+          </article>
         </div>
-        <div class="my-2">
-          <div class="font-tabular text-4xl sm:text-5xl font-black text-carmesi-700 tracking-tight leading-none">
-            S/ {venta.toFixed(3)}
-          </div>
-          <p class="text-xs text-ink-600 mt-2">
-            Monto en soles que debes pagar para adquirir 1 dólar estadounidense.
-          </p>
-        </div>
-        <div class="text-[11px] text-ink-500 font-tabular pt-3 border-t border-carmesi-100 flex items-center justify-between">
-          <span>Spread bancario</span>
-          <span class="font-bold text-ink-700">S/ {spread}</span>
-        </div>
-      </article>
 
-      <!-- Referencia Ocoña / Paralelo Card -->
-      <article class="bg-ink-900 text-white rounded-xl p-6 shadow-elevated flex flex-col justify-between border border-ink-800">
-        <div>
-          <span class="text-xs font-bold text-soles-400 uppercase tracking-wider block mb-1">
-            Mercado Paralelo (Ocoña / Casas de Cambio)
-          </span>
-          <div class="flex items-baseline gap-2 mt-2">
-            <span class="font-tabular text-3xl font-black text-white">S/ {(compra - 0.01).toFixed(2)}</span>
-            <span class="text-xs text-slate-400">/</span>
-            <span class="font-tabular text-3xl font-black text-soles-400">S/ {(venta + 0.01).toFixed(2)}</span>
+        <!-- Mercado Paralelo Banner Card -->
+        <article class="bg-ink-900 text-white rounded-xl p-4 sm:p-5 shadow-elevated border border-ink-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <span class="text-[11px] font-bold text-soles-400 uppercase tracking-wider block mb-1">
+              Mercado Paralelo (Ocoña / Casas de Cambio)
+            </span>
+            <p class="text-xs text-slate-300">
+              Cotización promedio estimada en casas de cambio físicas y cambistas en Lima.
+            </p>
           </div>
-          <p class="text-xs text-slate-300 mt-2 leading-relaxed">
-            Cotización promedio estimada en casas de cambio físicas y cambistas en Lima.
-          </p>
-        </div>
-        <div class="mt-4 pt-3 border-t border-ink-800 flex items-center justify-between text-xs text-slate-400">
-          <span>Mayor liquidez</span>
-          <span class="text-soles-300 font-medium">9:00 AM – 1:30 PM</span>
-        </div>
-      </article>
+          <div class="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-lg border border-white/10 self-start sm:self-auto shrink-0">
+            <div>
+              <span class="text-[10px] uppercase text-slate-400 block font-mono">Compra</span>
+              <span class="font-tabular text-lg font-black text-white">S/ {(compra - 0.01).toFixed(2)}</span>
+            </div>
+            <span class="text-slate-500 text-sm">/</span>
+            <div>
+              <span class="text-[10px] uppercase text-soles-400 block font-mono">Venta</span>
+              <span class="font-tabular text-lg font-black text-soles-400">S/ {(venta + 0.01).toFixed(2)}</span>
+            </div>
+          </div>
+        </article>
+      </div>
 
+      <!-- Lado Derecho (5 cols): Conversor Instantáneo (Al lado de los precios) -->
+      <div class="lg:col-span-5 flex flex-col">
+        <ConversorMonedas client:load tasaCompra={compra} tasaVenta={venta} />
+      </div>
     </section>
 
     <!-- Estructura Principal: Columna Principal (8) + Sidebar Publicidad (4) -->
@@ -173,9 +195,9 @@ const schemaJsonLd = [
       <!-- Columna Principal -->
       <main class="lg:col-span-8 space-y-8">
         
-        <!-- Conversor de Monedas -->
-        <section aria-label="Conversor de Monedas">
-          <ConversorMonedas client:load tasaCompra={compra} tasaVenta={venta} />
+        <!-- Gráfico de Tendencia Histórica del Dólar -->
+        <section aria-label="Evolución Histórica del Dólar">
+          <GraficoDolar client:load historico={historico} tasaCompraActual={compra} tasaVentaActual={venta} />
         </section>
 
         <!-- Anuncio In-Feed intermedio de alta conversión -->

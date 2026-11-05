@@ -96,6 +96,8 @@ async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise
 export const api = {
   // Dólar
   getDolarActual: () => fetchApi<DolarData>('/dolar'),
+  getDolarHistorico: (desde: string, hasta: string) =>
+    fetchApi<Array<{ fecha: string; compra: number; venta: number }>>(`/dolar/historico?desde=${desde}&hasta=${hasta}`),
   convertirMoneda: (de: string, a: string, monto: number) =>
     fetchApi<{ de: string; a: string; monto: number; resultado: number; tasa: number }>(
       `/monedas/convertir?de=${de}&a=${a}&monto=${monto}`

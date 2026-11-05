@@ -29,7 +29,7 @@ export default function ConversorMonedas({ tasaCompra, tasaVenta }: Props) {
   const presets = direccion === 'PEN_A_USD' ? [50, 100, 200, 500, 1000] : [20, 50, 100, 200, 500];
 
   return (
-    <div className="bg-white rounded-xl shadow-clean border border-ink-100 p-6 sm:p-7">
+    <div className="bg-white rounded-xl shadow-clean border border-ink-100 p-6 sm:p-7 h-full flex flex-col justify-between">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-ink-100">
         <div>
           <h3 className="font-heading font-bold text-ink-950 text-base sm:text-lg flex items-center gap-2">
@@ -37,7 +37,7 @@ export default function ConversorMonedas({ tasaCompra, tasaVenta }: Props) {
             {direccion === 'PEN_A_USD' ? 'Cambio de Soles a Dólares (PEN → USD)' : 'Cambio de Dólares a Soles (USD → PEN)'}
           </h3>
           <p className="text-xs text-ink-500 mt-0.5">
-            Tasa referencial aplicada: <strong class="font-tabular text-ink-800">S/ {tasaAplicada.toFixed(3)}</strong> ({direccion === 'PEN_A_USD' ? 'Venta bancaria' : 'Compra bancaria'})
+            Tasa referencial aplicada: <strong className="font-tabular text-ink-800">S/ {tasaAplicada.toFixed(3)}</strong> ({direccion === 'PEN_A_USD' ? 'Venta bancaria' : 'Compra bancaria'})
           </p>
         </div>
 
