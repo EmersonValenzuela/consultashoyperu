@@ -16,41 +16,41 @@ try {
 if (sismos.length === 0) {
   sismos = [
     {
-      id: 'usgs-1',
+      id: 1,
       magnitud: 4.6,
       lugar: '68 km al SO de Pisco, Ica',
-      profundidad: 35,
-      fecha_hora: new Date(Date.now() - 3600000 * 2).toISOString(),
+      profundidad_km: 35,
+      ocurrido_en: new Date(Date.now() - 3600000 * 2).toISOString(),
       latitud: -14.12,
       longitud: -76.55,
       fuente: 'USGS / IGP',
     },
     {
-      id: 'usgs-2',
+      id: 2,
       magnitud: 3.8,
       lugar: '24 km al O de Chilca, Cañete - Lima',
-      profundidad: 48,
-      fecha_hora: new Date(Date.now() - 3600000 * 7).toISOString(),
+      profundidad_km: 48,
+      ocurrido_en: new Date(Date.now() - 3600000 * 7).toISOString(),
       latitud: -12.52,
       longitud: -76.92,
       fuente: 'USGS / IGP',
     },
     {
-      id: 'usgs-3',
+      id: 3,
       magnitud: 5.1,
       lugar: '45 km al S de Chala, Caravelí - Arequipa',
-      profundidad: 28,
-      fecha_hora: new Date(Date.now() - 3600000 * 18).toISOString(),
+      profundidad_km: 28,
+      ocurrido_en: new Date(Date.now() - 3600000 * 18).toISOString(),
       latitud: -16.20,
       longitud: -74.25,
       fuente: 'USGS / IGP',
     },
     {
-      id: 'usgs-4',
+      id: 4,
       magnitud: 4.1,
       lugar: '82 km al O de Sechura, Piura',
-      profundidad: 22,
-      fecha_hora: new Date(Date.now() - 3600000 * 30).toISOString(),
+      profundidad_km: 22,
+      ocurrido_en: new Date(Date.now() - 3600000 * 30).toISOString(),
       latitud: -5.72,
       longitud: -81.55,
       fuente: 'USGS / IGP',
@@ -121,12 +121,20 @@ const segundoGrupo = sismos.slice(midPoint);
                   ? 'bg-amber-50 border-amber-200 text-amber-800'
                   : 'bg-emerald-50 border-emerald-200 text-emerald-800';
 
-              const fechaObj = new Date(sismo.fecha_hora);
-              const fechaLima = fechaObj.toLocaleString('es-PE', {
-                timeZone: 'America/Lima',
-                dateStyle: 'medium',
-                timeStyle: 'short',
-              });
+              const rawFecha = sismo.ocurrido_en || sismo.fecha_hora;
+              const fechaObj = rawFecha ? new Date(rawFecha) : null;
+              const fechaLima = fechaObj && !isNaN(fechaObj.getTime())
+                ? fechaObj.toLocaleString('es-PE', {
+                    timeZone: 'America/Lima',
+                    dateStyle: 'medium',
+                    timeStyle: 'short',
+                  })
+                : 'Fecha no disponible';
+
+              const profundidadNum = sismo.profundidad_km ?? sismo.profundidad;
+              const profundidadTexto = profundidadNum !== null && profundidadNum !== undefined
+                ? `${Math.round(Number(profundidadNum))} km`
+                : 'N/D';
 
               return (
                 <article class="p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-slate-50/60 transition-colors">
@@ -146,7 +154,7 @@ const segundoGrupo = sismos.slice(midPoint);
                           {fechaLima}
                         </span>
                         <span>•</span>
-                        <span>Profundidad: <strong>{sismo.profundidad} km</strong></span>
+                        <span>Profundidad: <strong>{profundidadTexto}</strong></span>
                       </div>
                     </div>
                   </div>
@@ -184,12 +192,20 @@ const segundoGrupo = sismos.slice(midPoint);
                   ? 'bg-amber-50 border-amber-200 text-amber-800'
                   : 'bg-emerald-50 border-emerald-200 text-emerald-800';
 
-              const fechaObj = new Date(sismo.fecha_hora);
-              const fechaLima = fechaObj.toLocaleString('es-PE', {
-                timeZone: 'America/Lima',
-                dateStyle: 'medium',
-                timeStyle: 'short',
-              });
+              const rawFecha = sismo.ocurrido_en || sismo.fecha_hora;
+              const fechaObj = rawFecha ? new Date(rawFecha) : null;
+              const fechaLima = fechaObj && !isNaN(fechaObj.getTime())
+                ? fechaObj.toLocaleString('es-PE', {
+                    timeZone: 'America/Lima',
+                    dateStyle: 'medium',
+                    timeStyle: 'short',
+                  })
+                : 'Fecha no disponible';
+
+              const profundidadNum = sismo.profundidad_km ?? sismo.profundidad;
+              const profundidadTexto = profundidadNum !== null && profundidadNum !== undefined
+                ? `${Math.round(Number(profundidadNum))} km`
+                : 'N/D';
 
               return (
                 <article class="p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-slate-50/60 transition-colors">
@@ -209,7 +225,7 @@ const segundoGrupo = sismos.slice(midPoint);
                           {fechaLima}
                         </span>
                         <span>•</span>
-                        <span>Profundidad: <strong>{sismo.profundidad} km</strong></span>
+                        <span>Profundidad: <strong>{profundidadTexto}</strong></span>
                       </div>
                     </div>
                   </div>

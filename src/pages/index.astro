@@ -159,7 +159,7 @@ const diasRestantes = proximoFeriado?.dias_faltantes ?? 0;
               {ultimoSismo?.lugar || 'Red Sísmica Nacional'}
             </h3>
             <p class="text-xs text-slate-500 font-mono">
-              {ultimoSismo ? `Profundidad: ${ultimoSismo.profundidad_km} km` : 'Monitoreo geofísico continuo en Perú.'}
+              {ultimoSismo ? `Profundidad: ${ultimoSismo.profundidad_km != null ? Math.round(Number(ultimoSismo.profundidad_km)) : 'N/D'} km` : 'Monitoreo geofísico continuo en Perú.'}
             </p>
           </div>
 
