@@ -82,6 +82,13 @@ const allSchemas = schema
     <meta property="twitter:title" content={`${title} — Consulta Hoy Perú`} />
     <meta property="twitter:description" content={description} />
 
+    <!-- Google AdSense Oficial -->
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7516906606472557"
+      crossorigin="anonymous"
+    ></script>
+
     <!-- Schema.org JSON-LD Datos Estructurados -->
     {allSchemas.map((s) => (
       <script type="application/ld+json" set:html={JSON.stringify(s)} />
