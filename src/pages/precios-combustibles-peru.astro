@@ -1,0 +1,491 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AdBanner from '../components/AdBanner.astro';
+import CalculadoraCombustible from '../components/widgets/CalculadoraCombustible';
+import { api, type CombustibleData } from '../lib/api';
+import { Fuel, Flame, Car, Info, ExternalLink, ArrowRight, ShieldAlert, Sparkles, TrendingUp, MapPin } from 'lucide-react';
+
+let combustibles: CombustibleData[] = [];
+let errorCarga = false;
+
+try {
+  const res = await api.getCombustibles();
+  combustibles = res.data || [];
+} catch (e) {
+  errorCarga = true;
+  // Fallback con datos referenciales
+  combustibles = [
+    {
+      id: 1,
+      region: 'Lima y Callao',
+      tipo: 'gasolina_regular',
+      nombre: 'Gasolina Regular',
+      octanaje: '90 / 95 (Unificada)',
+      unidad: 'galón',
+      simbolo_unidad: 'gal',
+      precio_promedio: 16.29,
+      precio_minimo: 14.79,
+      precio_maximo: 18.50,
+      fuente: 'Osinergmin / Facilito',
+      vigencia_desde: new Date().toISOString().slice(0, 10),
+    },
+    {
+      id: 2,
+      region: 'Lima y Callao',
+      tipo: 'gasolina_premium',
+      nombre: 'Gasolina Premium',
+      octanaje: '97 / 98',
+      unidad: 'galón',
+      simbolo_unidad: 'gal',
+      precio_promedio: 18.49,
+      precio_minimo: 16.99,
+      precio_maximo: 21.20,
+      fuente: 'Osinergmin / Facilito',
+      vigencia_desde: new Date().toISOString().slice(0, 10),
+    },
+    {
+      id: 3,
+      region: 'Lima y Callao',
+      tipo: 'diesel',
+      nombre: 'Diésel B5 S-50 UV',
+      octanaje: null,
+      unidad: 'galón',
+      simbolo_unidad: 'gal',
+      precio_promedio: 16.19,
+      precio_minimo: 14.89,
+      precio_maximo: 18.10,
+      fuente: 'Osinergmin / Facilito',
+      vigencia_desde: new Date().toISOString().slice(0, 10),
+    },
+    {
+      id: 4,
+      region: 'Lima y Callao',
+      tipo: 'glp_vehicular',
+      nombre: 'GLP Automotor',
+      octanaje: null,
+      unidad: 'litro',
+      simbolo_unidad: 'L',
+      precio_promedio: 2.29,
+      precio_minimo: 1.99,
+      precio_maximo: 2.65,
+      fuente: 'Osinergmin / Facilito',
+      vigencia_desde: new Date().toISOString().slice(0, 10),
+    },
+    {
+      id: 5,
+      region: 'Lima y Callao',
+      tipo: 'gnv',
+      nombre: 'Gas Natural Vehicular (GNV)',
+      octanaje: null,
+      unidad: 'metro cúbico',
+      simbolo_unidad: 'm³',
+      precio_promedio: 1.55,
+      precio_minimo: 1.39,
+      precio_maximo: 1.79,
+      fuente: 'Osinergmin / Facilito',
+      vigencia_desde: new Date().toISOString().slice(0, 10),
+    },
+    {
+      id: 6,
+      region: 'Lima y Callao',
+      tipo: 'balon_gas_10kg',
+      nombre: 'Balón de Gas GLP Doméstico (10 kg)',
+      octanaje: null,
+      unidad: 'balón 10kg',
+      simbolo_unidad: 'balón',
+      precio_promedio: 44.50,
+      precio_minimo: 36.00,
+      precio_maximo: 55.00,
+      fuente: 'Osinergmin / Facilito',
+      vigencia_desde: new Date().toISOString().slice(0, 10),
+    },
+  ];
+}
+
+const fechaVigencia = combustibles[0]?.vigencia_desde ?? new Date().toISOString().slice(0, 10);
+const regular = combustibles.find((c) => c.tipo === 'gasolina_regular') || combustibles[0];
+const premium = combustibles.find((c) => c.tipo === 'gasolina_premium') || combustibles[1];
+const diesel = combustibles.find((c) => c.tipo === 'diesel') || combustibles[2];
+const balonGas = combustibles.find((c) => c.tipo === 'balon_gas_10kg') || combustibles[5];
+const glp = combustibles.find((c) => c.tipo === 'glp_vehicular') || combustibles[3];
+const gnv = combustibles.find((c) => c.tipo === 'gnv') || combustibles[4];
+
+// Schema.org FAQ para Google Featured Snippets
+const schemaJsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    'mainEntity': [
+      {
+        '@type': 'Question',
+        'name': '¿A cuánto está el galón de gasolina regular hoy en Perú?',
+        'acceptedAnswer': {
+          '@type': 'Answer',
+          'text': `El precio promedio del galón de gasolina regular en Lima y Callao se ubica hoy en aproximadamente S/ ${regular?.precio_promedio.toFixed(2)}, con grifos económicos desde S/ ${regular?.precio_minimo.toFixed(2)} y grifos de mayor tarifa hasta S/ ${regular?.precio_maximo.toFixed(2)}.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        'name': '¿Cuánto cuesta el balón de gas de 10 kg hoy en Lima?',
+        'acceptedAnswer': {
+          '@type': 'Answer',
+          'text': `El balón de gas doméstico de 10 kg tiene un precio promedio referencial de S/ ${balonGas?.precio_promedio.toFixed(2)}. Los locales formales más económicos ofrecen el balón desde S/ ${balonGas?.precio_minimo.toFixed(2)}, mientras que con delivery a domicilio puede alcanzar los S/ ${balonGas?.precio_maximo.toFixed(2)}.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        'name': '¿Cuál es la diferencia entre gasolina regular y premium en Perú?',
+        'acceptedAnswer': {
+          '@type': 'Answer',
+          'text': 'Desde la simplificación del D.S. N° 014-2021-EM, en el Perú solo se comercializan dos gasolinas: Regular (que agrupa el octanaje 90 y 95) y Premium (que agrupa el octanaje 97 y 98 con aditivos limpiadores y menor azufre).',
+        },
+      },
+    ],
+  },
+];
+---
+
+<Layout
+  title="Precio de Combustibles y Balón de Gas Hoy en Perú | Facilito Osinergmin"
+  description="Consulta el precio actualizado del galón de gasolina regular, premium, diésel, GLP, GNV y balón de gas de 10 kg en Lima y Perú hoy. Calculadora de llenado de tanque y ahorro de combustible."
+  schema={schemaJsonLd}
+>
+  <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    
+    <!-- Top Leaderboard Ad -->
+    <AdBanner slotId="combustibles-header-leaderboard" format="leaderboard" className="mb-6" />
+
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs text-ink-500 mb-4" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-carmesi-700 transition-colors">Inicio</a>
+      <span>/</span>
+      <span class="text-ink-900 font-medium">Precios de Combustibles en Perú</span>
+    </nav>
+
+    <!-- Header Editorial -->
+    <header class="border-b border-ink-100 pb-6 mb-8">
+      <div class="flex flex-wrap items-center gap-2.5 mb-2.5">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold bg-amber-50 text-amber-900 border border-amber-200">
+          Osinergmin / Facilito / Petroperú
+        </span>
+        <span class="text-xs text-ink-500 font-tabular">Vigencia referencial: {fechaVigencia}</span>
+        <span class="text-xs bg-slate-100 text-ink-700 font-medium px-2 py-0.5 rounded">Lima y Callao</span>
+      </div>
+      <h1 class="font-heading text-3xl sm:text-4xl text-ink-950 font-black tracking-tight leading-tight">
+        Precio de Combustibles y Balón de Gas Hoy en Perú
+      </h1>
+      <p class="text-sm sm:text-base text-ink-600 mt-2 max-w-4xl leading-relaxed">
+        Precios referenciales de <strong>Gasolina Regular, Premium, Diésel, GLP, GNV y Balón de Gas de 10 kg</strong> en grifos y estaciones de servicio autorizadas. Monitorea el rango de tarifas y calcula el costo exacto de llenar tu tanque.
+      </p>
+    </header>
+
+    <!-- Grid de Tarjetas de Precios Principales -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
+      
+      <!-- Gasolina Regular -->
+      <article class="bg-white rounded-xl p-5 sm:p-6 border border-ink-100 shadow-clean flex flex-col justify-between hover:shadow-elevated transition-shadow">
+        <div>
+          <div class="flex items-center justify-between text-xs font-semibold text-ink-500 uppercase tracking-wider mb-2">
+            <span class="flex items-center gap-1.5"><Fuel class="w-4 h-4 text-emerald-600" /> Gasolina Regular</span>
+            <span class="text-[10px] bg-emerald-50 text-emerald-700 font-mono px-2 py-0.5 rounded border border-emerald-200">90 / 95 Oct</span>
+          </div>
+          <div class="my-2">
+            <span class="text-xs text-ink-400 block font-medium">Precio promedio por galón</span>
+            <div class="font-tabular text-3xl sm:text-4xl font-black text-ink-950 tracking-tight leading-none mt-1">
+              S/ {regular?.precio_promedio.toFixed(2)}
+            </div>
+            <p class="text-xs text-ink-500 mt-2">
+              Combustible estándar para el 80% de vehículos particulares y motos en el Perú.
+            </p>
+          </div>
+        </div>
+        <div class="text-[11px] font-tabular pt-3 border-t border-slate-100 flex items-center justify-between text-ink-600">
+          <span>Barato: <strong class="text-emerald-600 font-bold">S/ {regular?.precio_minimo.toFixed(2)}</strong></span>
+          <span>Caro: <strong class="text-rose-600 font-bold">S/ {regular?.precio_maximo.toFixed(2)}</strong></span>
+        </div>
+      </article>
+
+      <!-- Gasolina Premium -->
+      <article class="bg-white rounded-xl p-5 sm:p-6 border-2 border-amber-500/30 bg-gradient-to-b from-amber-50/20 to-white shadow-clean flex flex-col justify-between hover:shadow-elevated transition-shadow">
+        <div>
+          <div class="flex items-center justify-between text-xs font-semibold text-amber-800 uppercase tracking-wider mb-2">
+            <span class="flex items-center gap-1.5"><Sparkles class="w-4 h-4 text-amber-600" /> Gasolina Premium</span>
+            <span class="text-[10px] bg-amber-100 text-amber-900 font-mono px-2 py-0.5 rounded font-bold">97 / 98 Oct</span>
+          </div>
+          <div class="my-2">
+            <span class="text-xs text-amber-700/80 block font-medium">Precio promedio por galón</span>
+            <div class="font-tabular text-3xl sm:text-4xl font-black text-amber-900 tracking-tight leading-none mt-1">
+              S/ {premium?.precio_promedio.toFixed(2)}
+            </div>
+            <p class="text-xs text-ink-600 mt-2">
+              Para motores de alta compresión, turboalimentados y vehículos de gama media-alta.
+            </p>
+          </div>
+        </div>
+        <div class="text-[11px] font-tabular pt-3 border-t border-amber-100 flex items-center justify-between text-ink-600">
+          <span>Barato: <strong class="text-emerald-600 font-bold">S/ {premium?.precio_minimo.toFixed(2)}</strong></span>
+          <span>Caro: <strong class="text-rose-600 font-bold">S/ {premium?.precio_maximo.toFixed(2)}</strong></span>
+        </div>
+      </article>
+
+      <!-- Diésel B5 S-50 -->
+      <article class="bg-white rounded-xl p-5 sm:p-6 border border-ink-100 shadow-clean flex flex-col justify-between hover:shadow-elevated transition-shadow">
+        <div>
+          <div class="flex items-center justify-between text-xs font-semibold text-ink-500 uppercase tracking-wider mb-2">
+            <span class="flex items-center gap-1.5"><Fuel class="w-4 h-4 text-slate-700" /> Diésel B5 S-50</span>
+            <span class="text-[10px] bg-slate-100 text-slate-700 font-mono px-2 py-0.5 rounded">Bajo Azufre</span>
+          </div>
+          <div class="my-2">
+            <span class="text-xs text-ink-400 block font-medium">Precio promedio por galón</span>
+            <div class="font-tabular text-3xl sm:text-4xl font-black text-ink-950 tracking-tight leading-none mt-1">
+              S/ {diesel?.precio_promedio.toFixed(2)}
+            </div>
+            <p class="text-xs text-ink-500 mt-2">
+              Para transporte de carga, pickups diésel, buses y furgonetas de reparto.
+            </p>
+          </div>
+        </div>
+        <div class="text-[11px] font-tabular pt-3 border-t border-slate-100 flex items-center justify-between text-ink-600">
+          <span>Barato: <strong class="text-emerald-600 font-bold">S/ {diesel?.precio_minimo.toFixed(2)}</strong></span>
+          <span>Caro: <strong class="text-rose-600 font-bold">S/ {diesel?.precio_maximo.toFixed(2)}</strong></span>
+        </div>
+      </article>
+
+      <!-- Balón de Gas 10 kg (Destacado) -->
+      <article class="bg-gradient-to-br from-carmesi-900 to-ink-950 text-white rounded-xl p-5 sm:p-6 shadow-elevated flex flex-col justify-between border border-carmesi-800">
+        <div>
+          <div class="flex items-center justify-between text-xs font-bold text-amber-300 uppercase tracking-wider mb-2">
+            <span class="flex items-center gap-1.5"><Flame class="w-4 h-4 text-amber-400" /> Balón de Gas 10 kg (GLP)</span>
+            <span class="text-[10px] bg-white/20 text-white px-2 py-0.5 rounded font-mono">Hogares</span>
+          </div>
+          <div class="my-2">
+            <span class="text-xs text-slate-300 block font-medium">Precio promedio estimado</span>
+            <div class="font-tabular text-3xl sm:text-4xl font-black text-white tracking-tight leading-none mt-1">
+              S/ {balonGas?.precio_promedio.toFixed(2)}
+            </div>
+            <p class="text-xs text-slate-200 mt-2 leading-relaxed">
+              En locales autorizados sin delivery se encuentra desde <strong>S/ {balonGas?.precio_minimo.toFixed(2)}</strong>. Con reparto suele costar hasta <strong>S/ {balonGas?.precio_maximo.toFixed(2)}</strong>.
+            </p>
+          </div>
+        </div>
+        <div class="text-[11px] font-tabular pt-3 border-t border-white/10 flex items-center justify-between text-slate-300">
+          <span>Ahorro posible:</span>
+          <span class="text-amber-300 font-bold">Hasta S/ {(balonGas ? balonGas.precio_maximo - balonGas.precio_minimo : 18).toFixed(2)} comprando en local</span>
+        </div>
+      </article>
+
+      <!-- GLP Automotor -->
+      <article class="bg-white rounded-xl p-5 sm:p-6 border border-ink-100 shadow-clean flex flex-col justify-between hover:shadow-elevated transition-shadow">
+        <div>
+          <div class="flex items-center justify-between text-xs font-semibold text-ink-500 uppercase tracking-wider mb-2">
+            <span class="flex items-center gap-1.5"><Fuel class="w-4 h-4 text-blue-600" /> GLP Automotor</span>
+            <span class="text-[10px] bg-blue-50 text-blue-700 font-mono px-2 py-0.5 rounded">Por Litro</span>
+          </div>
+          <div class="my-2">
+            <span class="text-xs text-ink-400 block font-medium">Precio promedio por litro</span>
+            <div class="font-tabular text-3xl sm:text-4xl font-black text-ink-950 tracking-tight leading-none mt-1">
+              S/ {glp?.precio_promedio.toFixed(2)}
+            </div>
+            <p class="text-xs text-ink-500 mt-2">
+              Popular entre taxis y autos particulares convertidos a gas licuado en Lima.
+            </p>
+          </div>
+        </div>
+        <div class="text-[11px] font-tabular pt-3 border-t border-slate-100 flex items-center justify-between text-ink-600">
+          <span>Barato: <strong class="text-emerald-600 font-bold">S/ {glp?.precio_minimo.toFixed(2)}</strong></span>
+          <span>Caro: <strong class="text-rose-600 font-bold">S/ {glp?.precio_maximo.toFixed(2)}</strong></span>
+        </div>
+      </article>
+
+      <!-- GNV Gas Natural -->
+      <article class="bg-white rounded-xl p-5 sm:p-6 border border-ink-100 shadow-clean flex flex-col justify-between hover:shadow-elevated transition-shadow">
+        <div>
+          <div class="flex items-center justify-between text-xs font-semibold text-ink-500 uppercase tracking-wider mb-2">
+            <span class="flex items-center gap-1.5"><Fuel class="w-4 h-4 text-teal-600" /> Gas Natural Vehicular (GNV)</span>
+            <span class="text-[10px] bg-teal-50 text-teal-700 font-mono px-2 py-0.5 rounded">Por m³</span>
+          </div>
+          <div class="my-2">
+            <span class="text-xs text-ink-400 block font-medium">Precio promedio por m³</span>
+            <div class="font-tabular text-3xl sm:text-4xl font-black text-ink-950 tracking-tight leading-none mt-1">
+              S/ {gnv?.precio_promedio.toFixed(2)}
+            </div>
+            <p class="text-xs text-ink-500 mt-2">
+              El combustible más económico por kilómetro recorrido en Lima y Callao (Cálidda).
+            </p>
+          </div>
+        </div>
+        <div class="text-[11px] font-tabular pt-3 border-t border-slate-100 flex items-center justify-between text-ink-600">
+          <span>Barato: <strong class="text-emerald-600 font-bold">S/ {gnv?.precio_minimo.toFixed(2)}</strong></span>
+          <span>Caro: <strong class="text-rose-600 font-bold">S/ {gnv?.precio_maximo.toFixed(2)}</strong></span>
+        </div>
+      </article>
+
+    </section>
+
+    <!-- Calculadora Interactiva de Llenado de Tanque y Ahorro -->
+    <section class="mb-12" aria-label="Calculadora de Combustible">
+      <CalculadoraCombustible client:load combustibles={combustibles} />
+    </section>
+
+    <!-- Layout 2 Columnas: Tablas SEO y Sidebar Publicitario -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Contenido Principal -->
+      <main class="lg:col-span-8 space-y-8">
+        
+        <!-- Tabla Resumen SEO -->
+        <section class="bg-white rounded-xl border border-ink-100 p-6 sm:p-8 shadow-clean">
+          <div class="border-b border-ink-100 pb-4 mb-6">
+            <h2 class="font-heading text-xl font-bold text-ink-950">
+              Tabla Comparativa de Precios de Combustibles en Lima y Callao
+            </h2>
+            <p class="text-xs sm:text-sm text-ink-500 mt-1">
+              Datos consolidados con base en reportes de Osinergmin y estaciones de servicio registradas.
+            </p>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-slate-50 text-ink-700 font-bold uppercase tracking-wider border-b border-ink-200">
+                <tr>
+                  <th scope="col" class="py-3 px-4">Combustible</th>
+                  <th scope="col" class="py-3 px-4">Unidad</th>
+                  <th scope="col" class="py-3 px-4 text-right">Mínimo</th>
+                  <th scope="col" class="py-3 px-4 text-right">Promedio</th>
+                  <th scope="col" class="py-3 px-4 text-right">Máximo</th>
+                  <th scope="col" class="py-3 px-4 text-right">Diferencia</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-ink-100 font-tabular">
+                {combustibles.map((c) => {
+                  const dif = (c.precio_maximo - c.precio_minimo).toFixed(2);
+                  return (
+                    <tr class="hover:bg-slate-50 transition-colors">
+                      <td class="py-3 px-4 font-bold text-ink-900">
+                        {c.nombre}
+                        {c.octanaje && <span class="block text-[10px] text-ink-400 font-normal">{c.octanaje}</span>}
+                      </td>
+                      <td class="py-3 px-4 text-ink-500">{c.simbolo_unidad}</td>
+                      <td class="py-3 px-4 text-right text-emerald-600 font-bold">S/ {c.precio_minimo.toFixed(2)}</td>
+                      <td class="py-3 px-4 text-right font-black text-ink-900">S/ {c.precio_promedio.toFixed(2)}</td>
+                      <td class="py-3 px-4 text-right text-rose-600 font-semibold">S/ {c.precio_maximo.toFixed(2)}</td>
+                      <td class="py-3 px-4 text-right text-amber-700 font-mono font-bold">S/ {dif}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-100 text-[11px] text-ink-400 flex items-center justify-between">
+            <span>Fuente: Reportes oficiales Osinergmin / Facilito / Petroperú</span>
+            <span>Precios libres en estaciones de servicio</span>
+          </div>
+        </section>
+
+        <!-- Anuncio In-Feed -->
+        <AdBanner slotId="combustibles-infeed-middle" format="infeed" label="Publicidad Patrocinada" />
+
+        <!-- Enlaces y Botón a Facilito Oficial -->
+        <section class="bg-gradient-to-r from-slate-900 to-ink-950 text-white rounded-xl p-6 sm:p-7 shadow-clean flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+          <div>
+            <span class="text-xs uppercase font-bold text-amber-400 tracking-wider block mb-1">
+              Plataforma Oficial del Estado Peruano
+            </span>
+            <h3 class="font-heading font-black text-xl text-white">
+              ¿Quieres ver el grifo exacto más barato cerca de tu casa?
+            </h3>
+            <p class="text-xs text-slate-300 mt-1 max-w-xl">
+              Consulta en el aplicativo oficial <strong>Facilito Osinergmin</strong> para filtrar grifos por tu distrito (Miraflores, Surco, Los Olivos, SJL, etc.) o buscar con tu GPS en tiempo real.
+            </p>
+          </div>
+          <a
+            href="https://www.facilito.gob.pe"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-ink-950 font-heading tracking-wide transition-all shadow-md shrink-0 cursor-pointer"
+          >
+            <span>Abrir Facilito Oficial</span>
+            <ExternalLink class="w-4 h-4" />
+          </a>
+        </section>
+
+        <!-- Preguntas Frecuentes SEO -->
+        <section class="bg-white rounded-xl border border-ink-100 p-6 sm:p-8 shadow-clean space-y-4">
+          <h2 class="font-heading text-xl font-bold text-ink-950 border-b border-ink-100 pb-3">
+            Preguntas Frecuentes sobre el Combustible en el Perú
+          </h2>
+
+          <div class="space-y-4 text-xs sm:text-sm text-ink-700 leading-relaxed">
+            <div>
+              <h3 class="font-bold text-ink-900 mb-1">¿Por qué hay tanta diferencia de precios entre un grifo y otro?</h3>
+              <p class="text-ink-600">
+                En el Perú, el mercado de combustibles líquidos está desregulado. Cada estación de servicio fija sus márgenes comerciales considerando su ubicación (avenidas principales, distritos comerciales), costos de alquiler, servicios complementarios (tiendas de conveniencia, lavados) y marca de bandera.
+              </p>
+            </div>
+
+            <div class="pt-3 border-t border-slate-100">
+              <h3 class="font-bold text-ink-900 mb-1">¿Qué gasolina le corresponde a mi auto: Regular o Premium?</h3>
+              <p class="text-ink-600">
+                La mayoría de vehículos compactos, sedanes y motores aspirados convencionales operan de forma óptima con <strong>Gasolina Regular (90/95)</strong>. La <strong>Gasolina Premium (97/98)</strong> se recomienda principalmente para vehículos con motores turboalimentados, inyección directa GDI o con relación de compresión superior a 10.5:1 indicada en el manual del fabricante.
+              </p>
+            </div>
+
+            <div class="pt-3 border-t border-slate-100">
+              <h3 class="font-bold text-ink-900 mb-1">¿Cómo ahorrar dinero al comprar el balón de gas doméstico?</h3>
+              <p class="text-ink-600">
+                El costo del balón de gas de 10 kg se reduce considerablemente (hasta S/ 15 a S/ 18 menos) cuando acudes a comprarlo directamente al local de distribución autorizado de tu distrito en lugar de solicitar delivery por teléfono o aplicaciones móviles.
+              </p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Sidebar -->
+      <aside class="lg:col-span-4 space-y-6">
+        
+        <!-- Widget de Acceso Rápido a Otras Utilidades -->
+        <div class="bg-white rounded-xl border border-ink-100 p-5 shadow-clean">
+          <h3 class="font-heading font-bold text-sm text-ink-900 uppercase tracking-wider mb-3">
+            Otras Consultas de Hoy
+          </h3>
+          <ul class="space-y-2.5 text-xs">
+            <li>
+              <a href="/tipo-de-cambio-dolar" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 transition-colors text-ink-800 font-medium">
+                <span class="flex items-center gap-2">💵 Dólar en Perú Hoy</span>
+                <span class="text-ink-400">→</span>
+              </a>
+            </li>
+            <li>
+              <a href="/sismos-peru" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 transition-colors text-ink-800 font-medium">
+                <span class="flex items-center gap-2">🚨 Últimos Sismos IGP</span>
+                <span class="text-ink-400">→</span>
+              </a>
+            </li>
+            <li>
+              <a href="/feriados-peru" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 transition-colors text-ink-800 font-medium">
+                <span class="flex items-center gap-2">🗓️ Feriados y Días No Laborables</span>
+                <span class="text-ink-400">→</span>
+              </a>
+            </li>
+            <li>
+              <a href="/calculadora-sueldo-neto" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 transition-colors text-ink-800 font-medium">
+                <span class="flex items-center gap-2">💼 Calculadora de Sueldo Neto</span>
+                <span class="text-ink-400">→</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Sidebar Sticky Ad -->
+        <div class="sticky top-20">
+          <AdBanner slotId="combustibles-sidebar-sticky" format="sticky" label="Publicidad" />
+        </div>
+
+      </aside>
+
+    </div>
+
+  </div>
+</Layout>

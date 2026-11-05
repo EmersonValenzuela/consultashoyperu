@@ -73,6 +73,42 @@ export interface RucData {
   distrito: string | null;
 }
 
+export interface CombustibleData {
+  id: number;
+  region: string;
+  tipo: string;
+  nombre: string;
+  octanaje: string | null;
+  unidad: string;
+  simbolo_unidad: string;
+  precio_promedio: number;
+  precio_minimo: number;
+  precio_maximo: number;
+  fuente: string;
+  vigencia_desde: string;
+}
+
+export interface CalcularTanqueResult {
+  tipo: string;
+  nombre: string;
+  unidad: string;
+  simbolo_unidad: string;
+  tipo_calculo: string;
+  cantidad_tanque?: number;
+  costo_promedio?: number;
+  costo_minimo?: number;
+  costo_maximo?: number;
+  ahorro_potencial?: number;
+  presupuesto_soles?: number;
+  volumen_promedio?: number;
+  volumen_minimo?: number;
+  volumen_maximo?: number;
+  volumen_extra?: number;
+  precio_unitario_promedio: number;
+  precio_unitario_minimo: number;
+  precio_unitario_maximo: number;
+}
+
 async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
   const url = `${API_BASE}${endpoint}`;
   const response = await fetch(url, {
@@ -160,5 +196,15 @@ export const api = {
     fetchApi<{ dni: string; valido: boolean; formato: string }>('/dni/validar', {
       method: 'POST',
       body: JSON.stringify({ dni }),
+    }),
+
+  // Combustibles
+  getCombustibles: (region?: string) =>
+    fetchApi<CombustibleData[]>(`/combustibles${region ? `?region=${encodeURIComponent(region)}` : ''}`),
+
+  calcularTanque: (params: { tipo: string; cantidad: number; tipo_calculo?: 'llenar_tanque' | 'presupuesto_soles' }) =>
+    fetchApi<CalcularTanqueResult>('/combustibles/calcular-tanque', {
+      method: 'POST',
+      body: JSON.stringify(params),
     }),
 };

@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import AdBanner from '../components/AdBanner.astro';
 import { api, type DolarData, type ProximoFeriadoData, type SismoData } from '../lib/api';
-import { DollarSign, Calendar, Activity, Calculator, Building2, ShieldCheck, ArrowRight, ArrowUpRight } from 'lucide-react';
+import { DollarSign, Calendar, Activity, Calculator, Building2, ShieldCheck, ArrowRight, ArrowUpRight, Fuel } from 'lucide-react';
 
 let dolar: DolarData | null = null;
 let proximoFeriado: ProximoFeriadoData | null = null;
@@ -188,6 +188,27 @@ const diasRestantes = proximoFeriado?.dias_faltantes ?? 0;
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Precios de Combustibles y Balón de Gas -->
+        <a
+          href="/precios-combustibles-peru"
+          class="bg-white p-6 rounded-2xl border border-slate-200/90 hover:border-amber-300 hover:shadow-elevated transition-all flex flex-col justify-between group"
+        >
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+              <Fuel class="w-5 h-5" />
+            </div>
+            <h3 class="font-bold text-ink-950 text-base mb-1 group-hover:text-amber-700 transition-colors">
+              Precios de Combustibles y Gas
+            </h3>
+            <p class="text-xs text-slate-500 leading-relaxed">
+              Precio del galón de Gasolina Regular, Premium, Diésel, GNV y Balón de Gas de 10 kg con calculadora de tanque y ahorro.
+            </p>
+          </div>
+          <span class="text-xs font-bold text-amber-700 mt-4 flex items-center gap-1">
+            Ver Precios y Ahorro <ArrowUpRight class="w-3.5 h-3.5" />
+          </span>
+        </a>
+
         <!-- Calculadora Sueldo Neto -->
         <a
           href="/calculadora-sueldo-neto"
