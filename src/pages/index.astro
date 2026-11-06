@@ -7,6 +7,9 @@ import { DollarSign, Calendar, Activity, Calculator, Building2, ShieldCheck, Arr
 let dolar: DolarData | null = null;
 let proximoFeriado: ProximoFeriadoData | null = null;
 let ultimoSismo: SismoData | null = null;
+let dolarFuente = 'Fuente no disponible';
+let dolarActualizado = '';
+let dolarStale = false;
 
 try {
   const [dolarRes, feriadoRes, sismosRes] = await Promise.allSettled([
@@ -15,18 +18,23 @@ try {
     api.getSismos(1),
   ]);
 
-  if (dolarRes.status === 'fulfilled') dolar = dolarRes.value.data;
+  if (dolarRes.status === 'fulfilled') {
+    dolar = dolarRes.value.data;
+    dolarFuente = dolarRes.value.meta?.fuente ?? dolarFuente;
+    dolarActualizado = dolarRes.value.meta?.actualizado_en ?? '';
+    dolarStale = dolarRes.value.meta?.stale ?? false;
+  }
   if (feriadoRes.status === 'fulfilled') proximoFeriado = feriadoRes.value.data;
   if (sismosRes.status === 'fulfilled' && sismosRes.value.data.length > 0) ultimoSismo = sismosRes.value.data[0];
 } catch {
   // Fallback
 }
 
-const compra = dolar?.compra ?? 3.750;
-const venta = dolar?.venta ?? 3.785;
-const fechaDolar = dolar?.fecha ?? 'Hoy';
-const feriadoNombre = proximoFeriado?.nombre ?? 'Próximo Feriado Oficial';
-const diasRestantes = proximoFeriado?.dias_faltantes ?? 0;
+const compra = dolar?.compra ?? null;
+const venta = dolar?.venta ?? null;
+const fechaDolar = dolar?.fecha ?? 'Sin dato';
+const feriadoNombre = proximoFeriado?.nombre ?? 'Dato no disponible';
+const diasRestantes = proximoFeriado?.dias_faltantes ?? null;
 ---
 
 <Layout title="Información y Utilidades de Perú en Tiempo Real">
@@ -40,14 +48,14 @@ const diasRestantes = proximoFeriado?.dias_faltantes ?? 0;
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200/80 pb-5">
         <div>
           <span class="text-xs font-bold uppercase tracking-widest text-carmesi-600 block mb-1">
-            Resumen Diario Oficial
+            Resumen del día
           </span>
           <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-ink-950 tracking-tight">
             Indicadores y utilidades del día en Perú
           </h1>
         </div>
         <div class="text-xs text-ink-500 font-mono flex items-center gap-2">
-          <span>Actualización automática en directo</span>
+          <span>Datos actualizados al consultar</span>
         </div>
       </div>
     </div>
@@ -65,7 +73,7 @@ const diasRestantes = proximoFeriado?.dias_faltantes ?? 0;
                 Tipo de Cambio • Dólar Americano (USD / PEN)
               </span>
             </div>
-            <span class="text-xs text-slate-400 font-mono">{fechaDolar}</span>
+            <span id="home-dollar-date" class="text-xs text-slate-400 font-mono">{fechaDolar}</span>
           </div>
 
           <!-- Bloque de Cotización Compra / Venta -->
@@ -76,11 +84,11 @@ const diasRestantes = proximoFeriado?.dias_faltantes ?? 0;
               </span>
               <div class="flex items-baseline gap-1">
                 <span class="text-xs font-bold text-slate-400">S/</span>
-                <span class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-ink-950 font-mono tracking-tight">
-                  {compra.toFixed(3)}
+                <span id="home-dollar-buy" class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-ink-950 font-mono tracking-tight">
+                  {compra?.toFixed(3) ?? '—'}
                 </span>
               </div>
-              <span class="text-[11px] text-slate-400 block mt-1">Precio para venta al banco</span>
+              <span class="text-[11px] text-slate-400 block mt-1">Referencia; puede variar según la entidad.</span>
             </div>
 
             <div class="p-4 rounded-xl bg-carmesi-50/40 border border-carmesi-100/70">
@@ -89,18 +97,19 @@ const diasRestantes = proximoFeriado?.dias_faltantes ?? 0;
               </span>
               <div class="flex items-baseline gap-1">
                 <span class="text-xs font-bold text-carmesi-700">S/</span>
-                <span class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-carmesi-700 font-mono tracking-tight">
-                  {venta.toFixed(3)}
+                <span id="home-dollar-sell" class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-carmesi-700 font-mono tracking-tight">
+                  {venta?.toFixed(3) ?? '—'}
                 </span>
               </div>
-              <span class="text-[11px] text-slate-400 block mt-1">Precio para compra en banco</span>
+              <span class="text-[11px] text-slate-400 block mt-1">Referencia; puede variar según la entidad.</span>
             </div>
           </div>
         </div>
 
         <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
-          <span class="text-xs text-ink-500">
-            Margen bancario: <strong class="text-ink-900 font-mono">S/ {(venta - compra).toFixed(3)}</strong>
+          <span id="home-dollar-meta" class="text-xs text-ink-500">
+            {dolar ? `Fuente: ${dolarFuente}${dolarStale ? ' · dato desactualizado' : ''}` : 'Tipo de cambio no disponible'}
+            {dolarActualizado ? ` · Actualizado: ${dolarActualizado}` : ''}
           </span>
           <a
             href="/tipo-de-cambio-dolar"
@@ -121,16 +130,16 @@ const diasRestantes = proximoFeriado?.dias_faltantes ?? 0;
               <span class="text-[11px] font-bold uppercase tracking-wider text-purple-700 font-mono flex items-center gap-1.5">
                 <Calendar class="w-3.5 h-3.5" /> Próximo Descanso
               </span>
-              <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-800 font-mono">
-                Faltan {diasRestantes} días
+              <span id="home-holiday-days" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-800 font-mono">
+                {diasRestantes == null ? '—' : `Faltan ${diasRestantes} días`}
               </span>
             </div>
 
-            <h3 class="text-lg sm:text-xl font-bold text-ink-950 mb-1 leading-snug">
+            <h3 id="home-holiday-name" class="text-lg sm:text-xl font-bold text-ink-950 mb-1 leading-snug">
               {feriadoNombre}
             </h3>
             <p class="text-xs text-slate-500">
-              {proximoFeriado?.fecha ? `Fecha oficial: ${proximoFeriado.fecha}` : 'Consulta los fines de semana largos y puentes turísticos de 2026.'}
+              <span id="home-holiday-date">{proximoFeriado?.fecha ? `Fecha: ${proximoFeriado.fecha}` : 'Sin información disponible.'}</span>
             </p>
           </div>
 
@@ -148,18 +157,16 @@ const diasRestantes = proximoFeriado?.dias_faltantes ?? 0;
               <span class="text-[11px] font-bold uppercase tracking-wider text-rose-700 font-mono flex items-center gap-1.5">
                 <Activity class="w-3.5 h-3.5" /> Sismicidad Reciente
               </span>
-              {ultimoSismo && (
-                <span class="text-xs font-extrabold px-2 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200 font-mono">
-                  M {ultimoSismo.magnitud.toFixed(1)}
-                </span>
-              )}
+              <span id="home-earthquake-magnitude" class="text-xs font-extrabold px-2 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200 font-mono">
+                {ultimoSismo ? `M ${ultimoSismo.magnitud.toFixed(1)}` : '—'}
+              </span>
             </div>
 
             <h3 class="text-sm sm:text-base font-bold text-ink-950 mb-1 line-clamp-1">
-              {ultimoSismo?.lugar || 'Red Sísmica Nacional'}
+              <span id="home-earthquake-place">{ultimoSismo?.lugar || 'Sin sismos en el periodo consultado'}</span>
             </h3>
             <p class="text-xs text-slate-500 font-mono">
-              {ultimoSismo ? `Profundidad: ${ultimoSismo.profundidad_km != null ? Math.round(Number(ultimoSismo.profundidad_km)) : 'N/D'} km` : 'Monitoreo geofísico continuo en Perú.'}
+              <span id="home-earthquake-depth">{ultimoSismo ? `Profundidad: ${ultimoSismo.profundidad_km != null ? Math.round(Number(ultimoSismo.profundidad_km)) : 'N/D'} km` : 'Sin datos recientes.'}</span>
             </p>
           </div>
 
@@ -384,3 +391,54 @@ const diasRestantes = proximoFeriado?.dias_faltantes ?? 0;
 
   </div>
 </Layout>
+
+<script>
+  import { api } from '../lib/api';
+
+  const setText = (id: string, value: string) => {
+    const element = document.getElementById(id);
+    if (element) element.textContent = value;
+  };
+
+  const formatTimestamp = (value?: string) => {
+    if (!value) return '';
+    const date = new Date(value);
+    return Number.isNaN(date.getTime())
+      ? value
+      : date.toLocaleString('es-PE', { timeZone: 'America/Lima' });
+  };
+
+  const refreshDashboard = async () => {
+    const [dolarResult, feriadoResult, sismosResult] = await Promise.allSettled([
+      api.getDolarActual(),
+      api.getProximoFeriado(),
+      api.getSismos(1),
+    ]);
+
+    if (dolarResult.status === 'fulfilled') {
+      const { data, meta } = dolarResult.value;
+      setText('home-dollar-date', data.fecha);
+      setText('home-dollar-meta', `Fuente: ${meta?.fuente ?? 'No indicada'}${meta?.stale ? ' · dato desactualizado' : ''}${meta?.actualizado_en ? ` · Actualizado: ${formatTimestamp(meta.actualizado_en)}` : ''}`);
+      setText('home-dollar-buy', Number(data.compra).toFixed(3));
+      setText('home-dollar-sell', Number(data.venta).toFixed(3));
+    }
+
+    if (feriadoResult.status === 'fulfilled') {
+      const { data } = feriadoResult.value;
+      setText('home-holiday-name', data.nombre);
+      setText('home-holiday-days', `Faltan ${data.dias_faltantes} días`);
+      setText('home-holiday-date', `Fecha: ${data.fecha}`);
+    }
+
+    if (sismosResult.status === 'fulfilled') {
+      const sismo = sismosResult.value.data[0];
+      setText('home-earthquake-place', sismo?.lugar ?? 'Sin sismos en el periodo consultado');
+      setText('home-earthquake-magnitude', sismo ? `M ${Number(sismo.magnitud).toFixed(1)}` : 'Sin evento');
+      setText('home-earthquake-depth', sismo
+        ? `Profundidad: ${sismo.profundidad_km == null ? 'N/D' : Math.round(Number(sismo.profundidad_km))} km`
+        : 'Sin datos recientes.');
+    }
+  };
+
+  void refreshDashboard();
+</script>

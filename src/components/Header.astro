@@ -69,6 +69,7 @@ const navItems = [
           return (
             <a
               href={item.href}
+              aria-current={isActive ? 'page' : undefined}
               class={`px-3 py-2 text-sm font-semibold transition-all relative ${
                 isActive
                   ? 'text-carmesi-600 after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:bg-carmesi-600'
@@ -99,19 +100,27 @@ const navItems = [
     </div>
   </div>
 
-  <!-- Mobile Subnav Horizontal Bar -->
-  <div class="lg:hidden border-t border-slate-100 bg-white/95 overflow-x-auto py-2.5 px-4 flex gap-1.5 text-xs whitespace-nowrap scrollbar-none">
-    {navItems.map((item) => (
-      <a
-        href={item.href}
-        class={`px-3 py-1.5 rounded-md font-semibold transition-colors ${
-          currentPath === item.href
-            ? 'bg-carmesi-50 text-carmesi-700 border border-carmesi-200'
-            : 'text-ink-700 hover:bg-slate-100'
-        }`}
-      >
-        {item.label}
-      </a>
-    ))}
-  </div>
+  <details class="lg:hidden border-t border-slate-100 bg-white/95">
+    <summary class="cursor-pointer list-none px-4 py-3 text-sm font-semibold text-ink-800">
+      Explorar herramientas
+    </summary>
+    <nav aria-label="Navegación móvil" class="grid grid-cols-2 sm:grid-cols-3 gap-1 px-4 pb-3">
+      {navItems.map((item) => {
+        const isActive = currentPath === item.href;
+        return (
+          <a
+            href={item.href}
+            aria-current={isActive ? 'page' : undefined}
+            class={`px-3 py-2 rounded-md text-sm font-semibold transition-colors ${
+              isActive
+                ? 'bg-carmesi-50 text-carmesi-700 border border-carmesi-200'
+                : 'text-ink-700 hover:bg-slate-100'
+            }`}
+          >
+            {item.label}
+          </a>
+        );
+      })}
+    </nav>
+  </details>
 </header>

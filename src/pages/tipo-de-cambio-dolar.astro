@@ -8,6 +8,10 @@ import { DollarSign, TrendingUp, Info, ArrowRight, ShieldCheck, Building2, Store
 
 let dolar: DolarData | null = null;
 let historico: Array<{ fecha: string; compra: number; venta: number }> = [];
+let fuente = 'Fuente no disponible';
+let actualizadoEn = '';
+let stale = false;
+let tipo = '';
 
 try {
   const [resDolar, resHist] = await Promise.allSettled([
@@ -18,71 +22,58 @@ try {
     ),
   ]);
 
-  if (resDolar.status === 'fulfilled') dolar = resDolar.value.data;
+  if (resDolar.status === 'fulfilled') {
+    dolar = resDolar.value.data;
+    fuente = resDolar.value.meta?.fuente ?? fuente;
+    actualizadoEn = resDolar.value.meta?.actualizado_en ?? '';
+    stale = resDolar.value.meta?.stale ?? false;
+    tipo = resDolar.value.meta?.tipo ?? '';
+  }
   if (resHist.status === 'fulfilled') historico = resHist.value.data || [];
 } catch {
   // Fallback
 }
 
-const compra = dolar?.compra ?? 3.75;
-const venta = dolar?.venta ?? 3.78;
-const fecha = dolar?.fecha ?? 'Hoy';
-const spread = (venta - compra).toFixed(3);
+const compra = dolar?.compra ?? null;
+const venta = dolar?.venta ?? null;
+const fecha = dolar?.fecha ?? 'Sin dato';
+const esReferencial = tipo === 'referencial' || (compra !== null && compra === venta);
+const spread = compra !== null && venta !== null ? (venta - compra).toFixed(3) : null;
 
 // Tablas precalculadas de conversión (esenciales para Featured Snippets / Posición Cero en Google)
 const montosSoles = [10, 20, 50, 100, 200, 500, 1000, 2000, 5000];
 const montosDolares = [1, 5, 10, 20, 50, 100, 200, 500, 1000, 5000];
 
-// Datos estructurados Schema.org para Google Rich Snippets
-const schemaJsonLd = [
-  {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    'mainEntity': [
-      {
-        '@type': 'Question',
-        'name': '¿A cuánto está el cambio de soles a dólares hoy en Perú?',
-        'acceptedAnswer': {
-          '@type': 'Answer',
-          'text': `El tipo de cambio para comprar dólares con soles hoy se ubica en aproximadamente S/ ${venta.toFixed(3)} según la tasa de venta interbancaria y SBS. Por ejemplo, cambiar 100 dólares requiere S/ ${(100 * venta).toFixed(2)}.`,
-        },
+const schemaJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  'mainEntity': [
+    {
+      '@type': 'Question',
+      'name': '¿Qué tipo de cambio muestra esta página?',
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': esReferencial
+          ? `La página muestra una tasa referencial USD/PEN de ${fuente}; no representa una oferta de compra o venta de una entidad financiera.`
+          : `La página muestra los valores de compra y venta reportados por ${fuente}. Verifica las condiciones vigentes con tu entidad financiera.`,
       },
-      {
-        '@type': 'Question',
-        'name': '¿A cuánto compran el dólar hoy en Perú?',
-        'acceptedAnswer': {
-          '@type': 'Answer',
-          'text': `El precio de compra oficial hoy es de S/ ${compra.toFixed(3)}. Es el monto que recibes en soles por cada dólar que vendes.`,
-        },
-      },
-      {
-        '@type': 'Question',
-        'name': '¿Cuál es la diferencia entre el dólar interbancario, SUNAT y paralelo?',
-        'acceptedAnswer': {
-          '@type': 'Answer',
-          'text': 'El dólar interbancario es el pactado entre entidades financieras. El tipo de cambio SUNAT corresponde al cierre del día hábil anterior publicado por la SBS para fines tributarios y contables. El paralelo u Ocoña se transa libremente en casas de cambio físicas y fintechs.',
-        },
-      },
-    ],
-  },
-  {
-    '@context': 'https://schema.org',
-    '@type': 'FinancialProduct',
-    'name': 'Tipo de Cambio Dólar a Soles y Soles a Dólar en Perú',
-    'description': `Cotización en tiempo real del dólar en Perú hoy: Compra S/ ${compra.toFixed(3)}, Venta S/ ${venta.toFixed(3)}.`,
-    'feesAndCommissionsSpecification': 'Sin comisiones en la consulta online',
-    'provider': {
-      '@type': 'Organization',
-      'name': 'Superintendencia de Banca, Seguros y AFP (SBS) / SUNAT',
     },
-  },
-];
+    {
+      '@type': 'Question',
+      'name': '¿Por qué puede variar el tipo de cambio?',
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': 'Las tasas pueden variar según la entidad, el canal, el horario y las condiciones de cada operación. Esta información es referencial.',
+      },
+    },
+  ],
+};
 ---
 
 <Layout
-  title="Cambio Soles a Dólar Hoy en Perú — Tipo de Cambio Dólar a Soles SBS y SUNAT"
-  description={`¿A cuánto está el cambio de soles a dólares hoy en Perú? Precio de compra (S/ ${compra.toFixed(3)}) y venta (S/ ${venta.toFixed(3)}) oficial SUNAT, SBS y paralelo Ocoña. Conversor en vivo.`}
-  keywords="cambio soles a dolar, cambio de soles a dolares, dolar a soles hoy peru, cuanto esta el dolar en peru hoy, tipo de cambio sunat hoy, tipo de cambio sbs, conversor soles a dolares, ocona tipo de cambio"
+  title="Tipo de Cambio del Dólar en Perú y Conversor USD/PEN"
+  description={`Consulta el tipo de cambio USD/PEN de referencia${venta !== null ? `: S/ ${venta.toFixed(3)}` : ''}. Fuente: ${fuente}. Actualización ${stale ? 'desactualizada' : 'referencial'}.`}
+  keywords="tipo de cambio dolar peru, cambio soles a dolares, dolar a soles, conversor usd pen, tipo de cambio referencial"
   schema={schemaJsonLd}
 >
   <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -100,92 +91,64 @@ const schemaJsonLd = [
     <header class="border-b border-ink-100 pb-6 mb-8">
       <div class="flex flex-wrap items-center gap-2.5 mb-2.5">
         <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold bg-soles-50 text-soles-800 border border-soles-200">
-          Superintendencia de Banca y Seguros (SBS)
+          Fuente: {fuente}
         </span>
-        <span class="text-xs text-ink-500 font-tabular">Fecha oficial: {fecha}</span>
+        <span class="text-xs text-ink-500 font-tabular">Fecha de cotización: {fecha}</span>
       </div>
       <h1 class="font-heading text-3xl sm:text-4xl text-ink-950 font-black tracking-tight leading-tight">
         Cambio de Soles a Dólar y Dólar a Soles Hoy en Perú
       </h1>
       <p class="text-sm sm:text-base text-ink-600 mt-2 max-w-4xl leading-relaxed">
-        Consulta el precio del dólar en el Perú en tiempo real. Cotizaciones oficiales de compra y venta de la SBS y SUNAT, mercado paralelo (Ocoña) y conversor instantáneo de divisas (PEN / USD).
+        Consulta una tasa USD/PEN de referencia y convierte entre soles y dólares. Los valores pueden variar según la entidad y las condiciones de cada operación.
       </p>
     </header>
 
     <!-- Bloque Superior Integrado: Cotizaciones en Vivo + Conversor Inmediato -->
     <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8 items-stretch">
       
-      <!-- Lado Izquierdo (7 cols): Tarjetas de Cotizaciones Oficiales y Paralelo -->
+      <!-- Lado Izquierdo (7 cols): cotización y fuente -->
       <div class="lg:col-span-7 flex flex-col justify-between gap-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
-          <!-- Compra Card -->
-          <article class="bg-white rounded-xl p-5 sm:p-6 border border-ink-100 shadow-clean flex flex-col justify-between">
-            <div class="flex items-center justify-between text-xs font-semibold text-ink-500 uppercase tracking-wider mb-2">
-              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Precio de Compra</span>
-              <span class="text-[10px] bg-slate-100 text-ink-600 px-2 py-0.5 rounded font-mono">SBS/SUNAT</span>
+        {dolar && venta !== null ? (
+          esReferencial ? (
+            <article class="bg-white rounded-xl p-6 sm:p-8 border border-ink-100 shadow-clean">
+              <span class="text-xs font-semibold uppercase tracking-wider text-ink-500">Tasa referencial USD/PEN</span>
+              <div class="font-tabular text-4xl sm:text-5xl font-black text-ink-950 tracking-tight mt-2">S/ {venta.toFixed(3)}</div>
+              <p class="text-sm text-ink-600 mt-3">La fuente entrega una tasa de referencia; no es una cotización de compra o venta de una entidad financiera.</p>
+            </article>
+          ) : (
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
+              <article class="bg-white rounded-xl p-5 sm:p-6 border border-ink-100 shadow-clean">
+                <span class="text-xs font-semibold uppercase tracking-wider text-ink-500">Compra</span>
+                <div class="font-tabular text-3xl sm:text-4xl font-black text-ink-950 mt-2">S/ {compra?.toFixed(3) ?? '—'}</div>
+                <p class="text-xs text-ink-500 mt-2">Valor reportado por la fuente; puede variar por entidad.</p>
+              </article>
+              <article class="bg-white rounded-xl p-5 sm:p-6 border border-carmesi-200 shadow-clean">
+                <span class="text-xs font-semibold uppercase tracking-wider text-carmesi-700">Venta</span>
+                <div class="font-tabular text-3xl sm:text-4xl font-black text-carmesi-700 mt-2">S/ {venta.toFixed(3)}</div>
+                <p class="text-xs text-ink-500 mt-2">Valor reportado por la fuente; verifica la tasa antes de operar.</p>
+              </article>
             </div>
-            <div class="my-2">
-              <div class="font-tabular text-3xl sm:text-4xl font-black text-ink-950 tracking-tight leading-none">
-                S/ {compra.toFixed(3)}
-              </div>
-              <p class="text-xs text-ink-500 mt-2">
-                Monto en soles que te pagan si vendes tus dólares hoy.
-              </p>
-            </div>
-            <div class="text-[11px] text-ink-400 font-tabular pt-2.5 border-t border-slate-100 flex items-center justify-between">
-              <span>Mercado mayorista</span>
-              <span class="text-emerald-600 font-medium">Oficial SBS</span>
-            </div>
-          </article>
-
-          <!-- Venta Card -->
-          <article class="bg-white rounded-xl p-5 sm:p-6 border-2 border-carmesi-600/30 bg-gradient-to-b from-carmesi-50/20 to-white shadow-clean flex flex-col justify-between">
-            <div class="flex items-center justify-between text-xs font-semibold text-carmesi-700 uppercase tracking-wider mb-2">
-              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-rose-500"></span> Precio de Venta</span>
-              <span class="text-[10px] bg-carmesi-50 text-carmesi-700 px-2 py-0.5 rounded font-bold border border-carmesi-200">Para comprar dólares</span>
-            </div>
-            <div class="my-2">
-              <div class="font-tabular text-3xl sm:text-4xl font-black text-carmesi-700 tracking-tight leading-none">
-                S/ {venta.toFixed(3)}
-              </div>
-              <p class="text-xs text-ink-600 mt-2">
-                Monto en soles que debes pagar para adquirir 1 dólar.
-              </p>
-            </div>
-            <div class="text-[11px] text-ink-500 font-tabular pt-2.5 border-t border-carmesi-100 flex items-center justify-between">
-              <span>Spread bancario</span>
-              <span class="font-bold text-ink-700">S/ {spread}</span>
-            </div>
-          </article>
-        </div>
-
-        <!-- Mercado Paralelo Banner Card -->
-        <article class="bg-ink-900 text-white rounded-xl p-4 sm:p-5 shadow-elevated border border-ink-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <span class="text-[11px] font-bold text-soles-400 uppercase tracking-wider block mb-1">
-              Mercado Paralelo (Ocoña / Casas de Cambio)
-            </span>
-            <p class="text-xs text-slate-300">
-              Cotización promedio estimada en casas de cambio físicas y cambistas en Lima.
-            </p>
+          )
+        ) : (
+          <div class="bg-white rounded-xl p-6 border border-ink-100 text-sm text-ink-600" role="status">
+            La cotización no está disponible en este momento.
           </div>
-          <div class="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-lg border border-white/10 self-start sm:self-auto shrink-0">
-            <div>
-              <span class="text-[10px] uppercase text-slate-400 block font-mono">Compra</span>
-              <span class="font-tabular text-lg font-black text-white">S/ {(compra - 0.01).toFixed(2)}</span>
-            </div>
-            <span class="text-slate-500 text-sm">/</span>
-            <div>
-              <span class="text-[10px] uppercase text-soles-400 block font-mono">Venta</span>
-              <span class="font-tabular text-lg font-black text-soles-400">S/ {(venta + 0.01).toFixed(2)}</span>
-            </div>
-          </div>
-        </article>
+        )}
+
+        <p class="text-xs text-ink-500" role="status">
+          Fuente: {fuente}{actualizadoEn ? ` · Actualizado: ${new Date(actualizadoEn).toLocaleString('es-PE', { timeZone: 'America/Lima' })}` : ''}{stale ? ' · Dato desactualizado' : ''}
+        </p>
       </div>
 
       <!-- Lado Derecho (5 cols): Conversor Instantáneo (Al lado de los precios) -->
       <div class="lg:col-span-5 flex flex-col">
-        <ConversorMonedas client:load tasaCompra={compra} tasaVenta={venta} />
+        {compra !== null && venta !== null ? (
+          <ConversorMonedas client:load tasaCompra={compra} tasaVenta={venta} />
+        ) : (
+          <div class="bg-white rounded-xl border border-ink-100 p-6 text-sm text-ink-600" role="status">
+            El conversor estará disponible cuando se recupere la cotización.
+          </div>
+        )}
       </div>
     </section>
 
@@ -197,7 +160,20 @@ const schemaJsonLd = [
         
         <!-- Gráfico de Tendencia Histórica del Dólar -->
         <section aria-label="Evolución Histórica del Dólar">
-          <GraficoDolar client:load historico={historico} tasaCompraActual={compra} tasaVentaActual={venta} />
+          {compra !== null && venta !== null && historico.length > 1 ? (
+            <GraficoDolar
+              client:load
+              historico={historico}
+              tasaCompraActual={compra}
+              tasaVentaActual={venta}
+              fuente={fuente}
+              shareUrl={new URL(Astro.url.pathname, Astro.site).href}
+            />
+          ) : (
+            <p class="bg-white rounded-xl border border-ink-100 p-5 text-sm text-ink-600" role="status">
+              No hay suficientes datos históricos para mostrar una tendencia.
+            </p>
+          )}
         </section>
 
         <!-- Anuncio In-Feed intermedio de alta conversión -->
@@ -210,11 +186,11 @@ const schemaJsonLd = [
               Tablas de Conversión Rápida de Soles a Dólar y Dólar a Soles
             </h2>
             <p class="text-xs sm:text-sm text-ink-500 mt-1">
-              Equivalencias calculadas con el tipo de cambio oficial vigente en el Perú.
+              Equivalencias indicativas calculadas con la tasa disponible de la fuente.
             </p>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {compra !== null && venta !== null ? <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             <!-- Tabla 1: De Soles a Dólares (Venta) -->
             <div class="border border-ink-100 rounded-xl overflow-hidden">
@@ -272,7 +248,7 @@ const schemaJsonLd = [
               </table>
             </div>
 
-          </div>
+          </div> : <p class="text-sm text-ink-600" role="status">Las equivalencias aparecerán cuando haya una cotización disponible.</p>}
         </section>
 
         <!-- Preguntas Frecuentes SEO (Acordeón / Contenido Estructurado) -->
@@ -290,7 +266,7 @@ const schemaJsonLd = [
                 ¿A cuánto está el cambio de soles a dólares hoy en Perú?
               </h3>
               <p class="text-xs text-ink-600">
-                Para comprar dólares con moneda nacional peruana, el tipo de cambio oficial de venta se sitúa en <strong>S/ {venta.toFixed(3)}</strong>. Por ejemplo, si deseas cambiar S/ 1,000 recibirás aproximadamente ${(1000 / venta).toFixed(2)} USD.
+                {venta !== null ? `La tasa referencial actual es S/ ${venta.toFixed(3)} por USD. El valor real puede variar según la entidad y las condiciones de operación.` : 'La tasa no está disponible en este momento.'}
               </p>
             </article>
 
@@ -299,7 +275,7 @@ const schemaJsonLd = [
                 ¿A cuánto compran el dólar en bancos y casas de cambio?
               </h3>
               <p class="text-xs text-ink-600">
-                La cotización de compra promedio es de <strong>S/ {compra.toFixed(3)}</strong>. Este es el monto en soles que te abonarán por cada billete estadounidense que vendas.
+                {compra !== null ? `La tasa referencial de compra reportada es S/ ${compra.toFixed(3)} por USD. Consulta las condiciones de tu entidad antes de operar.` : 'La tasa no está disponible en este momento.'}
               </p>
             </article>
 
@@ -308,7 +284,7 @@ const schemaJsonLd = [
                 ¿Dónde conviene cambiar dinero: bancos, fintechs o calle Ocoña?
               </h3>
               <p class="text-xs text-ink-600">
-                Las fintechs de cambio online registradas ante la SBS y las casas de cambio de calle Ocoña / Miraflores ofrecen los márgenes más competitivos. Las agencias y ventanillas bancarias tradicionales suelen tener un margen de ganancia más elevado (spread bancario).
+                Las tasas pueden diferir entre bancos, casas de cambio y plataformas digitales. Compara el precio final, las comisiones y las condiciones antes de realizar una operación.
               </p>
             </article>
           </div>

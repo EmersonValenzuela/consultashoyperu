@@ -2,7 +2,15 @@
  * Cliente de conexión con el backend de Consulta Hoy Perú (docs/03-api-v1.md)
  */
 
-const API_BASE = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+const configuredApiBase = import.meta.env.PUBLIC_API_URL;
+
+if (import.meta.env.PROD && !configuredApiBase) {
+  throw new Error(
+    "PUBLIC_API_URL debe configurarse para compilar el frontend de producción.",
+  );
+}
+
+const API_BASE = configuredApiBase || "http://localhost:8000/api/v1";
 
 export interface ApiResponse<T> {
   data: T;
@@ -109,12 +117,15 @@ export interface CalcularTanqueResult {
   precio_unitario_maximo: number;
 }
 
-async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
+async function fetchApi<T>(
+  endpoint: string,
+  options: RequestInit = {},
+): Promise<ApiResponse<T>> {
   const url = `${API_BASE}${endpoint}`;
   const response = await fetch(url, {
     headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
+      Accept: "application/json",
+      "Content-Type": "application/json",
       ...options.headers,
     },
     ...options,
@@ -123,7 +134,9 @@ async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise
   const json = await response.json();
 
   if (!response.ok) {
-    throw new Error(json?.error?.mensaje || `Error de API HTTP ${response.status}`);
+    throw new Error(
+      json?.error?.mensaje || `Error de API HTTP ${response.status}`,
+    );
   }
 
   return json;
@@ -131,43 +144,55 @@ async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise
 
 export const api = {
   // Dólar
-  getDolarActual: () => fetchApi<DolarData>('/dolar'),
+  getDolarActual: () => fetchApi<DolarData>("/dolar"),
   getDolarHistorico: (desde: string, hasta: string) =>
-    fetchApi<Array<{ fecha: string; compra: number; venta: number }>>(`/dolar/historico?desde=${desde}&hasta=${hasta}`),
-  convertirMoneda: (de: string, a: string, monto: number) =>
-    fetchApi<{ de: string; a: string; monto: number; resultado: number; tasa: number }>(
-      `/monedas/convertir?de=${de}&a=${a}&monto=${monto}`
+    fetchApi<Array<{ fecha: string; compra: number; venta: number }>>(
+      `/dolar/historico?desde=${desde}&hasta=${hasta}`,
     ),
+  convertirMoneda: (de: string, a: string, monto: number) =>
+    fetchApi<{
+      de: string;
+      a: string;
+      monto: number;
+      resultado: number;
+      tasa: number;
+    }>(`/monedas/convertir?de=${de}&a=${a}&monto=${monto}`),
 
   // Sismos
   getSismos: (limite = 10, minMagnitud = 3.0) =>
-    fetchApi<SismoData[]>(`/sismos?limite=${limite}&min_magnitud=${minMagnitud}`),
+    fetchApi<SismoData[]>(
+      `/sismos?limite=${limite}&min_magnitud=${minMagnitud}`,
+    ),
 
   // Feriados
-  getFeriados: (anio?: number) => fetchApi<FeriadoData[]>(`/feriados${anio ? `?anio=${anio}` : ''}`),
-  getProximoFeriado: () => fetchApi<ProximoFeriadoData>('/feriados/proximo'),
+  getFeriados: (anio?: number) =>
+    fetchApi<FeriadoData[]>(`/feriados${anio ? `?anio=${anio}` : ""}`),
+  getProximoFeriado: () => fetchApi<ProximoFeriadoData>("/feriados/proximo"),
 
   // Calculadoras
-  calcularIgv: (monto: number, tipo: 'base' | 'total') =>
-    fetchApi<{ base: number; igv: number; total: number; tasa: number }>('/calculadoras/igv', {
-      method: 'POST',
-      body: JSON.stringify({ monto, tipo }),
-    }),
+  calcularIgv: (monto: number, tipo: "base" | "total") =>
+    fetchApi<{ base: number; igv: number; total: number; tasa: number }>(
+      "/calculadoras/igv",
+      {
+        method: "POST",
+        body: JSON.stringify({ monto, tipo }),
+      },
+    ),
 
   calcularGratificacion: (params: {
     sueldo: number;
     asignacion_familiar: boolean;
     meses_trabajados: number;
     promedio_variables?: number;
-    tipo_seguro: 'essalud' | 'eps';
+    tipo_seguro: "essalud" | "eps";
   }) =>
     fetchApi<{
       remuneracion_computable: number;
       gratificacion: number;
       bonificacion_extraordinaria: number;
       total: number;
-    }>('/calculadoras/gratificacion', {
-      method: 'POST',
+    }>("/calculadoras/gratificacion", {
+      method: "POST",
       body: JSON.stringify(params),
     }),
 
@@ -183,8 +208,8 @@ export const api = {
       cts_por_meses: number;
       cts_por_dias: number;
       total: number;
-    }>('/calculadoras/cts', {
-      method: 'POST',
+    }>("/calculadoras/cts", {
+      method: "POST",
       body: JSON.stringify(params),
     }),
 
@@ -193,18 +218,27 @@ export const api = {
 
   // DNI
   validarDni: (dni: string) =>
-    fetchApi<{ dni: string; valido: boolean; formato: string }>('/dni/validar', {
-      method: 'POST',
-      body: JSON.stringify({ dni }),
-    }),
+    fetchApi<{ dni: string; valido: boolean; formato: string }>(
+      "/dni/validar",
+      {
+        method: "POST",
+        body: JSON.stringify({ dni }),
+      },
+    ),
 
   // Combustibles
   getCombustibles: (region?: string) =>
-    fetchApi<CombustibleData[]>(`/combustibles${region ? `?region=${encodeURIComponent(region)}` : ''}`),
+    fetchApi<CombustibleData[]>(
+      `/combustibles${region ? `?region=${encodeURIComponent(region)}` : ""}`,
+    ),
 
-  calcularTanque: (params: { tipo: string; cantidad: number; tipo_calculo?: 'llenar_tanque' | 'presupuesto_soles' }) =>
-    fetchApi<CalcularTanqueResult>('/combustibles/calcular-tanque', {
-      method: 'POST',
+  calcularTanque: (params: {
+    tipo: string;
+    cantidad: number;
+    tipo_calculo?: "llenar_tanque" | "presupuesto_soles";
+  }) =>
+    fetchApi<CalcularTanqueResult>("/combustibles/calcular-tanque", {
+      method: "POST",
       body: JSON.stringify(params),
     }),
 };
