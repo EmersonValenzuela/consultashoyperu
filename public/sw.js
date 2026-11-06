@@ -1,18 +1,14 @@
-const CACHE_NAME = 'consultahoy-v1';
-const STATIC_ASSETS = [
-  '/',
-  '/favicon.svg',
-  '/manifest.webmanifest'
-];
+const CACHE_NAME = "consultahoy-v1";
+const STATIC_ASSETS = ["/", "/favicon.svg", "/manifest.webmanifest"];
 
-self.addEventListener('install', (event) => {
+self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS)),
   );
   self.skipWaiting();
 });
 
-self.addEventListener('activate', (event) => {
+self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(
@@ -20,21 +16,28 @@ self.addEventListener('activate', (event) => {
           if (key !== CACHE_NAME) {
             return caches.delete(key);
           }
-        })
-      )
-    )
+        }),
+      ),
+    ),
   );
   self.clients.claim();
 });
 
-self.addEventListener('fetch', (event) => {
+self.addEventListener("fetch", (event) => {
   // Solo interceptar peticiones GET
-  if (event.request.method !== 'GET') return;
+  if (event.request.method !== "GET") return;
 
   const url = new URL(event.request.url);
 
+  // El Cache API solo debe recibir solicitudes HTTP(S) del mismo origen.
+  if (
+    url.origin !== self.location.origin ||
+    !["http:", "https:"].includes(url.protocol)
+  )
+    return;
+
   // No interceptar peticiones a la API para que los datos siempre estén frescos
-  if (url.pathname.startsWith('/api/')) return;
+  if (url.pathname.startsWith("/api/")) return;
 
   event.respondWith(
     fetch(event.request)
@@ -47,6 +50,6 @@ self.addEventListener('fetch', (event) => {
         }
         return networkResponse;
       })
-      .catch(() => caches.match(event.request))
+      .catch(() => caches.match(event.request)),
   );
 });
