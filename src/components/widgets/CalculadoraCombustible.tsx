@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Fuel, Sparkles, Share2, Info, Flame } from 'lucide-react';
 import type { CombustibleData } from '../../lib/api';
 
@@ -24,13 +24,23 @@ const PRESETS: VehiculoPreset[] = [
   { id: 'gas_hogar', nombre: 'Gas Hogar (1 Balón)', icono: '🏠', tipoCombustible: 'balon_gas_10kg', capacidad: 1 },
 ];
 
-export default function CalculadoraCombustible({ combustibles }: Props) {
+export default function CalculadoraCombustible({ combustibles: initialCombustibles }: Props) {
+  const [combustibles, setCombustibles] = useState<CombustibleData[]>(initialCombustibles);
+
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent<CombustibleData[]>).detail;
+      if (Array.isArray(detail) && detail.length > 0) setCombustibles(detail);
+    };
+    window.addEventListener('combustibles:updated', handler);
+    return () => window.removeEventListener('combustibles:updated', handler);
+  }, []);
   const [modo, setModo] = useState<'llenar_tanque' | 'presupuesto_soles'>('llenar_tanque');
   const [tipoSeleccionado, setTipoSeleccionado] = useState<string>('gasolina_regular');
   const [cantidad, setCantidad] = useState<string>('11.5');
   const [presetActivo, setPresetActivo] = useState<string>('sedan');
 
-  const combustibleActual = useMemo(() => {
+  const combustibleActual = useMemo<CombustibleData>(() => {
     return combustibles.find((c) => c.tipo === tipoSeleccionado) || combustibles[0] || {
       tipo: 'gasolina_regular',
       nombre: 'Gasolina Regular',
@@ -39,7 +49,11 @@ export default function CalculadoraCombustible({ combustibles }: Props) {
       precio_promedio: 16.29,
       precio_minimo: 14.79,
       precio_maximo: 18.50,
+      id: 0,
+      region: 'Lima y Callao',
+      octanaje: null,
       fuente: 'Osinergmin / Facilito',
+      vigencia_desde: 'Referencial',
     };
   }, [combustibles, tipoSeleccionado]);
 
@@ -54,6 +68,7 @@ export default function CalculadoraCombustible({ combustibles }: Props) {
       const ahorro = Math.max(0, costoMaximo - costoMinimo);
 
       return {
+        modo: 'llenar_tanque' as const,
         costoPromedio,
         costoMinimo,
         costoMaximo,
@@ -67,6 +82,7 @@ export default function CalculadoraCombustible({ combustibles }: Props) {
       const volumenExtra = Math.max(0, volumenMaximo - volumenPromedio);
 
       return {
+        modo: 'presupuesto_soles' as const,
         volumenPromedio,
         volumenMinimo,
         volumenMaximo,
@@ -86,7 +102,7 @@ export default function CalculadoraCombustible({ combustibles }: Props) {
   const shareText = encodeURIComponent(
     `⛽ *Cálculo de Combustible en Perú*\n` +
     `🚗 Combustible: ${combustibleActual.nombre}\n` +
-    (modo === 'llenar_tanque'
+    (calculo.modo === 'llenar_tanque'
       ? `💵 Tanque (${numCantidad} ${combustibleActual.simbolo_unidad}): Aprox. S/ ${calculo.costoPromedio.toFixed(2)}\n` +
         `🟢 En grifo económico: S/ ${calculo.costoMinimo.toFixed(2)}\n` +
         `💡 Ahorras hasta: S/ ${calculo.ahorro.toFixed(2)} por tanque!\n`

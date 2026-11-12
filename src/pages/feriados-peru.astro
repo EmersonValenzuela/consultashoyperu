@@ -113,7 +113,7 @@ const mesesNombres = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'S
             <div class="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-slate-300">
               <span class="inline-flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-full border border-white/15">
                 <Calendar class="w-4 h-4 text-soles-400" />
-                <time datetime={proximo.fecha}>{proximo.fecha}</time>
+                <time id="feriado-proximo-fecha" datetime={proximo.fecha}>{proximo.fecha}</time>
               </span>
               <span class="inline-flex items-center gap-1 bg-carmesi-950/80 text-carmesi-200 px-3 py-1 rounded-full border border-carmesi-800/80 capitalize font-medium">
                 {proximo.tipo}
@@ -146,11 +146,11 @@ const mesesNombres = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'S
 
           <div class="bg-white/5 border border-white/15 backdrop-blur-sm rounded-xl p-5 text-center flex lg:flex-col items-center justify-between lg:justify-center gap-3 min-w-[200px]">
             <span class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Faltan</span>
-            <div class="font-tabular text-4xl sm:text-5xl font-black text-soles-400 tracking-tight leading-none">
+            <div id="feriado-proximo-dias" class="font-tabular text-4xl sm:text-5xl font-black text-soles-400 tracking-tight leading-none">
               {proximo.dias_faltantes}
             </div>
             <span class="text-xs text-slate-300 font-medium">
-              {proximo.dias_faltantes === 1 ? 'día calendario' : 'días calendario'}
+              <span id="feriado-proximo-dias-label">{proximo.dias_faltantes === 1 ? 'día calendario' : 'días calendario'}</span>
             </span>
           </div>
         </div>
@@ -381,3 +381,36 @@ const mesesNombres = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'S
 
   </div>
 </Layout>
+
+<script>
+  import { api } from '../lib/api';
+
+  const refreshProximoFeriado = async () => {
+    try {
+      const res = await api.getProximoFeriado();
+      const data = res.data;
+      if (!data) return;
+
+      const nombreEl = document.getElementById('feriado-proximo-nombre');
+      if (nombreEl) nombreEl.textContent = data.nombre;
+
+      const fechaEl = document.getElementById('feriado-proximo-fecha');
+      if (fechaEl) {
+        fechaEl.setAttribute('datetime', data.fecha);
+        fechaEl.textContent = data.fecha;
+      }
+
+      const diasEl = document.getElementById('feriado-proximo-dias');
+      if (diasEl) diasEl.textContent = String(data.dias_faltantes);
+
+      const labelEl = document.getElementById('feriado-proximo-dias-label');
+      if (labelEl) {
+        labelEl.textContent = data.dias_faltantes === 1 ? 'día calendario' : 'días calendario';
+      }
+    } catch {
+      // Mantiene cálculo estático si falla la red
+    }
+  };
+
+  void refreshProximoFeriado();
+</script>

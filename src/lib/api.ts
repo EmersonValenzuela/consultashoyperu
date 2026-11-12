@@ -131,12 +131,18 @@ async function fetchApi<T>(
     ...options,
   });
 
-  const json = await response.json();
+  const contentType = response.headers.get('content-type') || '';
+  const isJson = contentType.includes('application/json');
+  const json = isJson ? await response.json().catch(() => null) : null;
 
   if (!response.ok) {
     throw new Error(
       json?.error?.mensaje || `Error de API HTTP ${response.status}`,
     );
+  }
+
+  if (!json) {
+    throw new Error('Respuesta inválida del servidor (se esperaba JSON).');
   }
 
   return json;

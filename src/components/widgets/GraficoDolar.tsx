@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { TrendingUp, ArrowUpRight, ArrowDownRight, Share2 } from "lucide-react";
 
 interface PuntoHistorico {
@@ -15,13 +15,31 @@ interface Props {
   shareUrl: string;
 }
 
+const SVG_PADDING = { top: 25, right: 30, bottom: 40, left: 55 } as const;
+
 export default function GraficoDolar({
-  historico,
-  tasaCompraActual,
-  tasaVentaActual,
-  fuente,
+  historico: initialHistorico,
+  tasaCompraActual: initialCompra,
+  tasaVentaActual: initialVenta,
+  fuente: initialFuente,
   shareUrl,
 }: Props) {
+  const [historico, setHistorico] = useState<PuntoHistorico[]>(initialHistorico);
+  const [tasaCompraActual, setTasaCompraActual] = useState<number>(initialCompra);
+  const [tasaVentaActual, setTasaVentaActual] = useState<number>(initialVenta);
+  const [fuente, setFuente] = useState<string>(initialFuente);
+
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent<{ compra?: number; venta?: number; fuente?: string; historico?: PuntoHistorico[] }>).detail;
+      if (typeof detail?.compra === 'number') setTasaCompraActual(detail.compra);
+      if (typeof detail?.venta === 'number') setTasaVentaActual(detail.venta);
+      if (typeof detail?.fuente === 'string' && detail.fuente) setFuente(detail.fuente);
+      if (Array.isArray(detail?.historico) && detail.historico.length > 0) setHistorico(detail.historico);
+    };
+    window.addEventListener('dolar:updated', handler);
+    return () => window.removeEventListener('dolar:updated', handler);
+  }, []);
   const [periodo, setPeriodo] = useState<"7D" | "15D" | "30D" | "90D">("30D");
   const [tipoTasa, setTipoTasa] = useState<"venta" | "compra">("venta");
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
@@ -61,7 +79,7 @@ export default function GraficoDolar({
   // Dimensiones del SVG
   const width = 800;
   const height = 260;
-  const padding = { top: 25, right: 30, bottom: 40, left: 55 };
+  const padding = SVG_PADDING;
   const graphWidth = width - padding.left - padding.right;
   const graphHeight = height - padding.top - padding.bottom;
 

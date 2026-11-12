@@ -7,7 +7,26 @@ interface Props {
   sismos: SismoData[];
 }
 
-export default function MapaSismos({ sismos }: Props) {
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+export default function MapaSismos({ sismos: initialSismos }: Props) {
+  const [sismos, setSismos] = useState<SismoData[]>(initialSismos);
+
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent<SismoData[]>).detail;
+      if (Array.isArray(detail) && detail.length > 0) setSismos(detail);
+    };
+    window.addEventListener('sismos:updated', handler);
+    return () => window.removeEventListener('sismos:updated', handler);
+  }, []);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const markersMapRef = useRef<Map<string | number, any>>(new Map());
@@ -89,7 +108,7 @@ export default function MapaSismos({ sismos }: Props) {
         });
 
         const shareText = encodeURIComponent(
-          `🚨 Sismo en Perú: M ${sismo.magnitud.toFixed(1)} - ${sismo.lugar}\nProfundidad: ${profStr} | Hora: ${fechaLima}\nUbicación: https://www.google.com/maps?q=${sismo.latitud},${sismo.longitud}`
+          `🚨 Sismo en Perú: M ${sismo.magnitud.toFixed(1)} - ${escapeHtml(sismo.lugar)}\nProfundidad: ${profStr} | Hora: ${fechaLima}\nUbicación: https://www.google.com/maps?q=${sismo.latitud},${sismo.longitud}`
         );
 
         const popupContent = `
@@ -97,11 +116,11 @@ export default function MapaSismos({ sismos }: Props) {
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; padding-bottom: 5px; border-bottom: 1px solid #e2e8f0;">
               <span style="font-weight: 800; font-size: 13px; color: ${color};">MAGNITUD ${sismo.magnitud.toFixed(1)}</span>
               <span style="font-size: 10px; font-weight: 700; background: #f1f5f9; color: #475569; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">
-                ${sismo.fuente || 'USGS / IGP'}
+                ${escapeHtml(sismo.fuente || 'USGS / IGP')}
               </span>
             </div>
             <div style="font-weight: 700; font-size: 13px; line-height: 1.3; margin-bottom: 6px; color: #0f172a;">
-              ${sismo.lugar}
+              ${escapeHtml(sismo.lugar)}
             </div>
             <div style="font-size: 11px; color: #64748b; line-height: 1.5; margin-bottom: 8px;">
               <div>🕒 <strong>Hora:</strong> ${fechaLima}</div>
@@ -120,7 +139,7 @@ export default function MapaSismos({ sismos }: Props) {
         `;
 
         marker.bindPopup(popupContent, { maxWidth: 280 });
-        marker.bindTooltip(`M ${sismo.magnitud.toFixed(1)} - ${sismo.lugar}`, {
+        marker.bindTooltip(`M ${sismo.magnitud.toFixed(1)} - ${escapeHtml(sismo.lugar)}`, {
           direction: 'top',
           offset: [0, -radius],
         });

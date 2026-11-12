@@ -91,9 +91,9 @@ const schemaJsonLd = {
     <header class="border-b border-ink-100 pb-6 mb-8">
       <div class="flex flex-wrap items-center gap-2.5 mb-2.5">
         <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold bg-soles-50 text-soles-800 border border-soles-200">
-          Fuente: {fuente}
+          <span id="dolar-page-source">Fuente: {fuente}</span>
         </span>
-        <span class="text-xs text-ink-500 font-tabular">Fecha de cotización: {fecha}</span>
+        <span id="dolar-page-date" class="text-xs text-ink-500 font-tabular">Fecha de cotización: {fecha}</span>
       </div>
       <h1 class="font-heading text-3xl sm:text-4xl text-ink-950 font-black tracking-tight leading-tight">
         Cambio de Soles a Dólar y Dólar a Soles Hoy en Perú
@@ -112,19 +112,19 @@ const schemaJsonLd = {
           esReferencial ? (
             <article class="bg-white rounded-xl p-6 sm:p-8 border border-ink-100 shadow-clean">
               <span class="text-xs font-semibold uppercase tracking-wider text-ink-500">Tasa referencial USD/PEN</span>
-              <div class="font-tabular text-4xl sm:text-5xl font-black text-ink-950 tracking-tight mt-2">S/ {venta.toFixed(3)}</div>
+              <div id="dolar-page-ref-value" class="font-tabular text-4xl sm:text-5xl font-black text-ink-950 tracking-tight mt-2">S/ {venta.toFixed(3)}</div>
               <p class="text-sm text-ink-600 mt-3">La fuente entrega una tasa de referencia; no es una cotización de compra o venta de una entidad financiera.</p>
             </article>
           ) : (
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
               <article class="bg-white rounded-xl p-5 sm:p-6 border border-ink-100 shadow-clean">
                 <span class="text-xs font-semibold uppercase tracking-wider text-ink-500">Compra</span>
-                <div class="font-tabular text-3xl sm:text-4xl font-black text-ink-950 mt-2">S/ {compra?.toFixed(3) ?? '—'}</div>
+                <div id="dolar-page-buy" class="font-tabular text-3xl sm:text-4xl font-black text-ink-950 mt-2">S/ {compra?.toFixed(3) ?? '—'}</div>
                 <p class="text-xs text-ink-500 mt-2">Valor reportado por la fuente; puede variar por entidad.</p>
               </article>
               <article class="bg-white rounded-xl p-5 sm:p-6 border border-carmesi-200 shadow-clean">
                 <span class="text-xs font-semibold uppercase tracking-wider text-carmesi-700">Venta</span>
-                <div class="font-tabular text-3xl sm:text-4xl font-black text-carmesi-700 mt-2">S/ {venta.toFixed(3)}</div>
+                <div id="dolar-page-sell" class="font-tabular text-3xl sm:text-4xl font-black text-carmesi-700 mt-2">S/ {venta.toFixed(3)}</div>
                 <p class="text-xs text-ink-500 mt-2">Valor reportado por la fuente; verifica la tasa antes de operar.</p>
               </article>
             </div>
@@ -135,8 +135,8 @@ const schemaJsonLd = {
           </div>
         )}
 
-        <p class="text-xs text-ink-500" role="status">
-          Fuente: {fuente}{actualizadoEn ? ` · Actualizado: ${new Date(actualizadoEn).toLocaleString('es-PE', { timeZone: 'America/Lima' })}` : ''}{stale ? ' · Dato desactualizado' : ''}
+        <p id="dolar-page-meta" class="text-xs text-ink-500" role="status">
+          <span id="dolar-page-source">Fuente: {fuente}</span>{actualizadoEn ? ` · Actualizado: ${new Date(actualizadoEn).toLocaleString('es-PE', { timeZone: 'America/Lima' })}` : ''}{stale ? ' · Dato desactualizado' : ''}
         </p>
       </div>
 
@@ -212,7 +212,7 @@ const schemaJsonLd = {
                     return (
                       <tr class="hover:bg-slate-50/60 transition-colors">
                         <td class="py-2 px-4 font-bold text-ink-900">S/ {s.toLocaleString('es-PE')}</td>
-                        <td class="py-2 px-4 text-right font-bold text-carmesi-700">${usdVal} USD</td>
+                        <td class="py-2 px-4 text-right font-bold text-carmesi-700" data-pen-to-usd={s}>${usdVal} USD</td>
                       </tr>
                     );
                   })}
@@ -240,7 +240,7 @@ const schemaJsonLd = {
                     return (
                       <tr class="hover:bg-slate-50/60 transition-colors">
                         <td class="py-2 px-4 font-bold text-ink-900">${d.toLocaleString('es-PE')} USD</td>
-                        <td class="py-2 px-4 text-right font-bold text-ink-950">S/ {penVal}</td>
+                        <td class="py-2 px-4 text-right font-bold text-ink-950" data-usd-to-pen={d}>S/ {penVal}</td>
                       </tr>
                     );
                   })}
@@ -337,3 +337,71 @@ const schemaJsonLd = {
 
   </div>
 </Layout>
+
+<script>
+  import { api } from '../lib/api';
+
+  const setText = (id: string, value: string) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  };
+
+  const refreshDolarPage = async () => {
+    const today = new Date().toISOString().slice(0, 10);
+    const from = new Date(Date.now() - 90 * 86400000).toISOString().slice(0, 10);
+
+    const [dolarRes, histRes] = await Promise.allSettled([
+      api.getDolarActual(),
+      api.getDolarHistorico(from, today),
+    ]);
+
+    const detail: { compra?: number; venta?: number; fuente?: string; historico?: Array<{ fecha: string; compra: number; venta: number }> } = {};
+
+    if (dolarRes.status === 'fulfilled') {
+      const { data, meta } = dolarRes.value;
+      const compra = Number(data.compra);
+      const venta = Number(data.venta);
+      const fuente = meta?.fuente ?? 'Fuente no disponible';
+
+      detail.compra = compra;
+      detail.venta = venta;
+      detail.fuente = fuente;
+
+      setText('dolar-page-source', `Fuente: ${fuente}`);
+      setText('dolar-page-date', `Fecha de cotización: ${data.fecha}`);
+      setText('dolar-page-ref-value', `S/ ${venta.toFixed(3)}`);
+      setText('dolar-page-buy', `S/ ${compra.toFixed(3)}`);
+      setText('dolar-page-sell', `S/ ${venta.toFixed(3)}`);
+
+      const actualizado = meta?.actualizado_en
+        ? ` · Actualizado: ${new Date(meta.actualizado_en).toLocaleString('es-PE', { timeZone: 'America/Lima' })}`
+        : '';
+      const staleLabel = meta?.stale ? ' · Dato desactualizado' : '';
+      setText('dolar-page-meta', `Fuente: ${fuente}${actualizado}${staleLabel}`);
+
+      document.querySelectorAll<HTMLElement>('[data-pen-to-usd]').forEach((cell) => {
+        const soles = Number(cell.dataset.penToUsd);
+        if (venta > 0 && Number.isFinite(soles)) {
+          cell.textContent = `$${(soles / venta).toFixed(2)} USD`;
+        }
+      });
+
+      document.querySelectorAll<HTMLElement>('[data-usd-to-pen]').forEach((cell) => {
+        const usd = Number(cell.dataset.usdToPen);
+        if (Number.isFinite(usd)) {
+          cell.textContent = `S/ ${(usd * compra).toFixed(2)}`;
+        }
+      });
+    }
+
+    if (histRes.status === 'fulfilled' && Array.isArray(histRes.value.data)) {
+      detail.historico = histRes.value.data;
+    }
+
+    if (detail.compra !== undefined || detail.historico !== undefined) {
+      window.dispatchEvent(new CustomEvent('dolar:updated', { detail }));
+    }
+  };
+
+  void refreshDolarPage();
+</script>

@@ -168,7 +168,7 @@ const schemaJsonLd = [
         <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold bg-amber-50 text-amber-900 border border-amber-200">
           Osinergmin / Facilito / Petroperú
         </span>
-        <span class="text-xs text-ink-500 font-tabular">Vigencia referencial: {fechaVigencia}</span>
+        <span id="fuel-vigencia" class="text-xs text-ink-500 font-tabular">Vigencia referencial: {fechaVigencia}</span>
         <span class="text-xs bg-slate-100 text-ink-700 font-medium px-2 py-0.5 rounded">Lima y Callao</span>
       </div>
       <h1 class="font-heading text-3xl sm:text-4xl text-ink-950 font-black tracking-tight leading-tight">
@@ -192,7 +192,7 @@ const schemaJsonLd = [
           <div class="my-2">
             <span class="text-xs text-ink-400 block font-medium">Precio promedio por galón</span>
             <div class="font-tabular text-3xl sm:text-4xl font-black text-ink-950 tracking-tight leading-none mt-1">
-              S/ {regular?.precio_promedio.toFixed(2)}
+              <span data-fuel-avg="gasolina_regular">S/ {regular?.precio_promedio.toFixed(2)}</span>
             </div>
             <p class="text-xs text-ink-500 mt-2">
               Combustible estándar para el 80% de vehículos particulares y motos en el Perú.
@@ -200,8 +200,8 @@ const schemaJsonLd = [
           </div>
         </div>
         <div class="text-[11px] font-tabular pt-3 border-t border-slate-100 flex items-center justify-between text-ink-600">
-          <span>Barato: <strong class="text-emerald-600 font-bold">S/ {regular?.precio_minimo.toFixed(2)}</strong></span>
-          <span>Caro: <strong class="text-rose-600 font-bold">S/ {regular?.precio_maximo.toFixed(2)}</strong></span>
+          <span>Barato: <strong class="text-emerald-600 font-bold"><span data-fuel-min="gasolina_regular">S/ {regular?.precio_minimo.toFixed(2)}</span></strong></span>
+          <span>Caro: <strong class="text-rose-600 font-bold"><span data-fuel-max="gasolina_regular">S/ {regular?.precio_maximo.toFixed(2)}</span></strong></span>
         </div>
       </article>
 
@@ -215,7 +215,7 @@ const schemaJsonLd = [
           <div class="my-2">
             <span class="text-xs text-amber-700/80 block font-medium">Precio promedio por galón</span>
             <div class="font-tabular text-3xl sm:text-4xl font-black text-amber-900 tracking-tight leading-none mt-1">
-              S/ {premium?.precio_promedio.toFixed(2)}
+              <span data-fuel-avg="gasolina_premium">S/ {premium?.precio_promedio.toFixed(2)}</span>
             </div>
             <p class="text-xs text-ink-600 mt-2">
               Para motores de alta compresión, turboalimentados y vehículos de gama media-alta.
@@ -223,8 +223,8 @@ const schemaJsonLd = [
           </div>
         </div>
         <div class="text-[11px] font-tabular pt-3 border-t border-amber-100 flex items-center justify-between text-ink-600">
-          <span>Barato: <strong class="text-emerald-600 font-bold">S/ {premium?.precio_minimo.toFixed(2)}</strong></span>
-          <span>Caro: <strong class="text-rose-600 font-bold">S/ {premium?.precio_maximo.toFixed(2)}</strong></span>
+          <span>Barato: <strong class="text-emerald-600 font-bold"><span data-fuel-min="gasolina_premium">S/ {premium?.precio_minimo.toFixed(2)}</span></strong></span>
+          <span>Caro: <strong class="text-rose-600 font-bold"><span data-fuel-max="gasolina_premium">S/ {premium?.precio_maximo.toFixed(2)}</span></strong></span>
         </div>
       </article>
 
@@ -238,7 +238,7 @@ const schemaJsonLd = [
           <div class="my-2">
             <span class="text-xs text-ink-400 block font-medium">Precio promedio por galón</span>
             <div class="font-tabular text-3xl sm:text-4xl font-black text-ink-950 tracking-tight leading-none mt-1">
-              S/ {diesel?.precio_promedio.toFixed(2)}
+              <span data-fuel-avg="diesel">S/ {diesel?.precio_promedio.toFixed(2)}</span>
             </div>
             <p class="text-xs text-ink-500 mt-2">
               Para transporte de carga, pickups diésel, buses y furgonetas de reparto.
@@ -246,8 +246,8 @@ const schemaJsonLd = [
           </div>
         </div>
         <div class="text-[11px] font-tabular pt-3 border-t border-slate-100 flex items-center justify-between text-ink-600">
-          <span>Barato: <strong class="text-emerald-600 font-bold">S/ {diesel?.precio_minimo.toFixed(2)}</strong></span>
-          <span>Caro: <strong class="text-rose-600 font-bold">S/ {diesel?.precio_maximo.toFixed(2)}</strong></span>
+          <span>Barato: <strong class="text-emerald-600 font-bold"><span data-fuel-min="diesel">S/ {diesel?.precio_minimo.toFixed(2)}</span></strong></span>
+          <span>Caro: <strong class="text-rose-600 font-bold"><span data-fuel-max="diesel">S/ {diesel?.precio_maximo.toFixed(2)}</span></strong></span>
         </div>
       </article>
 
@@ -261,10 +261,10 @@ const schemaJsonLd = [
           <div class="my-2">
             <span class="text-xs text-slate-300 block font-medium">Precio promedio estimado</span>
             <div class="font-tabular text-3xl sm:text-4xl font-black text-white tracking-tight leading-none mt-1">
-              S/ {balonGas?.precio_promedio.toFixed(2)}
+              <span data-fuel-avg="balon_gas_10kg">S/ {balonGas?.precio_promedio.toFixed(2)}</span>
             </div>
             <p class="text-xs text-slate-200 mt-2 leading-relaxed">
-              En locales autorizados sin delivery se encuentra desde <strong>S/ {balonGas?.precio_minimo.toFixed(2)}</strong>. Con reparto suele costar hasta <strong>S/ {balonGas?.precio_maximo.toFixed(2)}</strong>.
+              En locales autorizados sin delivery se encuentra desde <strong><span data-fuel-min="balon_gas_10kg">S/ {balonGas?.precio_minimo.toFixed(2)}</span></strong>. Con reparto suele costar hasta <strong><span data-fuel-max="balon_gas_10kg">S/ {balonGas?.precio_maximo.toFixed(2)}</span></strong>.
             </p>
           </div>
         </div>
@@ -284,7 +284,7 @@ const schemaJsonLd = [
           <div class="my-2">
             <span class="text-xs text-ink-400 block font-medium">Precio promedio por litro</span>
             <div class="font-tabular text-3xl sm:text-4xl font-black text-ink-950 tracking-tight leading-none mt-1">
-              S/ {glp?.precio_promedio.toFixed(2)}
+              <span data-fuel-avg="glp_vehicular">S/ {glp?.precio_promedio.toFixed(2)}</span>
             </div>
             <p class="text-xs text-ink-500 mt-2">
               Popular entre taxis y autos particulares convertidos a gas licuado en Lima.
@@ -292,8 +292,8 @@ const schemaJsonLd = [
           </div>
         </div>
         <div class="text-[11px] font-tabular pt-3 border-t border-slate-100 flex items-center justify-between text-ink-600">
-          <span>Barato: <strong class="text-emerald-600 font-bold">S/ {glp?.precio_minimo.toFixed(2)}</strong></span>
-          <span>Caro: <strong class="text-rose-600 font-bold">S/ {glp?.precio_maximo.toFixed(2)}</strong></span>
+          <span>Barato: <strong class="text-emerald-600 font-bold"><span data-fuel-min="glp_vehicular">S/ {glp?.precio_minimo.toFixed(2)}</span></strong></span>
+          <span>Caro: <strong class="text-rose-600 font-bold"><span data-fuel-max="glp_vehicular">S/ {glp?.precio_maximo.toFixed(2)}</span></strong></span>
         </div>
       </article>
 
@@ -307,7 +307,7 @@ const schemaJsonLd = [
           <div class="my-2">
             <span class="text-xs text-ink-400 block font-medium">Precio promedio por m³</span>
             <div class="font-tabular text-3xl sm:text-4xl font-black text-ink-950 tracking-tight leading-none mt-1">
-              S/ {gnv?.precio_promedio.toFixed(2)}
+              <span data-fuel-avg="gnv">S/ {gnv?.precio_promedio.toFixed(2)}</span>
             </div>
             <p class="text-xs text-ink-500 mt-2">
               El combustible más económico por kilómetro recorrido en Lima y Callao (Cálidda).
@@ -315,8 +315,8 @@ const schemaJsonLd = [
           </div>
         </div>
         <div class="text-[11px] font-tabular pt-3 border-t border-slate-100 flex items-center justify-between text-ink-600">
-          <span>Barato: <strong class="text-emerald-600 font-bold">S/ {gnv?.precio_minimo.toFixed(2)}</strong></span>
-          <span>Caro: <strong class="text-rose-600 font-bold">S/ {gnv?.precio_maximo.toFixed(2)}</strong></span>
+          <span>Barato: <strong class="text-emerald-600 font-bold"><span data-fuel-min="gnv">S/ {gnv?.precio_minimo.toFixed(2)}</span></strong></span>
+          <span>Caro: <strong class="text-rose-600 font-bold"><span data-fuel-max="gnv">S/ {gnv?.precio_maximo.toFixed(2)}</span></strong></span>
         </div>
       </article>
 
@@ -480,7 +480,7 @@ const schemaJsonLd = [
 
         <!-- Sidebar Sticky Ad -->
         <div class="sticky top-20">
-          <AdBanner slotId="combustibles-sidebar-sticky" format="sticky" label="Publicidad" />
+          <AdBanner slotId="combustibles-sidebar-sticky" format="halfpage" label="Publicidad" />
         </div>
 
       </aside>
@@ -489,3 +489,38 @@ const schemaJsonLd = [
 
   </div>
 </Layout>
+
+<script>
+  import { api } from '../lib/api';
+
+  const refreshCombustibles = async () => {
+    try {
+      const res = await api.getCombustibles();
+      const items = res.data || [];
+      if (items.length === 0) return;
+
+      const vigEl = document.getElementById('fuel-vigencia');
+      if (vigEl && items[0]?.vigencia_desde) {
+        vigEl.textContent = `Vigencia referencial: ${items[0].vigencia_desde}`;
+      }
+
+      for (const item of items) {
+        document.querySelectorAll<HTMLElement>(`[data-fuel-avg="${item.tipo}"]`).forEach((el) => {
+          el.textContent = `S/ ${Number(item.precio_promedio).toFixed(2)}`;
+        });
+        document.querySelectorAll<HTMLElement>(`[data-fuel-min="${item.tipo}"]`).forEach((el) => {
+          el.textContent = `S/ ${Number(item.precio_minimo).toFixed(2)}`;
+        });
+        document.querySelectorAll<HTMLElement>(`[data-fuel-max="${item.tipo}"]`).forEach((el) => {
+          el.textContent = `S/ ${Number(item.precio_maximo).toFixed(2)}`;
+        });
+      }
+
+      window.dispatchEvent(new CustomEvent('combustibles:updated', { detail: items }));
+    } catch {
+      // Mantiene datos estáticos de respaldo si falla la red
+    }
+  };
+
+  void refreshCombustibles();
+</script>

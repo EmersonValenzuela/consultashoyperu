@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowRightLeft, Coins } from "lucide-react";
 
 interface Props {
@@ -6,7 +6,20 @@ interface Props {
   tasaVenta: number;
 }
 
-export default function ConversorMonedas({ tasaCompra, tasaVenta }: Props) {
+export default function ConversorMonedas({ tasaCompra: initialCompra, tasaVenta: initialVenta }: Props) {
+  const [tasaCompra, setTasaCompra] = useState<number>(initialCompra);
+  const [tasaVenta, setTasaVenta] = useState<number>(initialVenta);
+
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent<{ compra?: number; venta?: number }>).detail;
+      if (typeof detail?.compra === 'number') setTasaCompra(detail.compra);
+      if (typeof detail?.venta === 'number') setTasaVenta(detail.venta);
+    };
+    window.addEventListener('dolar:updated', handler);
+    return () => window.removeEventListener('dolar:updated', handler);
+  }, []);
+
   const [monto, setMonto] = useState<string>("100");
   const [direccion, setDireccion] = useState<"USD_A_PEN" | "PEN_A_USD">(
     "PEN_A_USD",

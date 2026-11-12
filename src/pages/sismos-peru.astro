@@ -113,10 +113,10 @@ const segundoGrupo = sismos.slice(midPoint);
               <Activity class="w-4 h-4 text-carmesi-600" />
               Eventos Sísmicos Más Recientes
             </h2>
-            <span class="text-xs text-ink-500 font-tabular">{sismos.length} sismos detectados</span>
+            <span id="sismos-total-count" class="text-xs text-ink-500 font-tabular">{sismos.length} sismos detectados</span>
           </div>
 
-          <div class="divide-y divide-ink-100">
+          <div id="sismos-list-recent" class="divide-y divide-ink-100">
             {primerGrupo.map((sismo) => {
               const isHigh = sismo.magnitud >= 5.0;
               const isMedium = sismo.magnitud >= 4.0 && sismo.magnitud < 5.0;
@@ -211,7 +211,7 @@ const segundoGrupo = sismos.slice(midPoint);
             </h2>
           </div>
 
-          <div class="divide-y divide-ink-100">
+          <div id="sismos-list-history" class="divide-y divide-ink-100">
             {segundoGrupo.map((sismo) => {
               const isHigh = sismo.magnitud >= 5.0;
               const isMedium = sismo.magnitud >= 4.0 && sismo.magnitud < 5.0;
@@ -356,7 +356,17 @@ const segundoGrupo = sismos.slice(midPoint);
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    import { api, type SismoData } from '../lib/api';
+
+    const escapeHtml = (text: string) =>
+      text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+
+    const bindFocusButtons = () => {
       document.querySelectorAll('.btn-focus-map').forEach((btn) => {
         btn.addEventListener('click', () => {
           const id = btn.getAttribute('data-sismo-id');
@@ -365,6 +375,93 @@ const segundoGrupo = sismos.slice(midPoint);
           window.dispatchEvent(new CustomEvent('focus-sismo', { detail: { id, lat, lng } }));
         });
       });
+    };
+
+    const renderSismoArticle = (sismo: SismoData) => {
+      const mag = Number(sismo.magnitud);
+      const isHigh = mag >= 5.0;
+      const isMedium = mag >= 4.0 && mag < 5.0;
+      const badgeColor = isHigh
+        ? 'bg-rose-50 border-rose-200 text-rose-800'
+        : isMedium
+          ? 'bg-amber-50 border-amber-200 text-amber-800'
+          : 'bg-emerald-50 border-emerald-200 text-emerald-800';
+
+      const rawFecha = sismo.ocurrido_en || sismo.fecha_hora;
+      const fechaObj = rawFecha ? new Date(rawFecha) : null;
+      const fechaLima =
+        fechaObj && !isNaN(fechaObj.getTime())
+          ? fechaObj.toLocaleString('es-PE', {
+              timeZone: 'America/Lima',
+              dateStyle: 'medium',
+              timeStyle: 'short',
+            })
+          : 'Fecha no disponible';
+
+      const profNum = sismo.profundidad_km ?? sismo.profundidad;
+      const profTexto =
+        profNum !== null && profNum !== undefined ? `${Math.round(Number(profNum))} km` : 'N/D';
+      const lugarSafe = escapeHtml(sismo.lugar || 'Ubicación no especificada');
+      const shareText = encodeURIComponent(
+        `🚨 *Sismo detectado en Perú*\n📍 Epicentro: ${sismo.lugar}\n💥 Magnitud: ${mag.toFixed(1)}\n📏 Profundidad: ${profTexto}\n🕒 Hora: ${fechaLima}\n\nConsulta en vivo: https://safezoneperu.com/sismos-peru/`
+      );
+
+      return `
+        <article class="p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-slate-50/60 transition-colors">
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 rounded-xl flex flex-col items-center justify-center border font-tabular flex-shrink-0 shadow-sm ${badgeColor}">
+              <span class="text-[10px] font-bold tracking-wider leading-none uppercase">MAG</span>
+              <span class="text-xl font-bold leading-none mt-1">${mag.toFixed(1)}</span>
+            </div>
+            <div>
+              <h3 class="font-heading font-bold text-ink-900 text-sm sm:text-base leading-snug">${lugarSafe}</h3>
+              <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-ink-500 font-tabular">
+                <span>${escapeHtml(fechaLima)}</span>
+                <span>•</span>
+                <span>Profundidad: <strong>${escapeHtml(profTexto)}</strong></span>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 flex-shrink-0">
+            ${isHigh ? '<span class="text-[11px] font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-200 uppercase tracking-wide">Alerta</span>' : ''}
+            <button type="button" data-sismo-id="${escapeHtml(String(sismo.id))}" data-lat="${Number(sismo.latitud)}" data-lng="${Number(sismo.longitud)}" class="btn-focus-map inline-flex items-center gap-1 text-xs font-semibold text-slate-700 hover:text-rose-700 bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer" title="Enfocar en el mapa">
+              <span class="hidden sm:inline">Ver mapa</span>
+            </button>
+            <a href="https://api.whatsapp.com/send?text=${shareText}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center p-1.5 text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors" title="Compartir por WhatsApp">WhatsApp</a>
+          </div>
+        </article>
+      `;
+    };
+
+    const refreshSismos = async () => {
+      try {
+        const res = await api.getSismos(20);
+        const items = res.data || [];
+        if (items.length === 0) return;
+
+        const countEl = document.getElementById('sismos-total-count');
+        if (countEl) countEl.textContent = `${items.length} sismos detectados`;
+
+        const recentEl = document.getElementById('sismos-list-recent');
+        if (recentEl) {
+          recentEl.innerHTML = items.slice(0, 5).map(renderSismoArticle).join('');
+        }
+
+        const historyEl = document.getElementById('sismos-list-history');
+        if (historyEl) {
+          historyEl.innerHTML = items.slice(5).map(renderSismoArticle).join('');
+        }
+
+        bindFocusButtons();
+        window.dispatchEvent(new CustomEvent('sismos:updated', { detail: items }));
+      } catch {
+        // Mantiene datos estáticos de respaldo si falla la red
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      bindFocusButtons();
+      void refreshSismos();
     });
   </script>
 </Layout>

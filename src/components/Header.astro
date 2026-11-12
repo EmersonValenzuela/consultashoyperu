@@ -31,7 +31,7 @@ const navItems = [
     <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
       <div class="flex items-center gap-2 capitalize">
         <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-        <span class="text-slate-200 font-medium">{todayLima}</span>
+        <span id="header-lima-date" class="text-slate-200 font-medium">{todayLima}</span>
         <span class="text-slate-500 hidden sm:inline">•</span>
         <span class="text-slate-400 hidden sm:inline">Hora oficial de Perú</span>
       </div>
@@ -124,3 +124,16 @@ const navItems = [
     </nav>
   </details>
 </header>
+
+<script>
+  const dateEl = document.getElementById('header-lima-date');
+  if (dateEl) {
+    dateEl.textContent = new Date().toLocaleDateString('es-PE', {
+      timeZone: 'America/Lima',
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  }
+</script>
