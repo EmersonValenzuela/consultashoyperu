@@ -180,7 +180,7 @@ const segundoGrupo = sismos.slice(midPoint);
                       title="Enfocar en el mapa"
                     >
                       <MapPin class="w-3.5 h-3.5 text-rose-600" />
-                      <span class="hidden sm:inline">Ver mapa</span>
+                      <svg class="w-3.5 h-3.5 text-rose-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span class="hidden sm:inline">Ver mapa</span>
                     </button>
                     <a
                       href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
@@ -204,7 +204,7 @@ const segundoGrupo = sismos.slice(midPoint);
         <AdBanner slotId="sismos-infeed-middle" format="infeed" label="Publicidad Patrocinada" />
 
         <!-- Bloque 2 de sismos -->
-        <section class="bg-white rounded-xl border border-ink-100 shadow-clean overflow-hidden">
+        <section id="sismos-history-section" class="bg-white rounded-xl border border-ink-100 shadow-clean overflow-hidden">
           <div class="px-5 py-4 border-b border-ink-100 bg-slate-50/70">
             <h2 class="font-heading text-sm font-bold text-ink-900">
               Historial de Movimientos Anteriores
@@ -270,7 +270,7 @@ const segundoGrupo = sismos.slice(midPoint);
                       title="Enfocar en el mapa"
                     >
                       <MapPin class="w-3.5 h-3.5 text-rose-600" />
-                      <span class="hidden sm:inline">Ver mapa</span>
+                      <svg class="w-3.5 h-3.5 text-rose-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span class="hidden sm:inline">Ver mapa</span>
                     </button>
                     <a
                       href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
@@ -416,7 +416,7 @@ const segundoGrupo = sismos.slice(midPoint);
             <div>
               <h3 class="font-heading font-bold text-ink-900 text-sm sm:text-base leading-snug">${lugarSafe}</h3>
               <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-ink-500 font-tabular">
-                <span>${escapeHtml(fechaLima)}</span>
+                <span class="flex items-center gap-1"><svg class="w-3.5 h-3.5 text-ink-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${escapeHtml(fechaLima)}</span>
                 <span>•</span>
                 <span>Profundidad: <strong>${escapeHtml(profTexto)}</strong></span>
               </div>
@@ -425,9 +425,9 @@ const segundoGrupo = sismos.slice(midPoint);
           <div class="flex items-center gap-1.5 flex-shrink-0">
             ${isHigh ? '<span class="text-[11px] font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-200 uppercase tracking-wide">Alerta</span>' : ''}
             <button type="button" data-sismo-id="${escapeHtml(String(sismo.id))}" data-lat="${Number(sismo.latitud)}" data-lng="${Number(sismo.longitud)}" class="btn-focus-map inline-flex items-center gap-1 text-xs font-semibold text-slate-700 hover:text-rose-700 bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer" title="Enfocar en el mapa">
-              <span class="hidden sm:inline">Ver mapa</span>
+              <svg class="w-3.5 h-3.5 text-rose-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span class="hidden sm:inline">Ver mapa</span>
             </button>
-            <a href="https://api.whatsapp.com/send?text=${shareText}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center p-1.5 text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors" title="Compartir por WhatsApp">WhatsApp</a>
+            <a href="https://api.whatsapp.com/send?text=${shareText}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center p-1.5 text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors" title="Compartir por WhatsApp"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg></a>
           </div>
         </article>
       `;
@@ -447,6 +447,10 @@ const segundoGrupo = sismos.slice(midPoint);
           recentEl.innerHTML = items.slice(0, 5).map(renderSismoArticle).join('');
         }
 
+        const historySection = document.getElementById('sismos-history-section');
+        if (historySection) {
+          historySection.classList.toggle('hidden', items.length <= 5);
+        }
         const historyEl = document.getElementById('sismos-list-history');
         if (historyEl) {
           historyEl.innerHTML = items.slice(5).map(renderSismoArticle).join('');
